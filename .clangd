@@ -1,0 +1,2 @@
+CompileFlags:
+  CompilationDatabase: .vscode/       # Search .vscode/ directory for compile_commands.json

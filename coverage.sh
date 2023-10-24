@@ -1,0 +1,1 @@
+gcovr --exclude googletest --html-details -o ./coverage/coverage.html
