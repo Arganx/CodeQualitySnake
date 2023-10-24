@@ -98,4 +98,12 @@ TEST_F(GameFixture, ThrowsWhenHeighthSetToZero) {
   EXPECT_THROW(getGame().setHeight(0), std::invalid_argument);
 }
 
+TEST_F(GameFixture, CanCreateBoardVectorsSizesCheck) {
+  getGame().createBoard();
+  for (const auto &row : getGame().getBoard()) {
+    EXPECT_EQ(row.size(), getGame().getWidth());
+  }
+  EXPECT_EQ(getGame().getBoard().size(), getGame().getHeight());
+}
+
 } // namespace

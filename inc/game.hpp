@@ -3,7 +3,9 @@
 #include <concepts>
 #include <cstdint>
 #include <stdexcept>
+#include <vector>
 namespace Game {
+
 /**
  * The main class of the Snake game. Contains everything necessary to run the
  * game.
@@ -13,6 +15,7 @@ private:
   uint16_t score = 0U;
   uint8_t width;
   uint8_t height;
+  std::vector<std::vector<uint8_t>> board;
 
 public:
   /**
@@ -21,24 +24,28 @@ public:
    * @return void.
    */
   void printWelcome() const;
+
   /**
    * Prints the current value of the status variable to the standard output.
    *
    * @return void.
    */
   void showStatus() const;
+
   /**
    * Gets the board width.
    *
    * @return The board width.
    */
   uint8_t getWidth() const;
+
   /**
    * Gets the board height.
    *
    * @return The board height.
    */
   uint8_t getHeight() const;
+
   /**
    * Sets the board width.
    *
@@ -49,6 +56,7 @@ public:
    * @throws std::invalid_argument if iWidth is not a positive number.
    */
   void setWidth(const uint8_t iWidth);
+
   /**
    * Sets the board height.
    *
@@ -59,6 +67,11 @@ public:
    * @throws std::invalid_argument if iHeight is not a positive number.
    */
   void setHeight(const uint8_t iHeight);
+
+  void createBoard();
+
+  std::vector<std::vector<uint8_t>> getBoard() const;
+
   /**
    * Main game constructor.
    *
