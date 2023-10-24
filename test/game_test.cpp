@@ -3,10 +3,12 @@
 #include <limits.h>
 
 #include "gtest/gtest.h"
+#include <stdexcept>
 namespace {
 
-const uint8_t k10 = static_cast<uint8_t>(10U);
-const uint8_t k100 = static_cast<uint8_t>(100U);
+const uint8_t k0{0U};
+const uint8_t k10{10U};
+const uint8_t k100{100U};
 
 class GameFixture : public ::testing::Test {
 private:
@@ -46,6 +48,24 @@ TEST(GameTests, CanGetHeight) {
   EXPECT_EQ(game.getHeight(), kGameHeight);
 }
 
+TEST(GameTests, ThrowsWhenGameCreatedWithZeroWidth) {
+  try {
+    Game::Game game{k0, k10};
+    FAIL() << "Should throw std::invalid_argument";
+  } catch (const std::invalid_argument &e) {
+    EXPECT_STREQ(e.what(), "Width must be a positive number");
+  }
+}
+
+TEST(GameTests, ThrowsWhenGameCreatedWithZeroHeight) {
+  try {
+    Game::Game game{k10, k0};
+    FAIL() << "Should throw std::invalid_argument";
+  } catch (const std::invalid_argument &e) {
+    EXPECT_STREQ(e.what(), "Height must be a positive number");
+  }
+}
+
 TEST_F(GameFixture, TestGameDimensionsFromFixture) {
   EXPECT_EQ(getGame().getWidth(), k10);
   EXPECT_EQ(getGame().getHeight(), k10);
@@ -68,6 +88,14 @@ TEST_F(GameFixture, CanChangeWidthAndHeight) {
   getGame().setWidth(k100);
   EXPECT_EQ(getGame().getWidth(), k100);
   EXPECT_EQ(getGame().getHeight(), k100);
+}
+
+TEST_F(GameFixture, ThrowsWhenWidthSetToZero) {
+  EXPECT_THROW(getGame().setWidth(0), std::invalid_argument);
+}
+
+TEST_F(GameFixture, ThrowsWhenHeighthSetToZero) {
+  EXPECT_THROW(getGame().setHeight(0), std::invalid_argument);
 }
 
 } // namespace

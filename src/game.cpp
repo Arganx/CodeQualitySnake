@@ -13,6 +13,18 @@ void Game::showStatus() const {
 uint8_t Game::getWidth() const { return this->width; };
 uint8_t Game::getHeight() const { return this->height; };
 
-void Game::setWidth(const uint8_t iWidth) { this->width = iWidth; };
-void Game::setHeight(const uint8_t iHeight) { this->height = iHeight; };
+void Game::setWidth(const uint8_t iWidth) {
+  if (iWidth > 0) {
+    this->width = iWidth;
+  } else {
+    throw std::invalid_argument("Width must be a positive number.");
+  }
+};
+void Game::setHeight(const uint8_t iHeight) {
+  if (iHeight > 0) {
+    this->height = iHeight;
+  } else {
+    throw std::invalid_argument("Height must be a positive number.");
+  }
+};
 } // namespace Game

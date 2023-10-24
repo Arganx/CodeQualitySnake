@@ -42,7 +42,7 @@ all : $(ALL)
 # 	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main
 
 clean:
-	rm -f $(ALL) gmock.a gmock_main.a *.o build/*
+	rm -f build/*
 
 # Builds gmock.a and gmock_main.a.  These libraries contain both
 # Google Mock and Google Test.  A test should link with either gmock.a

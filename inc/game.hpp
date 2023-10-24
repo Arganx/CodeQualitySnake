@@ -2,6 +2,7 @@
 #define Game_Guard
 #include <concepts>
 #include <cstdint>
+#include <stdexcept>
 namespace Game {
 /**
  * The main class of the Snake game. Contains everything necessary to run the
@@ -45,6 +46,7 @@ public:
    *
    * @param iWidth The new width that the game board is supposed to have.
    * @return void.
+   * @throws std::invalid_argument if iWidth is not a positive number.
    */
   void setWidth(const uint8_t iWidth);
   /**
@@ -54,6 +56,7 @@ public:
    *
    * @param iHeight The new height that the game board is supposed to have.
    * @return void.
+   * @throws std::invalid_argument if iHeight is not a positive number.
    */
   void setHeight(const uint8_t iHeight);
   /**
@@ -67,7 +70,13 @@ public:
    */
   explicit Game(std::same_as<uint8_t> auto iWidth,
                 std::same_as<uint8_t> auto iHeight)
-      : width{iWidth}, height{iHeight} {};
+      : width{iWidth}, height{iHeight} {
+    if (iWidth <= 0) {
+      throw std::invalid_argument("Width must be a positive number");
+    } else if (iHeight <= 0) {
+      throw std::invalid_argument("Height must be a positive number");
+    }
+  };
 };
 } // namespace Game
 #endif
