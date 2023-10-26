@@ -73,8 +73,16 @@ gmock.a : gmock-all.o gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
-# Builds a sample test.
+
+
 game_test.o : $(USER_DIR)/game_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/game_test.cpp
 game_test : game_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+
+board_test.o : $(USER_DIR)/board_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_test.cpp
+board_test : board_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+
+tests: board_test game_test

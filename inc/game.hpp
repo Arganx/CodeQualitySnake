@@ -1,9 +1,10 @@
 #ifndef Game_Guard
 #define Game_Guard
-#include <concepts>
+#include "board.hpp"
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
-#include <vector>
 namespace Game {
 
 /**
@@ -13,9 +14,7 @@ namespace Game {
 class Game {
 private:
   uint16_t score = 0U;
-  uint8_t width;
-  uint8_t height;
-  std::vector<std::vector<uint8_t>> board;
+  std::unique_ptr<Board> boardPtr;
 
 public:
   /**
@@ -33,63 +32,32 @@ public:
   void showStatus() const;
 
   /**
-   * Gets the board width.
    *
-   * @return The board width.
-   */
-  uint8_t getWidth() const;
-
-  /**
-   * Gets the board height.
+   * Initializes the components of the Game class.
    *
-   * @return The board height.
-   */
-  uint8_t getHeight() const;
-
-  /**
-   * Sets the board width.
+   * @param iWidth The width that the game board is supposed to have.
+   * @param iHeight The height that the game board is supposed to have.
    *
-   * Changes the value of the class member width, to the one provided.
-   *
-   * @param iWidth The new width that the game board is supposed to have.
    * @return void.
-   * @throws std::invalid_argument if iWidth is not a positive number.
    */
-  void setWidth(const uint8_t iWidth);
+  void initGame(uint8_t iWidth, uint8_t iHeight);
 
   /**
-   * Sets the board height.
    *
-   * Changes the value of the class member height, to the one provided.
+   * Getter for the board.
    *
-   * @param iHeight The new height that the game board is supposed to have.
-   * @return void.
-   * @throws std::invalid_argument if iHeight is not a positive number.
+   * @return std::unique_ptr<Board> - Pointer to the board. The pointer can be
+   * null.
    */
-  void setHeight(const uint8_t iHeight);
-
-  void createBoard();
-
-  std::vector<std::vector<uint8_t>> getBoard() const;
+  std::unique_ptr<Board> &getBoardPtr();
 
   /**
    * Main game constructor.
    *
-   * Creates a game object and sets the width, height and score member
-   * variables.
+   * Creates a game object and sets the score member variable.
    *
-   * @param iWidth The width that the game board is supposed to have.
-   * @param iHeight The height that the game board is supposed to have.
    */
-  explicit Game(std::same_as<uint8_t> auto iWidth,
-                std::same_as<uint8_t> auto iHeight)
-      : width{iWidth}, height{iHeight} {
-    if (iWidth <= 0) {
-      throw std::invalid_argument("Width must be a positive number");
-    } else if (iHeight <= 0) {
-      throw std::invalid_argument("Height must be a positive number");
-    }
-  };
+  explicit Game();
 };
 } // namespace Game
 #endif
