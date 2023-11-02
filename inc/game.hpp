@@ -1,6 +1,7 @@
 #ifndef Game_Guard
 #define Game_Guard
 #include "board.hpp"
+#include "snake.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -15,6 +16,10 @@ class Game {
 private:
   uint16_t score = 0U;
   std::unique_ptr<Board> boardPtr;
+  std::unique_ptr<Snake> snake;
+
+  void drawSnake();
+  void cleanSnake();
 
 public:
   /**
@@ -41,6 +46,8 @@ public:
    * @return void.
    */
   void initGame(uint8_t iWidth, uint8_t iHeight);
+
+  void step();
 
   /**
    *

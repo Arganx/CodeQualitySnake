@@ -85,4 +85,12 @@ board_test.o : $(USER_DIR)/board_test.cpp $(GMOCK_HEADERS)
 board_test : board_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
-tests: board_test game_test
+board_position_test.o : $(USER_DIR)/board_position_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_position_test.cpp
+board_position_test : board_position_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+
+tests: board_test game_test board_position_test
+
+main: ../main.cpp
+	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main

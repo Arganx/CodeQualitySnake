@@ -1,6 +1,7 @@
 #ifndef Board_Guard
 #define Board_Guard
 
+#include "board_position.hpp"
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
@@ -63,10 +64,12 @@ public:
 
   std::vector<std::vector<uint8_t>> getBoard() const;
 
+  void drawCharacter(const BoardPosition &iPosition, uint8_t iCharacter);
+
   /**
    * Main Board constructor.
    *
-   * Creates a board object and sets the width, height and score member
+   * Creates a board object and sets the width and height member
    * variables.
    *
    * @param iWidth The width that the board is supposed to have.

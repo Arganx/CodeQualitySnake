@@ -1,7 +1,7 @@
 #include "../inc/board.hpp"
+#include "../inc/board_mappings.hpp"
+#include <cstdint>
 #include <stdexcept>
-
-constexpr char kCellInitValue = '*';
 
 namespace Game {
 
@@ -29,10 +29,22 @@ void Board::createBoard() {
   boardSpace.clear();
   boardSpace.reserve(height);
   for (uint8_t heightIndex{0U}; heightIndex < height; ++heightIndex) {
-    boardSpace.emplace_back(width, kCellInitValue);
+    boardSpace.emplace_back(width, BoardMapping::kEmptySpace);
   }
 }
 
 std::vector<std::vector<uint8_t>> Board::getBoard() const { return boardSpace; }
+
+void Board::drawCharacter(const BoardPosition &iPosition, uint8_t iCharacter) {
+  if (iPosition.getXPosition() >= width) {
+    throw std::invalid_argument("Trying to draw outside of the board. X "
+                                "position bigger than board width.");
+  }
+  if (iPosition.getYPosition() >= height) {
+    throw std::invalid_argument("Trying to draw outside of the board. Y "
+                                "position bigger than board height.");
+  }
+  boardSpace[iPosition.getYPosition()][iPosition.getXPosition()] = iCharacter;
+}
 
 } // namespace Game
