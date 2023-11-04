@@ -41,4 +41,15 @@ TEST_F(BoardPositionFixture, CanSetXPosition) {
   EXPECT_EQ(getPosition().getYPosition(), k10);
 }
 
+TEST_F(BoardPositionFixture, CanCompareBoardPositions) {
+  Game::BoardPosition samePosition{k1, k10};
+  Game::BoardPosition differentXPosition{k0, k10};
+  Game::BoardPosition differentYPosition{k1, k5};
+  Game::BoardPosition differentXAndYPosition{k10, k1};
+  EXPECT_EQ(getPosition(), samePosition);
+  EXPECT_NE(getPosition(), differentXPosition);
+  EXPECT_NE(getPosition(), differentYPosition);
+  EXPECT_NE(getPosition(), differentXAndYPosition);
+}
+
 } // namespace

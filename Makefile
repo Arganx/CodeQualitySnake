@@ -90,7 +90,12 @@ board_position_test.o : $(USER_DIR)/board_position_test.cpp $(GMOCK_HEADERS)
 board_position_test : board_position_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
-tests: board_test game_test board_position_test
+snake_test.o : $(USER_DIR)/snake_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/snake_test.cpp
+snake_test : snake_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+
+tests: board_test game_test board_position_test snake_test
 
 main: ../main.cpp
 	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main

@@ -2,6 +2,7 @@
 #define Board_Position_Guard
 
 #include <cstdint>
+#include <variant>
 
 namespace Game {
 class BoardPosition {
@@ -25,6 +26,7 @@ public:
   uint8_t getYPosition() const;
   void setXPosition(const uint8_t iPosition);
   void setYPosition(const uint8_t iPosition);
+  bool operator==(const BoardPosition &iPosition) const;
 };
 
 } // namespace Game

@@ -32,7 +32,10 @@ void Game::step() {
 }
 
 void Game::drawSnake() {
-  boardPtr->drawCharacter(snake->getHeadPosition(), BoardMapping::kSnakeHead);
+  if (snake->getHeadPosition()) {
+    boardPtr->drawCharacter(snake->getHeadPosition()->get(),
+                            BoardMapping::kSnakeHead);
+  }
 }
 
 void Game::cleanSnake() {

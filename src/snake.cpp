@@ -1,5 +1,6 @@
 #include "../inc/snake.hpp"
 #include "../inc/segment.hpp"
+#include <optional>
 
 namespace Game {
 Snake::Snake() = default;
@@ -10,10 +11,12 @@ void Snake::addSegment(const Segment &iSegment) {
   segments.emplace_back(iSegment);
 }
 
-void Snake::clear() { segments.clear(); }
-
-const BoardPosition &Snake::getHeadPosition() const {
-  return segments[0].getPosition();
+std::optional<std::reference_wrapper<const BoardPosition>>
+Snake::getHeadPosition() const {
+  if (!segments.empty()) {
+    return segments[0].getPosition();
+  }
+  return std::nullopt;
 }
 
 const std::vector<Segment> &Snake::getSnakeSegments() const { return segments; }

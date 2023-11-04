@@ -3,6 +3,8 @@
 
 #include "board_position.hpp"
 #include "segment.hpp"
+#include <functional>
+#include <optional>
 #include <vector>
 namespace Game {
 class Snake {
@@ -11,8 +13,8 @@ private:
 
 public:
   void addSegment(const Segment &iSegment);
-  void clear();
-  const BoardPosition &getHeadPosition() const;
+  std::optional<std::reference_wrapper<const BoardPosition>>
+  getHeadPosition() const;
   Snake();
   explicit Snake(const Segment &iSegment);
   const std::vector<Segment> &getSnakeSegments() const;

@@ -14,4 +14,11 @@ void BoardPosition::setXPosition(const uint8_t iPosition) {
 void BoardPosition::setYPosition(const uint8_t iPosition) {
   yPosition = iPosition;
 };
+
+bool BoardPosition::operator==(const BoardPosition &iPosition) const {
+  if (iPosition.xPosition == xPosition && iPosition.yPosition == yPosition) {
+    return true;
+  }
+  return false;
+}
 } // namespace Game
