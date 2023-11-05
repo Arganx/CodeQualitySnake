@@ -106,7 +106,7 @@ visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
 visualiser_test : visualiser_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/* -o $@
 
-tests: board_test game_test board_position_test snake_test
+tests: board_test game_test board_position_test snake_test visualiser_test
 
 main: ../main.cpp
 	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main

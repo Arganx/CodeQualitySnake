@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 namespace Game {
 
 void Game::printWelcome() const { std::cout << "Welcome" << std::endl; }
@@ -15,7 +16,7 @@ void Game::showStatus() const { std::cout << "Score: " << score << std::endl; }
 
 void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
   boardPtr = std::make_unique<Board>(iWidth, iHeight);
-  snake = std::make_unique<Snake>(
+  snakePtr = std::make_unique<Snake>(
       Segment{BoardPosition{static_cast<uint8_t>(std::floor(iWidth / 2U)),
                             static_cast<uint8_t>(std::floor(iHeight / 2U))}});
 }
@@ -31,15 +32,26 @@ void Game::step() {
   drawSnake();
 }
 
+void Game::checkIfPointersAreInitialized() {
+  if (snakePtr == nullptr) {
+    throw std::invalid_argument("Snake is not initialized");
+  }
+  if (boardPtr == nullptr) {
+    throw std::invalid_argument("Board is not initialized");
+  }
+}
+
 void Game::drawSnake() {
-  if (snake->getHeadPosition()) {
-    boardPtr->drawCharacter(snake->getHeadPosition()->get(),
+  checkIfPointersAreInitialized();
+  if (snakePtr->getHeadPosition()) {
+    boardPtr->drawCharacter(snakePtr->getHeadPosition()->get(),
                             BoardMapping::kSnakeHead);
   }
 }
 
 void Game::cleanSnake() {
-  for (const auto &segment : snake->getSnakeSegments()) {
+  checkIfPointersAreInitialized();
+  for (const auto &segment : snakePtr->getSnakeSegments()) {
     boardPtr->drawCharacter(segment.getPosition(), BoardMapping::kEmptySpace);
   }
 }

@@ -16,10 +16,11 @@ class Game {
 private:
   uint16_t score = 0U;
   std::unique_ptr<Board> boardPtr;
-  std::unique_ptr<Snake> snake;
+  std::unique_ptr<Snake> snakePtr;
 
   void drawSnake();
   void cleanSnake();
+  void checkIfPointersAreInitialized();
 
 public:
   /**
