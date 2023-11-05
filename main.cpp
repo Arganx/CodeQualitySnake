@@ -1,5 +1,5 @@
 #include "inc/game.hpp"
-#include "inc/visualiser.hpp"
+#include "tools/inc/visualiser.hpp"
 #include <chrono>
 #include <cstdint>
 #include <iostream>

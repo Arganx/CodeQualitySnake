@@ -14,6 +14,12 @@ GMOCK_DIR = ../googletest/googlemock
 # Where to find user code.
 USER_DIR = ../test
 
+# Where to find tools code
+TOOLS_DIR = ../tools
+TOOLS_TESTS = $(TOOLS_DIR)/tests
+TOOLS_INC = $(TOOLS_DIR)/inc
+TOOLS_SRC = $(TOOLS_DIR)/src
+
 # Flags passed to the preprocessor.
 # Set Google Test and Google Mock's header directories as system
 # directories, such that the compiler doesn't generate warnings in
@@ -95,7 +101,12 @@ snake_test.o : $(USER_DIR)/snake_test.cpp $(GMOCK_HEADERS)
 snake_test : snake_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
+visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(INC_DIR) -I$(TOOLS_INC) $(flags) -c $(TOOLS_TESTS)/visualiser_test.cpp
+visualiser_test : visualiser_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/* -o $@
+
 tests: board_test game_test board_position_test snake_test
 
 main: ../main.cpp
-	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main
+	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main

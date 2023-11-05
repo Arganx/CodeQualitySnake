@@ -1,6 +1,6 @@
 #ifndef Visualiser_Guard
 #define Visualiser_Guard
-#include "board.hpp"
+#include "../../inc/board.hpp"
 
 namespace tools {
 
