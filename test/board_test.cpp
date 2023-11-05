@@ -1,4 +1,6 @@
 #include "../inc/board.hpp"
+#include "board_mappings.hpp"
+#include "board_position.hpp"
 #include <cstdint>
 #include <limits.h>
 
@@ -7,6 +9,8 @@
 namespace {
 
 const uint8_t k0{0U};
+const uint8_t k1{1U};
+const uint8_t k2{2U};
 const uint8_t k10{10U};
 const uint8_t k100{100U};
 
@@ -87,6 +91,57 @@ TEST_F(BoardFixture, CanCreateBoardVectorsSizesCheck) {
     EXPECT_EQ(row.size(), getBoard().getWidth());
   }
   EXPECT_EQ(getBoard().getBoard().size(), getBoard().getHeight());
+}
+
+TEST_F(BoardFixture, CanDrawOnBoard) {
+  for (const auto &row : getBoard().getBoard()) {
+    for (const auto &cell : row) {
+      EXPECT_EQ(cell, BoardMapping::kEmptySpace);
+    }
+  }
+
+  Game::BoardPosition positionOne{k2, k1};
+  Game::BoardPosition positionTwo{k2, k2};
+
+  getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
+  getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeHead);
+
+  for (uint8_t heightCounter{0U}; heightCounter < getBoard().getHeight();
+       ++heightCounter) {
+    for (uint8_t widthCounter{0U}; widthCounter < getBoard().getWidth();
+         ++widthCounter) {
+      if (heightCounter == k1 && widthCounter == k2) {
+        EXPECT_EQ(getBoard().getBoard()[heightCounter][widthCounter],
+                  BoardMapping::kSnakeBody);
+      } else if (heightCounter == k2 && widthCounter == k2) {
+        EXPECT_EQ(getBoard().getBoard()[heightCounter][widthCounter],
+                  BoardMapping::kSnakeHead);
+      } else {
+        EXPECT_EQ(getBoard().getBoard()[heightCounter][widthCounter],
+                  BoardMapping::kEmptySpace);
+      }
+    }
+  }
+}
+
+TEST_F(BoardFixture, CantDrawOutsideTheBoard) {
+  Game::BoardPosition positionOne{k100, k1};
+  try {
+    getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
+    FAIL() << "Should throw std::invalid_argument";
+  } catch (const std::invalid_argument &exception) {
+    EXPECT_STREQ(exception.what(), "Trying to draw outside of the board. X "
+                                   "position bigger than board width.");
+  }
+
+  Game::BoardPosition positionTwo{k1, k10};
+  try {
+    getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeBody);
+    FAIL() << "Should throw std::invalid_argument";
+  } catch (const std::invalid_argument &exception) {
+    EXPECT_STREQ(exception.what(), "Trying to draw outside of the board. Y "
+                                   "position bigger than board height.");
+  }
 }
 
 } // namespace

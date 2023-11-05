@@ -31,12 +31,12 @@ GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
                 $(GMOCK_DIR)/include/gmock/internal/*.h \
                 $(GTEST_HEADERS)
 
-ALL = game_test
+# ALL = game_test
 
 INC_DIR = ../inc
 SRC_DIR = ../src
 
-all : $(ALL)
+# all : $(ALL)
 
 # main: ../main.cpp
 # 	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main
