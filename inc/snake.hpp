@@ -13,11 +13,13 @@ private:
 
 public:
   void addSegment(const Segment &iSegment);
+  void addSegment(Segment &&iSegment);
   std::optional<std::reference_wrapper<const BoardPosition>>
   getHeadPosition() const;
   Snake();
   explicit Snake(const Segment &iSegment);
   const std::vector<Segment> &getSnakeSegments() const;
+  void move(const BoardPosition &iNextHeadPosition);
 };
 } // namespace Game
 

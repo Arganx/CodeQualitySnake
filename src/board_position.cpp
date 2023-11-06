@@ -1,4 +1,12 @@
 #include "../inc/board_position.hpp"
+#include <cmath>
+#include <cstdint>
+#include <utility>
+
+namespace {
+constexpr uint8_t k0{0U};
+constexpr uint8_t k1{1U};
+} // namespace
 
 namespace Game {
 
@@ -21,4 +29,14 @@ bool BoardPosition::operator==(const BoardPosition &iPosition) const {
   }
   return false;
 }
+
+bool BoardPosition::isAdjacent(const BoardPosition &iPosition) const {
+  auto xDiff = std::abs(iPosition.xPosition - xPosition);
+  auto yDiff = std::abs(iPosition.yPosition - yPosition);
+  if ((xDiff == k1 && yDiff == k0) || (xDiff == k0 && yDiff == k1)) {
+    return true;
+  }
+  return false;
+}
+
 } // namespace Game

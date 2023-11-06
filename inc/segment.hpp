@@ -11,9 +11,11 @@ private:
   BoardPosition segmentPosition;
 
 public:
-  // void goToNextPosition();
+  void goToPosition(const BoardPosition &iPosition);
   explicit Segment(const BoardPosition &iPosition);
+  explicit Segment(BoardPosition &&iPosition);
   const BoardPosition &getPosition() const;
+  bool operator==(const Segment &iSegment) const;
 };
 } // namespace Game
 #endif

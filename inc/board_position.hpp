@@ -27,6 +27,7 @@ public:
   void setXPosition(const uint8_t iPosition);
   void setYPosition(const uint8_t iPosition);
   bool operator==(const BoardPosition &iPosition) const;
+  bool isAdjacent(const BoardPosition &iPosition) const;
 };
 
 } // namespace Game

@@ -1,6 +1,10 @@
 #include "../inc/snake.hpp"
 #include "../inc/segment.hpp"
+#include <algorithm>
+#include <bits/ranges_util.h>
+#include <iterator>
 #include <optional>
+#include <stdexcept>
 
 namespace Game {
 Snake::Snake() = default;
@@ -8,7 +12,15 @@ Snake::Snake() = default;
 Snake::Snake(const Segment &iSegment) : segments{iSegment} {};
 
 void Snake::addSegment(const Segment &iSegment) {
-  segments.emplace_back(iSegment);
+  if (std::ranges::find(segments, iSegment) == segments.end()) {
+    segments.emplace_back(iSegment);
+  }
+}
+
+void Snake::addSegment(Segment &&iSegment) {
+  if (std::ranges::find(segments, iSegment) == segments.end()) {
+    segments.emplace_back(std::move(iSegment));
+  }
 }
 
 std::optional<std::reference_wrapper<const BoardPosition>>
@@ -20,5 +32,25 @@ Snake::getHeadPosition() const {
 }
 
 const std::vector<Segment> &Snake::getSnakeSegments() const { return segments; }
+
+void Snake::move(const BoardPosition &iNextHeadPosition) {
+  if (segments.empty()) {
+    return;
+  }
+  if (!iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
+    throw std::invalid_argument(
+        "Trying to move to non adjacent tile"); // TODO
+                                                // change
+                                                // exception
+                                                // type
+  }
+  if (segments.size() > 1) {
+    for (auto iterator{--segments.end()}; iterator > segments.begin();
+         --iterator) {
+      iterator->goToPosition(std::prev(iterator)->getPosition());
+    }
+  }
+  segments[0].goToPosition(iNextHeadPosition);
+}
 
 } // namespace Game
