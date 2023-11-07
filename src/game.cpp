@@ -27,12 +27,11 @@ Game::Game() = default;
 
 void Game::step() {
   std::cout << "Step" << std::endl;
-  cleanSnake();
-  // TODO move snake
-  drawSnake();
+  cleanFullSnake();
+  drawFullSnake();
 }
 
-void Game::checkIfPointersAreInitialized() {
+void Game::checkIfPointersAreInitialized() const {
   if (snakePtr == nullptr) {
     throw std::invalid_argument("Snake is not initialized");
   }
@@ -49,10 +48,25 @@ void Game::drawSnake() {
   }
 }
 
-void Game::cleanSnake() {
+void Game::cleanFullSnake() {
   checkIfPointersAreInitialized();
   for (const auto &segment : snakePtr->getSnakeSegments()) {
     boardPtr->drawCharacter(segment.getPosition(), BoardMapping::kEmptySpace);
+  }
+}
+
+void Game::drawFullSnake() {
+  checkIfPointersAreInitialized();
+
+  if (snakePtr->getHeadPosition()) {
+    boardPtr->drawCharacter(snakePtr->getHeadPosition()->get(),
+                            BoardMapping::kSnakeHead);
+  }
+  for (auto segmentIterator = std::next(snakePtr->getSnakeSegments().cbegin());
+       segmentIterator < snakePtr->getSnakeSegments().cend();
+       ++segmentIterator) {
+    boardPtr->drawCharacter(segmentIterator->getPosition(),
+                            BoardMapping::kSnakeBody);
   }
 }
 

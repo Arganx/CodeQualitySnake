@@ -48,9 +48,9 @@ TEST_F(SnakeFixture, CantAddDuplicateSegments) {
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
   getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k1);
+  getSnake().addSegment(Game::Segment{Game::BoardPosition{k0, k1}});
   getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
-  EXPECT_EQ(getSnake().getSnakeSegments().size(), k1);
+  EXPECT_EQ(getSnake().getSnakeSegments().size(), k2);
 }
 
 TEST_F(SnakeFixture, CantMoveToSelf) {
@@ -121,6 +121,23 @@ TEST_F(SnakeFixture, CantDo180) {
     FAIL() << "Should have thrown";
   } catch (const std::invalid_argument &exception) {
     EXPECT_STREQ(exception.what(), "Trying to move back into itself");
+  }
+}
+
+TEST_F(SnakeFixture, CantAddSegmentNonAdjacentToTheLastSegment) {
+  Game::BoardPosition startingHeadPosition{};
+  Game::BoardPosition startingPositionSegmentOne{k0, k1};
+  Game::BoardPosition startingPositionSegmentTwo{k0, k3};
+
+  getSnake().addSegment(Game::Segment{startingHeadPosition});
+  getSnake().addSegment(Game::Segment{startingPositionSegmentOne});
+  try {
+    getSnake().addSegment(Game::Segment{startingPositionSegmentTwo});
+    FAIL() << "Should have thrown";
+  } catch (const std::invalid_argument &exception) {
+    EXPECT_STREQ(
+        exception.what(),
+        "Can't add a segment that is not adjacent to the last segment");
   }
 }
 

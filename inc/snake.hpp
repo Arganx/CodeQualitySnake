@@ -11,6 +11,7 @@ class Snake {
 private:
   std::vector<Segment> segments;
   bool isDoing180(const BoardPosition &iNextHeadPosition) const;
+  void checkIfAdjacentToLastSegment(const Segment &iSegment) const;
 
 public:
   void addSegment(const Segment &iSegment);

@@ -19,8 +19,9 @@ private:
   std::unique_ptr<Snake> snakePtr;
 
   void drawSnake();
-  void cleanSnake();
-  void checkIfPointersAreInitialized();
+  void drawFullSnake();
+  void cleanFullSnake();
+  void checkIfPointersAreInitialized() const;
 
 public:
   /**
