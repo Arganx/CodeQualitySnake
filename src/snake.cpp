@@ -45,12 +45,24 @@ void Snake::move(const BoardPosition &iNextHeadPosition) {
                                                 // type
   }
   if (segments.size() > 1) {
+    if (isDoing180(iNextHeadPosition)) {
+      throw std::invalid_argument("Trying to move back into itself");
+    }
     for (auto iterator{--segments.end()}; iterator > segments.begin();
          --iterator) {
       iterator->goToPosition(std::prev(iterator)->getPosition());
     }
   }
   segments[0].goToPosition(iNextHeadPosition);
+}
+
+bool Snake::isDoing180(const BoardPosition &iNextHeadPosition) const {
+  if (segments.size() > 1) {
+    if (iNextHeadPosition == segments[1].getPosition()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace Game

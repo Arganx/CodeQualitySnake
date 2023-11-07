@@ -10,6 +10,7 @@ namespace Game {
 class Snake {
 private:
   std::vector<Segment> segments;
+  bool isDoing180(const BoardPosition &iNextHeadPosition) const;
 
 public:
   void addSegment(const Segment &iSegment);

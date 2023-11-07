@@ -38,7 +38,8 @@ TEST_F(SnakeFixture, canAddSegments) {
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
   getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k1);
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k0, k1}});
+  Game::Segment segment{Game::BoardPosition{k0, k1}};
+  getSnake().addSegment(segment);
   getSnake().addSegment(Game::Segment{Game::BoardPosition{k1, k1}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k3);
 }
@@ -54,9 +55,6 @@ TEST_F(SnakeFixture, CantAddDuplicateSegments) {
 
 TEST_F(SnakeFixture, CantMoveToSelf) {
   getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k0, k1}});
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k0, k2}});
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k1, k2}});
   try {
     getSnake().move(Game::BoardPosition{});
     FAIL() << "Should have thrown";
@@ -66,7 +64,6 @@ TEST_F(SnakeFixture, CantMoveToSelf) {
 }
 
 TEST_F(SnakeFixture, SegmentsMoveCorrectly) {
-  // TODO Add test checking that you don't move into the next snake segment
   Game::BoardPosition nextHeadPosition{k1, k0};
   Game::BoardPosition startingHeadPosition{};
   Game::BoardPosition startingPositionSegmentOne{k0, k1};
@@ -86,6 +83,45 @@ TEST_F(SnakeFixture, SegmentsMoveCorrectly) {
             startingPositionSegmentOne);
   EXPECT_EQ(getSnake().getSnakeSegments()[3].getPosition(),
             startingPositionSegmentTwo);
+}
+
+TEST_F(SnakeFixture, MoveOnEmptySnakeDoesNothing) {
+  Game::BoardPosition nextHeadPosition{k1, k0};
+  getSnake().move(nextHeadPosition);
+
+  EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
+}
+
+TEST_F(SnakeFixture, CantMoveToNonAdjacentCell) {
+  Game::BoardPosition nextHeadPosition{k3, k0};
+  Game::BoardPosition startingHeadPosition{};
+
+  getSnake().addSegment(Game::Segment{startingHeadPosition});
+
+  try {
+    getSnake().move(nextHeadPosition);
+    FAIL() << "Should have thrown";
+  } catch (const std::invalid_argument &exception) {
+    EXPECT_STREQ(exception.what(), "Trying to move to non adjacent tile");
+  }
+}
+
+TEST_F(SnakeFixture, CantDo180) {
+  Game::BoardPosition nextHeadPosition{k3, k0};
+  Game::BoardPosition startingHeadPosition{};
+  Game::BoardPosition startingPositionSegmentOne{k0, k1};
+  Game::BoardPosition startingPositionSegmentTwo{k0, k2};
+
+  getSnake().addSegment(Game::Segment{startingHeadPosition});
+  getSnake().addSegment(Game::Segment{startingPositionSegmentOne});
+  getSnake().addSegment(Game::Segment{startingPositionSegmentTwo});
+
+  try {
+    getSnake().move(startingPositionSegmentOne);
+    FAIL() << "Should have thrown";
+  } catch (const std::invalid_argument &exception) {
+    EXPECT_STREQ(exception.what(), "Trying to move back into itself");
+  }
 }
 
 } // namespace
