@@ -66,6 +66,8 @@ public:
 
   void drawCharacter(const BoardPosition &iPosition, uint8_t iCharacter);
 
+  std::vector<BoardPosition> getAvailablePositions() const;
+
   /**
    * Main Board constructor.
    *

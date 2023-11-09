@@ -22,6 +22,7 @@ private:
   void drawFullSnake();
   void cleanFullSnake();
   void checkIfPointersAreInitialized() const;
+  void drawSnack(const uint8_t iNumberOfSnacks = 1);
 
 public:
   /**

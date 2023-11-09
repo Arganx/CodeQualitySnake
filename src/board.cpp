@@ -47,4 +47,19 @@ void Board::drawCharacter(const BoardPosition &iPosition, uint8_t iCharacter) {
   boardSpace[iPosition.getYPosition()][iPosition.getXPosition()] = iCharacter;
 }
 
+std::vector<BoardPosition> Board::getAvailablePositions() const {
+  std::vector<BoardPosition> availablePositions;
+  for (auto heightIndex{static_cast<uint8_t>(0U)}; heightIndex < height;
+       ++heightIndex) {
+    for (auto widthIndex{static_cast<uint8_t>(0U)}; widthIndex < width;
+         ++widthIndex) {
+      if (boardSpace[heightIndex][widthIndex] == BoardMapping::kEmptySpace) {
+        availablePositions.emplace_back(widthIndex, heightIndex);
+      }
+    }
+  }
+
+  return availablePositions;
+}
+
 } // namespace Game
