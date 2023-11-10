@@ -11,7 +11,6 @@ private:
   BoardPosition segmentPosition;
 
 public:
-  void goToPosition(const BoardPosition &iPosition);
   explicit Segment(const BoardPosition &iPosition);
   explicit Segment(BoardPosition &&iPosition);
   const BoardPosition &getPosition() const;

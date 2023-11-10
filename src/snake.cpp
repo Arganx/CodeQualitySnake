@@ -33,7 +33,7 @@ Snake::getHeadPosition() const {
   return std::nullopt;
 }
 
-const std::vector<Segment> &Snake::getSnakeSegments() const { return segments; }
+const std::deque<Segment> &Snake::getSnakeSegments() const { return segments; }
 
 void Snake::move(const BoardPosition &iNextHeadPosition) {
   if (segments.empty()) {
@@ -46,16 +46,12 @@ void Snake::move(const BoardPosition &iNextHeadPosition) {
                                                 // exception
                                                 // type
   }
-  if (segments.size() > 1) {
-    if (isDoing180(iNextHeadPosition)) {
-      throw std::invalid_argument("Trying to move back into itself");
-    }
-    for (auto iterator{--segments.end()}; iterator > segments.begin();
-         --iterator) {
-      iterator->goToPosition(std::prev(iterator)->getPosition());
-    }
+  if (segments.size() > 1 && isDoing180(iNextHeadPosition)) {
+    throw std::invalid_argument("Trying to move back into itself");
   }
-  segments[0].goToPosition(iNextHeadPosition);
+
+  segments.pop_back();
+  segments.emplace_front(iNextHeadPosition);
 }
 
 bool Snake::isDoing180(const BoardPosition &iNextHeadPosition) const {

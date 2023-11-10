@@ -3,13 +3,13 @@
 
 #include "board_position.hpp"
 #include "segment.hpp"
+#include <deque>
 #include <functional>
 #include <optional>
-#include <vector>
 namespace Game {
 class Snake {
 private:
-  std::vector<Segment> segments;
+  std::deque<Segment> segments;
   bool isDoing180(const BoardPosition &iNextHeadPosition) const;
   void checkIfAdjacentToLastSegment(const Segment &iSegment) const;
 
@@ -20,7 +20,7 @@ public:
   getHeadPosition() const;
   Snake();
   explicit Snake(const Segment &iSegment);
-  const std::vector<Segment> &getSnakeSegments() const;
+  const std::deque<Segment> &getSnakeSegments() const;
   void move(const BoardPosition &iNextHeadPosition);
 };
 } // namespace Game
