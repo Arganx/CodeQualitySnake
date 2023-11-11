@@ -39,4 +39,9 @@ bool BoardPosition::isAdjacent(const BoardPosition &iPosition) const {
   return false;
 }
 
+void BoardPosition::incrementX() { ++xPosition; };
+void BoardPosition::decrementX() { --xPosition; };
+void BoardPosition::incrementY() { ++yPosition; };
+void BoardPosition::decrementY() { --yPosition; };
+
 } // namespace Game

@@ -28,6 +28,10 @@ public:
   void setYPosition(const uint8_t iPosition);
   bool operator==(const BoardPosition &iPosition) const;
   bool isAdjacent(const BoardPosition &iPosition) const;
+  void incrementX();
+  void decrementX();
+  void incrementY();
+  void decrementY();
 };
 
 } // namespace Game

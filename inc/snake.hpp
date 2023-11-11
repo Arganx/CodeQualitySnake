@@ -21,7 +21,8 @@ public:
   Snake();
   explicit Snake(const Segment &iSegment);
   const std::deque<Segment> &getSnakeSegments() const;
-  void move(const BoardPosition &iNextHeadPosition);
+  void move(const BoardPosition &iNextHeadPosition,
+            bool iIsPassingBoardBoarder = false);
 };
 } // namespace Game
 

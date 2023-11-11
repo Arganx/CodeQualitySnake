@@ -32,13 +32,65 @@ Game::Game() = default;
 void Game::step() {
   std::cout << "Step" << std::endl;
   cleanFullSnake();
+  moveSnake();
   drawFullSnake();
 }
 
-void Game::checkIfPointersAreInitialized() const {
+void Game::moveSnake() {
+  checkIfPointersAreInitialized();
+  if (!snakePtr->getHeadPosition()) {
+    throw std::invalid_argument("Snake head not initialized");
+  }
+  BoardPosition nextPosition{snakePtr->getHeadPosition()->get()};
+  bool isPassingBoardBorder = false;
+  switch (direction) {
+    using enum Direction::Direction;
+  case Right:
+    nextPosition.incrementX();
+    if (nextPosition.getXPosition() >= boardPtr.get()->getWidth()) {
+      isPassingBoardBorder = true;
+      nextPosition.setXPosition(0U);
+    }
+    break;
+  case Left:
+    nextPosition.decrementX();
+    if (nextPosition.getXPosition() == 255U) {
+      isPassingBoardBorder = true;
+      nextPosition.setXPosition(boardPtr.get()->getWidth() -
+                                static_cast<uint8_t>(1U));
+    }
+    break;
+  case Down:
+    nextPosition.incrementY();
+    if (nextPosition.getYPosition() >= boardPtr.get()->getHeight()) {
+      isPassingBoardBorder = true;
+      nextPosition.setYPosition(0U);
+    }
+    break;
+  case Up:
+    nextPosition.decrementY();
+    if (nextPosition.getYPosition() == 255U) {
+      isPassingBoardBorder = true;
+      nextPosition.setYPosition(boardPtr.get()->getHeight() -
+                                static_cast<uint8_t>(1U));
+    }
+    break;
+  default:
+    throw std::invalid_argument("Unsupported direction");
+  }
+  snakePtr->move(nextPosition,
+                 isPassingBoardBorder); // This position can be outside of the
+                                        // current board or with turned unsigned
+}
+
+void Game::checkIfSnakeIsInitialized() const {
   if (snakePtr == nullptr) {
     throw std::invalid_argument("Snake is not initialized");
   }
+}
+
+void Game::checkIfPointersAreInitialized() const {
+  checkIfSnakeIsInitialized();
   if (boardPtr == nullptr) {
     throw std::invalid_argument("Board is not initialized");
   }
@@ -84,6 +136,10 @@ void Game::drawSnack(const uint8_t iNumberOfSnacks) {
   for (const auto &position : selectedPositions) {
     boardPtr->drawCharacter(position, BoardMapping::kSnack);
   }
+}
+
+void Game::setDirection(const Direction::Direction iDirection) {
+  direction = iDirection;
 }
 
 } // namespace Game

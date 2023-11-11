@@ -1,6 +1,7 @@
 #ifndef Game_Guard
 #define Game_Guard
 #include "board.hpp"
+#include "direction.hpp"
 #include "snake.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -17,14 +18,18 @@ private:
   uint16_t score = 0U;
   std::unique_ptr<Board> boardPtr;
   std::unique_ptr<Snake> snakePtr;
+  Direction::Direction direction = Direction::Direction::Right;
 
   void drawSnake();
   void drawFullSnake();
   void cleanFullSnake();
+  void checkIfSnakeIsInitialized() const;
   void checkIfPointersAreInitialized() const;
   void drawSnack(const uint8_t iNumberOfSnacks = 1);
+  void moveSnake();
 
 public:
+  void setDirection(const Direction::Direction iDirection);
   /**
    * Prints welcome to the standard output.
    *

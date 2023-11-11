@@ -35,11 +35,13 @@ Snake::getHeadPosition() const {
 
 const std::deque<Segment> &Snake::getSnakeSegments() const { return segments; }
 
-void Snake::move(const BoardPosition &iNextHeadPosition) {
+void Snake::move(const BoardPosition &iNextHeadPosition,
+                 bool iIsPassingBoardBoarder) {
   if (segments.empty()) {
     return;
   }
-  if (!iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
+  if (!iIsPassingBoardBoarder &&
+      !iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
     throw std::invalid_argument(
         "Trying to move to non adjacent tile"); // TODO
                                                 // change
@@ -49,7 +51,6 @@ void Snake::move(const BoardPosition &iNextHeadPosition) {
   if (segments.size() > 1 && isDoing180(iNextHeadPosition)) {
     throw std::invalid_argument("Trying to move back into itself");
   }
-
   segments.pop_back();
   segments.emplace_front(iNextHeadPosition);
 }
