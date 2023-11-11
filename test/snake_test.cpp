@@ -106,6 +106,16 @@ TEST_F(SnakeFixture, CantMoveToNonAdjacentCell) {
   }
 }
 
+TEST_F(SnakeFixture, CanMoveToNonAdjacentCellIfIsPassingBoardBoarderIsSet) {
+  Game::BoardPosition nextHeadPosition{k3, k0};
+  Game::BoardPosition startingHeadPosition{};
+
+  getSnake().addSegment(Game::Segment{startingHeadPosition});
+
+  getSnake().move(nextHeadPosition, true);
+  EXPECT_EQ(getSnake().getSnakeSegments()[0].getPosition(), nextHeadPosition);
+}
+
 TEST_F(SnakeFixture, CantDo180) {
   Game::BoardPosition nextHeadPosition{k3, k0};
   Game::BoardPosition startingHeadPosition{};
