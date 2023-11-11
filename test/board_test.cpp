@@ -1,6 +1,7 @@
 #include "../inc/board.hpp"
 #include "board_mappings.hpp"
 #include "board_position.hpp"
+#include <bits/ranges_util.h>
 #include <cstdint>
 #include <limits.h>
 
@@ -141,6 +142,46 @@ TEST_F(BoardFixture, CantDrawOutsideTheBoard) {
   } catch (const std::invalid_argument &exception) {
     EXPECT_STREQ(exception.what(), "Trying to draw outside of the board. Y "
                                    "position bigger than board height.");
+  }
+}
+
+TEST_F(BoardFixture, ByDefaultAllPositionsAreAvailable) {
+  auto availablePositions = getBoard().getAvailablePositions();
+  uint8_t counter{k0};
+  for (auto heightIndex{k0}; heightIndex < getBoard().getHeight();
+       ++heightIndex) {
+    for (auto widthIndex{k0}; widthIndex < getBoard().getWidth();
+         ++widthIndex) {
+      EXPECT_EQ(availablePositions[counter].getXPosition(), widthIndex);
+      EXPECT_EQ(availablePositions[counter].getYPosition(), heightIndex);
+      ++counter;
+    }
+  }
+}
+
+TEST_F(BoardFixture, DrawingOnTheBoardMakesThePositionsUnavailable) {
+  Game::BoardPosition positionOne{k0, k0};
+  Game::BoardPosition positionTwo{k2, k0};
+  Game::BoardPosition positionThree{k2, k1};
+  getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
+  getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeHead);
+  getBoard().drawCharacter(positionThree, BoardMapping::kSnack);
+
+  auto availablePositions = getBoard().getAvailablePositions();
+  for (auto heightIndex{k0}; heightIndex < getBoard().getHeight();
+       ++heightIndex) {
+    for (auto widthIndex{k0}; widthIndex < getBoard().getWidth();
+         ++widthIndex) {
+      Game::BoardPosition testedPosition{widthIndex, heightIndex};
+      if (testedPosition == positionOne || testedPosition == positionTwo ||
+          testedPosition == positionThree) {
+        EXPECT_EQ(std::ranges::find(availablePositions, testedPosition),
+                  availablePositions.end());
+      } else {
+        EXPECT_NE(std::ranges::find(availablePositions, testedPosition),
+                  availablePositions.end());
+      }
+    }
   }
 }
 
