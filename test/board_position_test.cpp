@@ -10,8 +10,9 @@ const uint8_t k1{1U};
 const uint8_t k2{2U};
 const uint8_t k3{3U};
 const uint8_t k4{4U};
-const uint8_t k10{10U};
 const uint8_t k5{5U};
+const uint8_t k10{10U};
+const uint8_t k255{255U};
 
 class BoardPositionFixture : public ::testing::Test {
 private:
@@ -107,6 +108,29 @@ TEST_F(BoardPositionFixture, DiagonalAreNotAdjacent) {
 
   Game::BoardPosition downLeft{k0, k2};
   EXPECT_FALSE(getPosition().isAdjacent(downLeft));
+}
+
+TEST_F(BoardPositionFixture, IncrementAndDecrementTest) {
+  // Test X axis
+  getPosition().decrementX();
+  EXPECT_EQ(getPosition().getXPosition(), k0);
+  getPosition().decrementX();
+  EXPECT_EQ(getPosition().getXPosition(), k255);
+  getPosition().incrementX();
+  EXPECT_EQ(getPosition().getXPosition(), k0);
+  getPosition().incrementX();
+  getPosition().incrementX();
+  EXPECT_EQ(getPosition().getXPosition(), k2);
+
+  // Test Y axis
+  getPosition().setYPosition(k0);
+  getPosition().decrementY();
+  EXPECT_EQ(getPosition().getYPosition(), k255);
+  getPosition().incrementY();
+  getPosition().incrementY();
+  EXPECT_EQ(getPosition().getYPosition(), k1);
+  getPosition().decrementY();
+  EXPECT_EQ(getPosition().getYPosition(), k0);
 }
 
 } // namespace
