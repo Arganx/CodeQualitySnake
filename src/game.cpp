@@ -12,8 +12,6 @@
 #include <stdexcept>
 namespace Game {
 
-void Game::printWelcome() const { std::cout << "Welcome" << std::endl; }
-
 void Game::showStatus() const { std::cout << "Score: " << score << std::endl; }
 
 void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
@@ -30,7 +28,6 @@ std::unique_ptr<Board> &Game::getBoardPtr() { return boardPtr; };
 Game::Game() = default;
 
 void Game::step() {
-  std::cout << "Step" << std::endl;
   cleanFullSnake();
   moveSnake();
   drawFullSnake();
@@ -93,14 +90,6 @@ void Game::checkIfPointersAreInitialized() const {
   checkIfSnakeIsInitialized();
   if (boardPtr == nullptr) {
     throw std::invalid_argument("Board is not initialized");
-  }
-}
-
-void Game::drawSnake() {
-  checkIfPointersAreInitialized();
-  if (snakePtr->getHeadPosition()) {
-    boardPtr->drawCharacter(snakePtr->getHeadPosition()->get(),
-                            BoardMapping::kSnakeHead);
   }
 }
 

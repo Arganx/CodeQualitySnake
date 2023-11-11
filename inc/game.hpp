@@ -20,7 +20,6 @@ private:
   std::unique_ptr<Snake> snakePtr;
   Direction::Direction direction = Direction::Direction::Right;
 
-  void drawSnake();
   void drawFullSnake();
   void cleanFullSnake();
   void checkIfSnakeIsInitialized() const;
@@ -30,12 +29,6 @@ private:
 
 public:
   void setDirection(const Direction::Direction iDirection);
-  /**
-   * Prints welcome to the standard output.
-   *
-   * @return void.
-   */
-  void printWelcome() const;
 
   /**
    * Prints the current value of the status variable to the standard output.
