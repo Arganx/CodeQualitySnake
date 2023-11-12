@@ -1,4 +1,5 @@
 #include "SFML/Window/Event.hpp"
+#include "SFML/Window/Keyboard.hpp"
 #include "direction.hpp"
 #include "inc/game.hpp"
 #include "tools/inc/visualiser.hpp"
@@ -8,8 +9,6 @@
 #include <iostream>
 #include <thread>
 
-using namespace std::literals::chrono_literals;
-
 void mainGameThread(std::stop_token stop_token, Game::Game &game) {
   while (true) {
     if (stop_token.stop_requested()) {
@@ -18,6 +17,27 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game) {
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(500));
     game.step();
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
+  }
+}
+
+void handleKey(const sf::Keyboard::Key &keyCode, Game::Game &game,
+               std::jthread &gameThread) {
+
+  if (keyCode == sf::Keyboard::Left) {
+    game.setDirection(Direction::Direction::Left);
+  }
+  if (keyCode == sf::Keyboard::Right) {
+    game.setDirection(Direction::Direction::Right);
+  }
+  if (keyCode == sf::Keyboard::Up) {
+    game.setDirection(Direction::Direction::Up);
+  }
+  if (keyCode == sf::Keyboard::Down) {
+    game.setDirection(Direction::Direction::Down);
+  }
+  if (keyCode == sf::Keyboard::Escape) {
+    gameThread.request_stop();
+    game.showStatus();
   }
 }
 
@@ -34,26 +54,9 @@ int main() {
         window.close();
 
       if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Left) {
-          game.setDirection(Direction::Direction::Left);
-        }
-        if (event.key.code == sf::Keyboard::Right) {
-          game.setDirection(Direction::Direction::Right);
-        }
-        if (event.key.code == sf::Keyboard::Up) {
-          game.setDirection(Direction::Direction::Up);
-        }
-        if (event.key.code == sf::Keyboard::Down) {
-          game.setDirection(Direction::Direction::Down);
-        }
-        if (event.key.code == sf::Keyboard::Escape) {
-          gameThread.request_stop();
-        }
+        handleKey(event.key.code, game, gameThread);
       }
     }
-    // std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(500));
-    // game.step();
-    // tools::Visualiser::visualiseBoard(*game.getBoardPtr());
 
     window.clear();
     window.display();

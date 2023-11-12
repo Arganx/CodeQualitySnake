@@ -75,9 +75,19 @@ void Game::moveSnake() {
   default:
     throw std::invalid_argument("Unsupported direction");
   }
-  snakePtr->move(nextPosition,
-                 isPassingBoardBorder); // This position can be outside of the
-                                        // current board or with turned unsigned
+  // This position can be outside of the current board or with turned unsigned
+  snakePtr->move(nextPosition, isPassingBoardBorder);
+  nextFieldInteraction(nextPosition);
+}
+
+void Game::nextFieldInteraction(const BoardPosition &iPosition) {
+  checkIfPointersAreInitialized();
+  if (boardPtr.get()
+          ->getBoard()[iPosition.getYPosition()][iPosition.getXPosition()] ==
+      BoardMapping::kSnack) {
+    ++score;
+    drawSnack();
+  }
 }
 
 void Game::checkIfSnakeIsInitialized() const {
