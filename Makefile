@@ -108,5 +108,8 @@ visualiser_test : visualiser_test.o gmock_main.a
 
 tests: board_test game_test board_position_test snake_test visualiser_test
 
+SFML_INC = /home/argan/libs/SFML-2.6.1/include
+SFML_LIB = /home/argan/libs/SFML-2.6.1/lib
+
 main: ../main.cpp
-	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main
+	$(compiler) $(flags) -I$(INC_DIR) -I$(SFML_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main -L$(SFML_LIB) -lsfml-graphics -lsfml-window -lsfml-system
