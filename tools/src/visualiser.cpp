@@ -13,5 +13,7 @@ void Visualiser::visualiseBoard(const Game::Board &board) {
     }
     std::cout << "\n";
   }
+  std::cout << "\033[" << static_cast<int>(board.getHeight()) << "A";
+  std::cout.flush();
 }
 } // namespace tools

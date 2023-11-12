@@ -12,7 +12,7 @@
 #include <stdexcept>
 namespace Game {
 
-void Game::showStatus() const { std::cout << "Score: " << score << std::endl; }
+void Game::showStatus() const { std::cout << "Score: " << score << "\n"; }
 
 void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
   boardPtr = std::make_unique<Board>(iWidth, iHeight);
