@@ -15,7 +15,9 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game) {
       return;
     }
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(500));
-    game.step();
+    if (!game.step()) {
+      return;
+    }
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
   }
 }

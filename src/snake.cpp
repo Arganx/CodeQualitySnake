@@ -36,7 +36,7 @@ Snake::getHeadPosition() const {
 const std::deque<Segment> &Snake::getSnakeSegments() const { return segments; }
 
 void Snake::move(const BoardPosition &iNextHeadPosition,
-                 bool iIsPassingBoardBoarder, bool isSnackEaten) {
+                 bool iIsPassingBoardBoarder, bool iAteSnack) {
   if (segments.empty()) {
     return;
   }
@@ -51,7 +51,7 @@ void Snake::move(const BoardPosition &iNextHeadPosition,
   if (segments.size() > 1 && isDoing180(iNextHeadPosition)) {
     throw std::invalid_argument("Trying to move back into itself");
   }
-  if (!isSnackEaten) {
+  if (!iAteSnack) {
     segments.pop_back();
   }
   segments.emplace_front(iNextHeadPosition);

@@ -3,6 +3,7 @@
 #include "../inc/segment.hpp"
 
 #include "../inc/board_mappings.hpp"
+#include "direction.hpp"
 #include <bits/ranges_algo.h>
 #include <cmath>
 #include <cstdint>
@@ -27,13 +28,32 @@ std::unique_ptr<Board> &Game::getBoardPtr() { return boardPtr; };
 
 Game::Game() = default;
 
-void Game::step() {
-  cleanFullSnake();
-  moveSnake();
-  drawFullSnake();
+bool Game::step() {
+  if (gameEnded) {
+    return false;
+  }
+  cleanLastSegmentOfSnake();
+  // 0 fail
+  // 1 ok
+  // 2 snack
+  switch (moveSnake()) {
+  default:
+    [[fallthrough]];
+  case 0:
+    return false;
+  case 1:
+    drawMovablePartsOfSnake();
+    break;
+  case 2:
+    drawMovablePartsOfSnake();
+    drawSnack();
+    break;
+  }
+
+  return true;
 }
 
-void Game::moveSnake() {
+uint8_t Game::moveSnake() {
   checkIfPointersAreInitialized();
   if (!snakePtr->getHeadPosition()) {
     throw std::invalid_argument("Snake head not initialized");
@@ -75,21 +95,23 @@ void Game::moveSnake() {
   default:
     throw std::invalid_argument("Unsupported direction");
   }
-  nextFieldInteraction(nextPosition, isPassingBoardBorder);
-}
 
-void Game::nextFieldInteraction(const BoardPosition &iPosition,
-                                bool isPassingBoardBorder) {
-  checkIfPointersAreInitialized();
-  bool isSnackEaten = false;
-  if (boardPtr.get()
-          ->getBoard()[iPosition.getYPosition()][iPosition.getXPosition()] ==
+  if (boardPtr.get()->getBoard()[nextPosition.getYPosition()]
+                                [nextPosition.getXPosition()] ==
       BoardMapping::kSnack) {
     ++score;
-    isSnackEaten = true;
-    drawSnack();
+    snakePtr->move(nextPosition, isPassingBoardBorder, true);
+    return 2;
+  } else if (boardPtr.get()->getBoard()[nextPosition.getYPosition()]
+                                       [nextPosition.getXPosition()] ==
+             BoardMapping::kSnakeBody) {
+    gameEnded = true;
+    return 0;
+  } else {
+    snakePtr->move(nextPosition, isPassingBoardBorder);
+    return 1;
   }
-  snakePtr->move(iPosition, isPassingBoardBorder, isSnackEaten);
+  return 0;
 }
 
 void Game::checkIfSnakeIsInitialized() const {
@@ -109,6 +131,38 @@ void Game::cleanFullSnake() {
   checkIfPointersAreInitialized();
   for (const auto &segment : snakePtr->getSnakeSegments()) {
     boardPtr->drawCharacter(segment.getPosition(), BoardMapping::kEmptySpace);
+  }
+}
+
+void Game::cleanLastSegmentOfSnake() {
+  checkIfPointersAreInitialized();
+  boardPtr->drawCharacter(snakePtr->getSnakeSegments().back().getPosition(),
+                          BoardMapping::kEmptySpace);
+}
+
+// There are 3 movable parts: head, 1 segment, last segment. Not all of them
+// need to exist.
+void Game::drawMovablePartsOfSnake() {
+  checkIfPointersAreInitialized();
+  // draw head
+  if (snakePtr->getHeadPosition()) {
+    boardPtr->drawCharacter(snakePtr->getHeadPosition()->get(),
+                            BoardMapping::kSnakeHead);
+  }
+  switch (snakePtr.get()->getSnakeSegments().size()) {
+  default:
+    // if more than 1 segments then draw last segment
+    boardPtr->drawCharacter(snakePtr->getSnakeSegments().back().getPosition(),
+                            BoardMapping::kSnakeBody);
+    [[fallthrough]];
+  case 2:
+    // draw 1 segment
+    boardPtr->drawCharacter(snakePtr->getSnakeSegments()[1].getPosition(),
+                            BoardMapping::kSnakeBody);
+    break;
+  case 0:
+  case 1:
+    break;
   }
 }
 
@@ -140,6 +194,33 @@ void Game::drawSnack(const uint8_t iNumberOfSnacks) {
 }
 
 void Game::setDirection(const Direction::Direction iDirection) {
+  switch (iDirection) { // TODO fix the bug where clicking fast changes
+                        // direction twice in one timer click (think of race
+                        // condition)
+    using enum Direction::Direction;
+  case Right:
+    if (direction == Left) {
+      return;
+    }
+    break;
+  case Left:
+    if (direction == Right) {
+      return;
+    }
+    break;
+  case Down:
+    if (direction == Up) {
+      return;
+    }
+    break;
+  case Up:
+    if (direction == Down) {
+      return;
+    }
+    break;
+  default:
+    throw std::invalid_argument("Unsupported direction");
+  }
   direction = iDirection;
 }
 

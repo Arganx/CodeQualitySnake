@@ -22,7 +22,7 @@ public:
   explicit Snake(const Segment &iSegment);
   const std::deque<Segment> &getSnakeSegments() const;
   void move(const BoardPosition &iNextHeadPosition,
-            bool iIsPassingBoardBoarder = false, bool isSnackEaten = false);
+            bool iIsPassingBoardBoarder = false, bool iAteSnack = false);
 };
 } // namespace Game
 
