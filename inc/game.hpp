@@ -19,6 +19,7 @@ private:
   std::unique_ptr<Board> boardPtr;
   std::unique_ptr<Snake> snakePtr;
   Direction::Direction direction = Direction::Direction::Right;
+  bool gameEnded = false;
 
   void drawFullSnake();
   void cleanFullSnake();
@@ -26,7 +27,8 @@ private:
   void checkIfPointersAreInitialized() const;
   void drawSnack(const uint8_t iNumberOfSnacks = 1);
   void moveSnake();
-  void nextFieldInteraction(const BoardPosition &iPosition);
+  void nextFieldInteraction(const BoardPosition &iPosition,
+                            bool isPassingBoardBorder);
 
 public:
   void setDirection(const Direction::Direction iDirection);
