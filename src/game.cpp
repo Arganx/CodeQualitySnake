@@ -3,7 +3,7 @@
 #include "../inc/segment.hpp"
 
 #include "../inc/board_mappings.hpp"
-#include "direction.hpp"
+#include "../inc/direction.hpp"
 #include <bits/ranges_algo.h>
 #include <cmath>
 #include <cstdint>

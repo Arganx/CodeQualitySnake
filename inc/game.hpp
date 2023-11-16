@@ -29,7 +29,6 @@ private:
   void checkIfPointersAreInitialized() const;
   void drawSnack(const uint8_t iNumberOfSnacks = 1);
   uint8_t moveSnake();
-  // void nextFieldInteraction(const BoardPosition &iPosition);
 
 public:
   void setDirection(const Direction::Direction iDirection);
