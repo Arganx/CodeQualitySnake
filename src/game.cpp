@@ -194,34 +194,55 @@ void Game::drawSnack(const uint8_t iNumberOfSnacks) {
 }
 
 void Game::setDirection(const Direction::Direction iDirection) {
-  switch (iDirection) { // TODO fix the bug where clicking fast changes
-                        // direction twice in one timer click (think of race
-                        // condition)
-    using enum Direction::Direction;
-  case Right:
-    if (direction == Left) {
-      return;
+  checkIfPointersAreInitialized();
+  if (snakePtr.get()->getSnakeSegments().size() > 1) {
+    auto snakeHeadXPosition =
+        snakePtr->getHeadPosition().value().get().getXPosition();
+    auto snakeHeadYPosition =
+        snakePtr->getHeadPosition().value().get().getYPosition();
+    auto snakeNextSegmentXPosition =
+        snakePtr.get()->getSnakeSegments()[1].getPosition().getXPosition();
+    auto snakeNextSegmentYPosition =
+        snakePtr.get()->getSnakeSegments()[1].getPosition().getYPosition();
+    switch (iDirection) {
+      using enum Direction::Direction;
+    case Right:
+      if (snakeNextSegmentXPosition == 0U &&
+          snakeHeadXPosition == boardPtr->getWidth() - 1U) {
+        return;
+      } else if (snakeNextSegmentXPosition == snakeHeadXPosition + 1U) {
+        return;
+      }
+      break;
+    case Left:
+      if (snakeNextSegmentXPosition == boardPtr->getWidth() - 1U &&
+          snakeHeadXPosition == 0U) {
+        return;
+      } else if (snakeNextSegmentXPosition == snakeHeadXPosition - 1U) {
+        return;
+      }
+      break;
+    case Down:
+      if (snakeHeadYPosition == boardPtr->getHeight() - 1U &&
+          snakeNextSegmentYPosition == 0U) {
+        return;
+      } else if (snakeNextSegmentYPosition == snakeHeadYPosition + 1U) {
+        return;
+      }
+      break;
+    case Up:
+      if (snakeHeadYPosition == 0U &&
+          snakeNextSegmentYPosition == boardPtr->getHeight() - 1U) {
+        return;
+      } else if (snakeNextSegmentYPosition == snakeHeadYPosition - 1U) {
+        return;
+      }
+      break;
+    default:
+      throw std::invalid_argument("Unsupported direction");
     }
-    break;
-  case Left:
-    if (direction == Right) {
-      return;
-    }
-    break;
-  case Down:
-    if (direction == Up) {
-      return;
-    }
-    break;
-  case Up:
-    if (direction == Down) {
-      return;
-    }
-    break;
-  default:
-    throw std::invalid_argument("Unsupported direction");
   }
-  direction = iDirection;
+  direction = iDirection; // TODO add mutex or atomic
 }
 
 } // namespace Game
