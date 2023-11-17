@@ -1,4 +1,5 @@
 #include "board_position.hpp"
+#include "exceptions.hpp"
 #include "segment.hpp"
 #include "snake.hpp"
 #include "gtest/gtest.h"
@@ -58,7 +59,8 @@ TEST_F(SnakeFixture, CantMoveToSelf) {
   try {
     getSnake().move(Game::BoardPosition{});
     FAIL() << "Should have thrown";
-  } catch (const std::invalid_argument &exception) {
+  } catch (
+      const Game::SnakeExceptions::NonAdjacentMovementException &exception) {
     EXPECT_STREQ(exception.what(), "Trying to move to non adjacent tile");
   }
 }
@@ -101,7 +103,8 @@ TEST_F(SnakeFixture, CantMoveToNonAdjacentCell) {
   try {
     getSnake().move(nextHeadPosition);
     FAIL() << "Should have thrown";
-  } catch (const std::invalid_argument &exception) {
+  } catch (
+      const Game::SnakeExceptions::NonAdjacentMovementException &exception) {
     EXPECT_STREQ(exception.what(), "Trying to move to non adjacent tile");
   }
 }
@@ -129,7 +132,7 @@ TEST_F(SnakeFixture, CantDo180) {
   try {
     getSnake().move(startingPositionSegmentOne);
     FAIL() << "Should have thrown";
-  } catch (const std::invalid_argument &exception) {
+  } catch (const Game::SnakeExceptions::MovingIntoItselfException &exception) {
     EXPECT_STREQ(exception.what(), "Trying to move back into itself");
   }
 }
@@ -144,7 +147,8 @@ TEST_F(SnakeFixture, CantAddSegmentNonAdjacentToTheLastSegment) {
   try {
     getSnake().addSegment(Game::Segment{startingPositionSegmentTwo});
     FAIL() << "Should have thrown";
-  } catch (const std::invalid_argument &exception) {
+  } catch (
+      const Game::SnakeExceptions::SegmentNonAdjacentException &exception) {
     EXPECT_STREQ(
         exception.what(),
         "Can't add a segment that is not adjacent to the last segment");

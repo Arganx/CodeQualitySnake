@@ -4,6 +4,7 @@
 
 #include "../inc/board_mappings.hpp"
 #include "../inc/direction.hpp"
+#include "../inc/exceptions.hpp"
 #include <bits/ranges_algo.h>
 #include <cmath>
 #include <cstdint>
@@ -56,7 +57,8 @@ bool Game::step() {
 uint8_t Game::moveSnake() {
   checkIfPointersAreInitialized();
   if (!snakePtr->getHeadPosition()) {
-    throw std::invalid_argument("Snake head not initialized");
+    throw SnakeExceptions::PointerNotInitializedException(
+        "Snake head not initialized");
   }
   BoardPosition nextPosition{snakePtr->getHeadPosition()->get()};
   bool isPassingBoardBorder = false;
@@ -93,7 +95,7 @@ uint8_t Game::moveSnake() {
     }
     break;
   default:
-    throw std::invalid_argument("Unsupported direction");
+    throw SnakeExceptions::UnexpectedSwitchValue("Unsupported direction");
   }
 
   if (boardPtr.get()->getBoard()[nextPosition.getYPosition()]
@@ -116,14 +118,16 @@ uint8_t Game::moveSnake() {
 
 void Game::checkIfSnakeIsInitialized() const {
   if (snakePtr == nullptr) {
-    throw std::invalid_argument("Snake is not initialized");
+    throw SnakeExceptions::PointerNotInitializedException(
+        "Snake is not initialized");
   }
 }
 
 void Game::checkIfPointersAreInitialized() const {
   checkIfSnakeIsInitialized();
   if (boardPtr == nullptr) {
-    throw std::invalid_argument("Board is not initialized");
+    throw SnakeExceptions::PointerNotInitializedException(
+        "Board is not initialized");
   }
 }
 
@@ -243,7 +247,7 @@ void Game::setDirection(const Direction::Direction iDirection) {
       }
       break;
     default:
-      throw std::invalid_argument("Unsupported direction");
+      throw SnakeExceptions::UnexpectedSwitchValue("Unsupported direction");
     }
   }
   direction = iDirection;

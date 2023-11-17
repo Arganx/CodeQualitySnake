@@ -1,11 +1,11 @@
 #include "../inc/snake.hpp"
+#include "../inc/exceptions.hpp"
 #include "../inc/segment.hpp"
 #include <algorithm>
 #include <bits/ranges_util.h>
 #include <iterator>
 #include <optional>
 #include <stdexcept>
-
 namespace Game {
 Snake::Snake() = default;
 
@@ -42,14 +42,12 @@ void Snake::move(const BoardPosition &iNextHeadPosition,
   }
   if (!iIsPassingBoardBoarder &&
       !iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
-    throw std::invalid_argument(
-        "Trying to move to non adjacent tile"); // TODO
-                                                // change
-                                                // exception
-                                                // type
+    throw Game::SnakeExceptions::NonAdjacentMovementException(
+        "Trying to move to non adjacent tile");
   }
   if (segments.size() > 1 && isDoing180(iNextHeadPosition)) {
-    throw std::invalid_argument("Trying to move back into itself");
+    throw Game::SnakeExceptions::MovingIntoItselfException(
+        "Trying to move back into itself");
   }
   if (!iAteSnack) {
     segments.pop_back();
@@ -67,7 +65,7 @@ bool Snake::isDoing180(const BoardPosition &iNextHeadPosition) const {
 void Snake::checkIfAdjacentToLastSegment(const Segment &iSegment) const {
   if (!segments.empty() &&
       !iSegment.getPosition().isAdjacent(segments.back().getPosition())) {
-    throw std::invalid_argument(
+    throw Game::SnakeExceptions::SegmentNonAdjacentException(
         "Can't add a segment that is not adjacent to the last segment");
   }
 }

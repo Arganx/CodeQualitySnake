@@ -1,3 +1,4 @@
+#include "../inc/exceptions.hpp"
 #include "../inc/game.hpp"
 #include "board_mappings.hpp"
 #include "direction.hpp"
@@ -50,7 +51,8 @@ TEST(GameTests, CanInit) {
 }
 
 TEST_F(GameFixture, StepCalledWithoutInitialisation) {
-  EXPECT_THROW(getGame().step(), std::invalid_argument);
+  EXPECT_THROW(getGame().step(),
+               Game::SnakeExceptions::PointerNotInitializedException);
 }
 
 TEST_F(GameFixture, DeterministicPositionOfSnack) {
