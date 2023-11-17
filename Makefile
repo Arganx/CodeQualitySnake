@@ -66,6 +66,9 @@ GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 # conservative and not optimized.  This is fine as Google Mock and
 # Google Test compile fast and for ordinary users their source rarely
 # changes.
+
+TESTING_FLAG = -D TESTING
+
 gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(flags) \
             -c $(GTEST_DIR)/src/gtest-all.cc
@@ -84,27 +87,27 @@ gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
 game_test.o : $(USER_DIR)/game_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/game_test.cpp
 game_test : game_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
 board_test.o : $(USER_DIR)/board_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_test.cpp
 board_test : board_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
 board_position_test.o : $(USER_DIR)/board_position_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_position_test.cpp
 board_position_test : board_position_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
 snake_test.o : $(USER_DIR)/snake_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/snake_test.cpp
 snake_test : snake_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
 
 visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) -I$(TOOLS_INC) $(flags) -c $(TOOLS_TESTS)/visualiser_test.cpp
 visualiser_test : visualiser_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/* -o $@
 
 tests: board_test game_test board_position_test snake_test visualiser_test
 

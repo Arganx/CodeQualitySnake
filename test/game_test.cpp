@@ -53,6 +53,11 @@ TEST_F(GameFixture, StepCalledWithoutInitialisation) {
   EXPECT_THROW(getGame().step(), std::invalid_argument);
 }
 
+TEST_F(GameFixture, DeterministicPositionOfSnack) {
+  getGame().initGame(k10, k10);
+  EXPECT_EQ(getGame().getBoardPtr()->getBoard()[k5][k4], BoardMapping::kSnack);
+}
+
 TEST_F(GameFixture, DefaultHeadPosition) {
   getGame().initGame(k10, k10);
   EXPECT_EQ(getGame().getBoardPtr().get()->getBoard()[k5][k5],
@@ -90,11 +95,14 @@ TEST_F(GameFixture, SnakeCanMoveUp) {
 
 TEST_F(GameFixture, SnakeCanMoveLeft) {
   getGame().initGame(k10, k10);
+  // There is a snack on tile [5,4]. Because of that to test moving left without
+  // any snacks the snake must first mover right
+  getGame().step();
   getGame().setDirection(Direction::Direction::Left);
   getGame().step();
-  EXPECT_EQ(getGame().getBoardPtr().get()->getBoard()[k5][k5],
+  EXPECT_EQ(getGame().getBoardPtr().get()->getBoard()[k5][k6],
             BoardMapping::kEmptySpace);
-  EXPECT_EQ(getGame().getBoardPtr().get()->getBoard()[k5][k4],
+  EXPECT_EQ(getGame().getBoardPtr().get()->getBoard()[k5][k5],
             BoardMapping::kSnakeHead);
 }
 

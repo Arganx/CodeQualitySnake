@@ -185,7 +185,11 @@ void Game::drawSnack(const uint8_t iNumberOfSnacks) {
   checkIfPointersAreInitialized();
   auto availablePositions = boardPtr->getAvailablePositions();
   std::vector<BoardPosition> selectedPositions;
+#ifdef TESTING
+  auto gen = std::mt19937{42};
+#else
   auto gen = std::mt19937{std::random_device{}()};
+#endif
   std::ranges::sample(availablePositions, std::back_inserter(selectedPositions),
                       iNumberOfSnacks, gen);
   for (const auto &position : selectedPositions) {
