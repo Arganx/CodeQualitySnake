@@ -3,6 +3,7 @@
 #include "board.hpp"
 #include "direction.hpp"
 #include "snake.hpp"
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -18,7 +19,7 @@ private:
   uint16_t score = 0U;
   std::unique_ptr<Board> boardPtr;
   std::unique_ptr<Snake> snakePtr;
-  Direction::Direction direction = Direction::Direction::Right;
+  std::atomic<Direction::Direction> direction{Direction::Direction::Right};
   bool gameEnded = false;
 
   void drawFullSnake();

@@ -246,7 +246,7 @@ void Game::setDirection(const Direction::Direction iDirection) {
       throw std::invalid_argument("Unsupported direction");
     }
   }
-  direction = iDirection; // TODO add mutex or atomic
+  direction = iDirection;
 }
 
 } // namespace Game
