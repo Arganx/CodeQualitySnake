@@ -3,7 +3,6 @@
 #include "board_position.hpp"
 #include <bits/ranges_util.h>
 #include <cstdint>
-#include <limits.h>
 
 #include "gtest/gtest.h"
 #include <stdexcept>

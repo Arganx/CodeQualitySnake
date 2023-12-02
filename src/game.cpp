@@ -11,7 +11,6 @@
 #include <iostream>
 #include <memory>
 #include <random>
-#include <stdexcept>
 namespace Game {
 
 void Game::showStatus() const { std::cout << "Score: " << score << "\n"; }
