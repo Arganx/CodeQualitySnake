@@ -4,10 +4,8 @@
 #include "direction.hpp"
 #include "snake.hpp"
 #include <atomic>
-#include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <stdexcept>
 namespace Game {
 
 /**
@@ -16,7 +14,7 @@ namespace Game {
  */
 class Game {
 private:
-  uint16_t score = 0U;
+  uint16_t score{0U};
   std::unique_ptr<Board> boardPtr;
   std::unique_ptr<Snake> snakePtr;
   std::atomic<Direction::Direction> direction{Direction::Direction::Right};

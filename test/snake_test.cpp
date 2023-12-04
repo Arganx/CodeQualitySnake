@@ -3,7 +3,6 @@
 #include "segment.hpp"
 #include "snake.hpp"
 #include "gtest/gtest.h"
-#include <stdexcept>
 #include <sys/types.h>
 
 namespace {
