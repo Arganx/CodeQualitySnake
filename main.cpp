@@ -91,7 +91,7 @@ int main() {
   game.initGame(5, 4); // From here the boardPtr is initialized
   sf::RenderWindow window(sf::VideoMode(100, 100), "Snake Game");
   sf::Texture grassTexture;
-  grassTexture.loadFromFile("Textures/Grass_01.png");
+  grassTexture.loadFromFile("Textures/Grass_04.png");
   auto tiles = createTiles(*game.getBoardPtr(), window.getSize(), grassTexture);
 
   std::stop_source stop_source;
