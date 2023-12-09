@@ -12,7 +12,9 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -41,7 +43,8 @@ void updateBlocksPositions(std::mutex &snakeBlockMutex,
 void mainGameThread(std::stop_token stop_token, Game::Game &game,
                     std::vector<sf::RectangleShape> &snakeBlocks,
                     const std::pair<uint16_t, uint16_t> &tileSizes,
-                    std::mutex &snakeBlockMutex) {
+                    std::mutex &snakeBlockMutex,
+                    std::map<std::string, sf::Texture, std::less<>> &textures) {
   while (true) {
     if (stop_token.stop_requested()) {
       return;
@@ -52,6 +55,14 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
     }
     // TODO make sure the sizes are the same and insert the blocks if they are
     // not.
+    while (game.getSnake().getSnakeSegments().size() > snakeBlocks.size()) {
+      snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
+      snakeBlocks.back().setTexture(&textures["body_vertical"]);
+    }
+    if (game.getSnake().getSnakeSegments().size() != snakeBlocks.size()) {
+      throw std::domain_error(
+          "Length of snake segments does not match the graphics");
+    }
     updateBlocksPositions(snakeBlockMutex, snakeBlocks, game, tileSizes);
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
   }
@@ -154,10 +165,14 @@ int main() {
   snakeBlocks[0].setTexture(&snakeHeadTexture);
 
   std::mutex snakeBlockMutex;
+  std::map<std::string, sf::Texture, std::less<>> textureMap;
+  textureMap.try_emplace("body_vertical");
+  textureMap["body_vertical"].loadFromFile("Textures/body_vertical.png");
 
   std::stop_source stop_source;
   std::jthread gameThread(mainGameThread, std::ref(game), std::ref(snakeBlocks),
-                          std::ref(tileSizes), std::ref(snakeBlockMutex));
+                          std::ref(tileSizes), std::ref(snakeBlockMutex),
+                          std::ref(textureMap));
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
