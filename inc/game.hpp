@@ -32,6 +32,8 @@ private:
 public:
   void setDirection(const Direction::Direction iDirection);
 
+  Snake &getSnake();
+
   /**
    * Prints the current value of the status variable to the standard output.
    *

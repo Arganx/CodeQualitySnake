@@ -252,4 +252,12 @@ void Game::setDirection(const Direction::Direction iDirection) {
   direction = iDirection;
 }
 
+Snake &Game::getSnake() {
+  if (snakePtr == nullptr) {
+    throw SnakeExceptions::PointerNotInitializedException(
+        "Snake is not initialized");
+  }
+  return *snakePtr;
+}
+
 } // namespace Game
