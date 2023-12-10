@@ -12,6 +12,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -20,6 +21,8 @@
 #include <stdexcept>
 #include <thread>
 #include <utility>
+
+const std::string texturePath = "Textures";
 
 void updateBlocksPositions(std::mutex &snakeBlockMutex,
                            std::vector<sf::RectangleShape> &snakeBlocks,
@@ -91,12 +94,8 @@ void handleKey(const sf::Keyboard::Key &keyCode, Game::Game &game,
 
 std::vector<std::vector<sf::RectangleShape>>
 createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
-            const std::vector<sf::Texture> &iTextures,
+            std::map<std::string, sf::Texture, std::less<>> &iTextureMap,
             std::pair<uint16_t, uint16_t> &oTileSizes) {
-  if (iTextures.size() < 1U) {
-    throw std::invalid_argument(
-        "There must be at least one texture for the tiles");
-  }
   // TODO think what to do with the offset
   auto offsetX = static_cast<uint16_t>(
       std::round(0.0f * static_cast<float>(iResolution.x)));
@@ -117,9 +116,12 @@ createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
       sfmlTiles[column][row].setPosition(
           static_cast<float>(offsetX + row * oTileSizes.first),
           static_cast<float>(offsetY + column * oTileSizes.second));
-
-      sfmlTiles[column][row].setTexture(
-          &iTextures[(column + row) % iTextures.size()]);
+      // TODO make sure the Textures are there
+      if ((column + row) % 2U == 0) {
+        sfmlTiles[column][row].setTexture(&iTextureMap["Light_Green"]);
+      } else {
+        sfmlTiles[column][row].setTexture(&iTextureMap["Dark_Green"]);
+      }
     }
   }
   return sfmlTiles;
@@ -142,32 +144,41 @@ void drawSnakeBlocks(std::mutex &iSnakeBlockMutex, sf::RenderWindow &iWindow,
   }
 }
 
+void loadTextures(
+    std::map<std::string, sf::Texture, std::less<>> &texturesMap) {
+  std::cout << "Loading Textures\n";
+  for (const auto &file : std::filesystem::directory_iterator(texturePath)) {
+    auto startPosition = file.path().string().find("/") + 1U;
+    auto endPosition = file.path().string().find(".");
+    auto name =
+        file.path().string().substr(startPosition, endPosition - startPosition);
+    texturesMap.try_emplace(name);
+    texturesMap[name].loadFromFile(file.path());
+  }
+  std::cout << "Textures Loaded\n";
+}
+
 int main() {
   Game::Game game;
   game.initGame(5, 4); // From here the boardPtr is initialized
+
+  std::map<std::string, sf::Texture, std::less<>> textureMap;
+  loadTextures(textureMap);
 
   sf::RenderWindow window(sf::VideoMode(100, 100), "Snake Game");
 
   sf::Texture snakeHeadTexture;
   snakeHeadTexture.loadFromFile("Textures/head_up.png");
-  std::vector<sf::Texture> textures;
-  textures.emplace_back();
-  textures.emplace_back();
-  textures[0].loadFromFile("Textures/Light_Green.png");
-  textures[1].loadFromFile("Textures/Dark_Green.png");
 
   std::pair<uint16_t, uint16_t> tileSizes;
   auto tiles =
-      createTiles(*game.getBoardPtr(), window.getSize(), textures, tileSizes);
+      createTiles(*game.getBoardPtr(), window.getSize(), textureMap, tileSizes);
 
   std::vector<sf::RectangleShape> snakeBlocks;
   snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
   snakeBlocks[0].setTexture(&snakeHeadTexture);
 
   std::mutex snakeBlockMutex;
-  std::map<std::string, sf::Texture, std::less<>> textureMap;
-  textureMap.try_emplace("body_vertical");
-  textureMap["body_vertical"].loadFromFile("Textures/body_vertical.png");
 
   std::stop_source stop_source;
   std::jthread gameThread(mainGameThread, std::ref(game), std::ref(snakeBlocks),
