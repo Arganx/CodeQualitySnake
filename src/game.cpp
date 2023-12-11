@@ -260,4 +260,6 @@ Snake &Game::getSnake() {
   return *snakePtr;
 }
 
+Direction::Direction Game::getDirection() const { return direction; }
+
 } // namespace Game

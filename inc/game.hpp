@@ -31,6 +31,7 @@ private:
 
 public:
   void setDirection(const Direction::Direction iDirection);
+  Direction::Direction getDirection() const; // Copy
 
   Snake &getSnake();
 
