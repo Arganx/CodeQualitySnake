@@ -3,3 +3,4 @@
 ./build/board_position_test
 ./build/snake_test
 ./build/visualiser_test
+./build/limited_uint8_8_test
