@@ -48,6 +48,25 @@ Limited_uint8_t Limited_uint8_t::operator+(const uint8_t iUint) const {
   return result;
 }
 
+Limited_uint8_t Limited_uint8_t::operator-(const uint8_t iUint) const {
+  auto resultValue{static_cast<int32_t>(value - iUint)};
+  while (resultValue < 0) {
+    resultValue += static_cast<uint32_t>(maxValue + 1U);
+  }
+  Limited_uint8_t result(static_cast<uint8_t>(resultValue), maxValue);
+  return result;
+}
+
+Limited_uint8_t
+Limited_uint8_t::operator-(const Limited_uint8_t &iOther) const {
+  auto resultValue{static_cast<int32_t>(value - iOther.getValue())};
+  while (resultValue < 0) {
+    resultValue += static_cast<uint32_t>(maxValue + 1U);
+  }
+  Limited_uint8_t result(static_cast<uint8_t>(resultValue), maxValue);
+  return result;
+}
+
 Limited_uint8_t
 Limited_uint8_t::operator+(const Limited_uint8_t &iOther) const {
   uint16_t resultValue{static_cast<uint16_t>(iOther.getValue() + value)};

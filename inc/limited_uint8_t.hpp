@@ -15,8 +15,10 @@ public:
   Limited_uint8_t &operator++();
   Limited_uint8_t operator++(int);
   Limited_uint8_t operator+(const uint8_t iUint) const;
+  Limited_uint8_t operator-(const uint8_t iUint) const;
   Limited_uint8_t operator+(const Limited_uint8_t &iOther)
       const; // Keeps the limit of the first element
+  Limited_uint8_t operator-(const Limited_uint8_t &iOther) const;
   Limited_uint8_t &operator--();
   Limited_uint8_t operator--(int);
   uint8_t getValue() const;

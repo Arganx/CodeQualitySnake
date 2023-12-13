@@ -9,7 +9,9 @@ const uint8_t k3{3U};
 const uint8_t k49{49U};
 const uint8_t k144{144U};
 const uint8_t k145{145U};
+const uint8_t k196{196U};
 const uint8_t k200{200U};
+const uint8_t k201{201U};
 const uint8_t k204{204U};
 const uint8_t k250{250U};
 const uint8_t k254{254U};
@@ -158,4 +160,64 @@ TEST(LimitedUint8tTest, AddOverLimit255Class) {
   Game::Limited_uint8_t limitedOne(k200, k255);
   Game::Limited_uint8_t limitedTwo(k200, k255);
   EXPECT_EQ(limitedOne + limitedTwo, k144);
+}
+
+TEST(LimitedUint8tTest, SubtractUnderLimit) {
+  Game::Limited_uint8_t limitedOne(k2, k3);
+  auto result = limitedOne - k2;
+  EXPECT_EQ(result, k0);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimit) {
+  Game::Limited_uint8_t limitedOne(k0, k2);
+  auto result = limitedOne - k3;
+  EXPECT_EQ(result, k0);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimitTwice) {
+  Game::Limited_uint8_t limitedOne(k200, k250);
+  auto result = limitedOne - k255;
+  EXPECT_EQ(result, k196);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimit254) {
+  Game::Limited_uint8_t limitedOne(k200, k254);
+  auto result = limitedOne - k201;
+  EXPECT_EQ(result, k254);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimit255) {
+  Game::Limited_uint8_t limitedOne(k200, k255);
+  auto result = limitedOne - k201;
+  EXPECT_EQ(result, k255);
+}
+
+TEST(LimitedUint8tTest, SubtractUnderLimitClass) {
+  Game::Limited_uint8_t limitedOne(k2, k3);
+  Game::Limited_uint8_t limitedTwo(k2, k3);
+  EXPECT_EQ(limitedOne - limitedTwo, k0);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimitClass) {
+  Game::Limited_uint8_t limitedOne(k0, k2);
+  Game::Limited_uint8_t limitedTwo(k3, k3);
+  EXPECT_EQ(limitedOne - limitedTwo, k0);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimitTwiceClass) {
+  Game::Limited_uint8_t limitedOne(k200, k250);
+  Game::Limited_uint8_t limitedTwo(k255, k255);
+  EXPECT_EQ(limitedOne - limitedTwo, k196);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimit254Class) {
+  Game::Limited_uint8_t limitedOne(k200, k254);
+  Game::Limited_uint8_t limitedTwo(k201, k255);
+  EXPECT_EQ(limitedOne - limitedTwo, k254);
+}
+
+TEST(LimitedUint8tTest, SubtractOverLimit255Class) {
+  Game::Limited_uint8_t limitedOne(k200, k255);
+  Game::Limited_uint8_t limitedTwo(k201, k255);
+  EXPECT_EQ(limitedOne - limitedTwo, k255);
 }
