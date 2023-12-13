@@ -6,7 +6,7 @@ namespace Game {
 class Limited_uint8_t {
 private:
   uint8_t value;
-  uint16_t maxPlusOne;
+  uint8_t maxValue;
 
 public:
   explicit Limited_uint8_t(uint8_t iValue, uint8_t iMaxValue = 255U);
@@ -14,6 +14,7 @@ public:
   bool operator==(const uint8_t iUint8) const;
   Limited_uint8_t &operator++();
   Limited_uint8_t operator++(int);
+  Limited_uint8_t operator+(const uint8_t iUint) const;
   Limited_uint8_t &operator--();
   Limited_uint8_t operator--(int);
   uint8_t getValue() const;

@@ -7,8 +7,12 @@ const uint8_t k1{1U};
 const uint8_t k2{2U};
 const uint8_t k3{3U};
 const uint8_t k49{49U};
+const uint8_t k144{144U};
+const uint8_t k145{145U};
 const uint8_t k200{200U};
+const uint8_t k204{204U};
 const uint8_t k250{250U};
+const uint8_t k254{254U};
 const uint8_t k255{255U};
 const uint16_t k256{256U};
 } // namespace
@@ -94,4 +98,34 @@ TEST(LimitedUint8tTest, LimitComparison) {
   EXPECT_EQ(limitedTwo, limitedThree);
   EXPECT_NE(limitedTwo, limitedFour);
   EXPECT_NE(limitedThree, limitedFour);
+}
+
+TEST(LimitedUint8tTest, AddUnderLimit) {
+  Game::Limited_uint8_t limitedOne(k0, k3);
+  auto result = limitedOne + k2;
+  EXPECT_EQ(result, k2);
+}
+
+TEST(LimitedUint8tTest, AddOverLimit) {
+  Game::Limited_uint8_t limitedOne(k0, k2);
+  auto result = limitedOne + k3;
+  EXPECT_EQ(result, k0);
+}
+
+TEST(LimitedUint8tTest, AddOverLimitTwice) {
+  Game::Limited_uint8_t limitedOne(k200, k250);
+  auto result = limitedOne + k255;
+  EXPECT_EQ(result, k204);
+}
+
+TEST(LimitedUint8tTest, AddOverLimit254) {
+  Game::Limited_uint8_t limitedOne(k200, k254);
+  auto result = limitedOne + k200;
+  EXPECT_EQ(result, k145);
+}
+
+TEST(LimitedUint8tTest, AddOverLimit255) {
+  Game::Limited_uint8_t limitedOne(k200, k255);
+  auto result = limitedOne + k200;
+  EXPECT_EQ(result, k144);
 }
