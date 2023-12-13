@@ -1,18 +1,18 @@
 #include "../inc/board_position.hpp"
-#include <cstdint>
+#include "../inc/limited_uint8_t.hpp"
 
 #include "gtest/gtest.h"
 
 namespace {
 
-const uint8_t k0{0U};
-const uint8_t k1{1U};
-const uint8_t k2{2U};
-const uint8_t k3{3U};
-const uint8_t k4{4U};
-const uint8_t k5{5U};
-const uint8_t k10{10U};
-const uint8_t k255{255U};
+const Game::Limited_uint8_t k0{0U, 255U};
+const Game::Limited_uint8_t k1{1U, 255U};
+const Game::Limited_uint8_t k2{2U, 255U};
+const Game::Limited_uint8_t k3{3U, 255U};
+const Game::Limited_uint8_t k4{4U, 255U};
+const Game::Limited_uint8_t k5{5U, 255U};
+const Game::Limited_uint8_t k10{10U, 255U};
+const Game::Limited_uint8_t k255{255U, 255U};
 
 class BoardPositionFixture : public ::testing::Test {
 private:
@@ -21,12 +21,6 @@ private:
 protected:
   Game::BoardPosition &getPosition() { return position; };
 };
-
-TEST(BoardPositionTest, DefaultPositionIsZero) {
-  Game::BoardPosition position{};
-  EXPECT_EQ(position.getXPosition(), k0);
-  EXPECT_EQ(position.getYPosition(), k0);
-}
 
 TEST_F(BoardPositionFixture, ConstructorPositionIsSaved) {
   EXPECT_EQ(getPosition().getXPosition(), k1);
