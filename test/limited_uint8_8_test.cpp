@@ -129,3 +129,33 @@ TEST(LimitedUint8tTest, AddOverLimit255) {
   auto result = limitedOne + k200;
   EXPECT_EQ(result, k144);
 }
+
+TEST(LimitedUint8tTest, AddUnderLimitClass) {
+  Game::Limited_uint8_t limitedOne(k0, k3);
+  Game::Limited_uint8_t limitedTwo(k2, k255);
+  EXPECT_EQ(limitedOne + limitedTwo, k2);
+}
+
+TEST(LimitedUint8tTest, AddOverLimitClass) {
+  Game::Limited_uint8_t limitedOne(k0, k2);
+  Game::Limited_uint8_t limitedTwo(k3, k255);
+  EXPECT_EQ(limitedOne + limitedTwo, k0);
+}
+
+TEST(LimitedUint8tTest, AddOverLimitTwiceClass) {
+  Game::Limited_uint8_t limitedOne(k200, k250);
+  Game::Limited_uint8_t limitedTwo(k255, k255);
+  EXPECT_EQ(limitedOne + limitedTwo, k204);
+}
+
+TEST(LimitedUint8tTest, AddOverLimit254Class) {
+  Game::Limited_uint8_t limitedOne(k200, k254);
+  Game::Limited_uint8_t limitedTwo(k200, k255);
+  EXPECT_EQ(limitedOne + limitedTwo, k145);
+}
+
+TEST(LimitedUint8tTest, AddOverLimit255Class) {
+  Game::Limited_uint8_t limitedOne(k200, k255);
+  Game::Limited_uint8_t limitedTwo(k200, k255);
+  EXPECT_EQ(limitedOne + limitedTwo, k144);
+}

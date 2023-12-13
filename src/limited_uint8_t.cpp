@@ -1,6 +1,5 @@
 #include "../inc/limited_uint8_t.hpp"
 #include <cstdint>
-#include <iostream>
 namespace Game {
 Limited_uint8_t::Limited_uint8_t(uint8_t iValue, uint8_t iMaxValue)
     : value{iValue}, maxValue{iMaxValue} {
@@ -42,7 +41,16 @@ Limited_uint8_t Limited_uint8_t::operator--(int) {
 
 Limited_uint8_t Limited_uint8_t::operator+(const uint8_t iUint) const {
   uint16_t resultValue{static_cast<uint16_t>(iUint + value)};
-  std::cout << (int)resultValue << std::endl;
+  while (resultValue > maxValue) {
+    resultValue -= static_cast<uint16_t>(maxValue + 1U);
+  }
+  Limited_uint8_t result(static_cast<uint8_t>(resultValue), maxValue);
+  return result;
+}
+
+Limited_uint8_t
+Limited_uint8_t::operator+(const Limited_uint8_t &iOther) const {
+  uint16_t resultValue{static_cast<uint16_t>(iOther.getValue() + value)};
   while (resultValue > maxValue) {
     resultValue -= static_cast<uint16_t>(maxValue + 1U);
   }
