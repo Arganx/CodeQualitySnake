@@ -6,11 +6,15 @@
 namespace {
 
 const Game::Limited_uint8_t k0{0U, 255U};
+const Game::Limited_uint8_t k0Limit5{0U, 5U};
+const Game::Limited_uint8_t k0Limit6{0U, 6U};
+const Game::Limited_uint8_t k1Limit5{1U, 5U};
 const Game::Limited_uint8_t k1{1U, 255U};
 const Game::Limited_uint8_t k2{2U, 255U};
 const Game::Limited_uint8_t k3{3U, 255U};
 const Game::Limited_uint8_t k4{4U, 255U};
 const Game::Limited_uint8_t k5{5U, 255U};
+const Game::Limited_uint8_t k5Limit5{5U, 5U};
 const Game::Limited_uint8_t k10{10U, 255U};
 const Game::Limited_uint8_t k255{255U, 255U};
 
@@ -125,6 +129,21 @@ TEST_F(BoardPositionFixture, IncrementAndDecrementTest) {
   EXPECT_EQ(getPosition().getYPosition(), k1);
   getPosition().decrementY();
   EXPECT_EQ(getPosition().getYPosition(), k0);
+}
+
+TEST_F(BoardPositionFixture, DetectsAdjacencyOverLimit) {
+  getPosition().setXPosition(k5Limit5);
+  getPosition().setYPosition(k5Limit5);
+
+  Game::BoardPosition nonAdjacentPosition{k1Limit5, k5Limit5};
+  Game::BoardPosition adjacentPositionOne{k0Limit5, k5Limit5};
+  Game::BoardPosition adjacentPositionTwo{k0Limit6, k5Limit5};
+  EXPECT_TRUE(adjacentPositionOne.isAdjacent(getPosition()));
+  EXPECT_TRUE(getPosition().isAdjacent(adjacentPositionOne));
+  EXPECT_TRUE(adjacentPositionTwo.isAdjacent(getPosition()));
+  EXPECT_TRUE(getPosition().isAdjacent(adjacentPositionTwo));
+  EXPECT_FALSE(nonAdjacentPosition.isAdjacent(getPosition()));
+  EXPECT_FALSE(getPosition().isAdjacent(nonAdjacentPosition));
 }
 
 } // namespace
