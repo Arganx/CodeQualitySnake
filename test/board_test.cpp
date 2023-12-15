@@ -1,4 +1,5 @@
 #include "../inc/board.hpp"
+#include "../inc/limited_uint8_t.hpp"
 #include "board_mappings.hpp"
 #include "board_position.hpp"
 #include <bits/ranges_util.h>
@@ -9,10 +10,15 @@
 namespace {
 
 const uint8_t k0{0U};
+const Game::Limited_uint8_t k0Limited{0U};
 const uint8_t k1{1U};
+const Game::Limited_uint8_t k1Limited{1U};
 const uint8_t k2{2U};
+const Game::Limited_uint8_t k2Limited{2U};
 const uint8_t k10{10U};
+const Game::Limited_uint8_t k10Limited{10U};
 const uint8_t k100{100U};
+const Game::Limited_uint8_t k100Limited{100U};
 
 class BoardFixture : public ::testing::Test {
 private:
@@ -100,8 +106,8 @@ TEST_F(BoardFixture, CanDrawOnBoard) {
     }
   }
 
-  Game::BoardPosition positionOne{k2, k1};
-  Game::BoardPosition positionTwo{k2, k2};
+  Game::BoardPosition positionOne{k2Limited, k1Limited};
+  Game::BoardPosition positionTwo{k2Limited, k2Limited};
 
   getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
   getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeHead);
@@ -125,7 +131,7 @@ TEST_F(BoardFixture, CanDrawOnBoard) {
 }
 
 TEST_F(BoardFixture, CantDrawOutsideTheBoard) {
-  Game::BoardPosition positionOne{k100, k1};
+  Game::BoardPosition positionOne{k100Limited, k1Limited};
   try {
     getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
     FAIL() << "Should throw std::invalid_argument";
@@ -134,7 +140,7 @@ TEST_F(BoardFixture, CantDrawOutsideTheBoard) {
                                    "position bigger than board width.");
   }
 
-  Game::BoardPosition positionTwo{k1, k10};
+  Game::BoardPosition positionTwo{k1Limited, k10Limited};
   try {
     getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeBody);
     FAIL() << "Should throw std::invalid_argument";
@@ -159,9 +165,9 @@ TEST_F(BoardFixture, ByDefaultAllPositionsAreAvailable) {
 }
 
 TEST_F(BoardFixture, DrawingOnTheBoardMakesThePositionsUnavailable) {
-  Game::BoardPosition positionOne{k0, k0};
-  Game::BoardPosition positionTwo{k2, k0};
-  Game::BoardPosition positionThree{k2, k1};
+  Game::BoardPosition positionOne{k0Limited, k0Limited};
+  Game::BoardPosition positionTwo{k2Limited, k0Limited};
+  Game::BoardPosition positionThree{k2Limited, k1Limited};
   getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody);
   getBoard().drawCharacter(positionTwo, BoardMapping::kSnakeHead);
   getBoard().drawCharacter(positionThree, BoardMapping::kSnack);
@@ -171,7 +177,9 @@ TEST_F(BoardFixture, DrawingOnTheBoardMakesThePositionsUnavailable) {
        ++heightIndex) {
     for (auto widthIndex{k0}; widthIndex < getBoard().getWidth();
          ++widthIndex) {
-      Game::BoardPosition testedPosition{widthIndex, heightIndex};
+      Game::BoardPosition testedPosition{
+          Game::Limited_uint8_t(widthIndex, getBoard().getWidth()),
+          Game::Limited_uint8_t(heightIndex, getBoard().getHeight())};
       if (testedPosition == positionOne || testedPosition == positionTwo ||
           testedPosition == positionThree) {
         EXPECT_EQ(std::ranges::find(availablePositions, testedPosition),

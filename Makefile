@@ -92,7 +92,7 @@ game_test : game_test.o gmock_main.a
 board_test.o : $(USER_DIR)/board_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_test.cpp
 board_test : board_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/board_position.cpp $(SRC_DIR)/limited_uint8_t.cpp $(SRC_DIR)/board.cpp -o $@
 
 board_position_test.o : $(USER_DIR)/board_position_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/board_position_test.cpp

@@ -24,6 +24,7 @@ private:
    * @return void.
    */
   void createBoard();
+  void checkIfBoardInitializedWithCorrectSize() const;
 
 public:
   /**
