@@ -107,7 +107,7 @@ snake_test : snake_test.o gmock_main.a
 limited_uint8_8_test.o : $(USER_DIR)/limited_uint8_8_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/limited_uint8_8_test.cpp
 limited_uint8_8_test : limited_uint8_8_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/limited_uint8_t.cpp -o $@
 
 visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) -I$(TOOLS_INC) $(flags) -c $(TOOLS_TESTS)/visualiser_test.cpp

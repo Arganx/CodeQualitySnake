@@ -14,6 +14,14 @@ bool Limited_uint8_t::operator==(const uint8_t iUint8) const {
   return iUint8 == value;
 }
 
+std::strong_ordering Limited_uint8_t::operator<=>(const uint8_t iUint8) const {
+  return value <=> iUint8;
+}
+std::strong_ordering
+Limited_uint8_t::operator<=>(const Limited_uint8_t &iOther) const {
+  return value <=> iOther.getValue();
+}
+
 Limited_uint8_t &Limited_uint8_t::operator++() {
   value = static_cast<uint8_t>((value + 1U) % (maxValue + 1U));
   return *this;

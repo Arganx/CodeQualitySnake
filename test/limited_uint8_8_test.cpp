@@ -17,6 +17,16 @@ const uint8_t k250{250U};
 const uint8_t k254{254U};
 const uint8_t k255{255U};
 const uint16_t k256{256U};
+
+class LimitedFixture : public ::testing::Test {
+private:
+  Game::Limited_uint8_t limitedOne{k200, k255};
+  Game::Limited_uint8_t limitedTwo{k201, k255};
+
+protected:
+  Game::Limited_uint8_t &getLimitedOne() { return limitedOne; };
+  Game::Limited_uint8_t &getLimitedTwo() { return limitedTwo; };
+};
 } // namespace
 
 TEST(LimitedUint8tTest, CanCreateLimited) {
@@ -220,4 +230,40 @@ TEST(LimitedUint8tTest, SubtractOverLimit255Class) {
   Game::Limited_uint8_t limitedOne(k200, k255);
   Game::Limited_uint8_t limitedTwo(k201, k255);
   EXPECT_EQ(limitedOne - limitedTwo, k255);
+}
+
+TEST_F(LimitedFixture, ComparisonSmaller) {
+  EXPECT_TRUE(getLimitedOne() < getLimitedTwo());
+  EXPECT_TRUE(getLimitedOne() < k204);
+  EXPECT_FALSE(getLimitedTwo() < getLimitedOne());
+  EXPECT_FALSE(k204 < getLimitedOne());
+  EXPECT_FALSE(getLimitedOne() < k200);
+  EXPECT_FALSE(getLimitedOne() < getLimitedOne());
+}
+
+TEST_F(LimitedFixture, ComparisonBigger) {
+  EXPECT_FALSE(getLimitedOne() > getLimitedTwo());
+  EXPECT_FALSE(getLimitedOne() > k204);
+  EXPECT_TRUE(getLimitedTwo() > getLimitedOne());
+  EXPECT_TRUE(k204 > getLimitedOne());
+  EXPECT_FALSE(getLimitedOne() > k200);
+  EXPECT_FALSE(getLimitedOne() > getLimitedOne());
+}
+
+TEST_F(LimitedFixture, ComparisonSmallerOrEqual) {
+  EXPECT_TRUE(getLimitedOne() <= getLimitedTwo());
+  EXPECT_TRUE(getLimitedOne() <= k204);
+  EXPECT_FALSE(getLimitedTwo() <= getLimitedOne());
+  EXPECT_FALSE(k204 <= getLimitedOne());
+  EXPECT_TRUE(getLimitedOne() <= k200);
+  EXPECT_TRUE(getLimitedOne() <= getLimitedOne());
+}
+
+TEST_F(LimitedFixture, ComparisonBiggerOrEqual) {
+  EXPECT_FALSE(getLimitedOne() >= getLimitedTwo());
+  EXPECT_FALSE(getLimitedOne() >= k204);
+  EXPECT_TRUE(getLimitedTwo() >= getLimitedOne());
+  EXPECT_TRUE(k204 >= getLimitedOne());
+  EXPECT_TRUE(getLimitedOne() >= k200);
+  EXPECT_TRUE(getLimitedOne() >= getLimitedOne());
 }
