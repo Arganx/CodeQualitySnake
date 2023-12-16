@@ -19,6 +19,7 @@ const uint8_t k10{10U};
 const Game::Limited_uint8_t k10Limited{10U};
 const uint8_t k100{100U};
 const Game::Limited_uint8_t k100Limited{100U};
+const uint8_t k200{200U};
 
 class BoardFixture : public ::testing::Test {
 private:
@@ -190,6 +191,28 @@ TEST_F(BoardFixture, DrawingOnTheBoardMakesThePositionsUnavailable) {
       }
     }
   }
+}
+
+TEST_F(BoardFixture, ChangeWidthNoRecreateWidth) {
+  getBoard().setWidth(k2);
+  Game::BoardPosition positionOne{k0Limited, k0Limited};
+  EXPECT_THROW(getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody),
+               std::invalid_argument);
+  getBoard().setWidth(k200);
+  EXPECT_THROW(getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody),
+               std::invalid_argument);
+}
+
+TEST_F(BoardFixture, ChangeWidthNoRecreateHeight) {
+  // TODO think if createBoard() shouldn't be called inside of changeWidth and
+  // changeHeight
+  getBoard().setHeight(k2);
+  Game::BoardPosition positionOne{k0Limited, k0Limited};
+  EXPECT_THROW(getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody),
+               std::invalid_argument);
+  getBoard().setHeight(k200);
+  EXPECT_THROW(getBoard().drawCharacter(positionOne, BoardMapping::kSnakeBody),
+               std::invalid_argument);
 }
 
 } // namespace

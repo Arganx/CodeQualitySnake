@@ -37,11 +37,11 @@ void Board::createBoard() {
 std::vector<std::vector<uint8_t>> Board::getBoard() const { return boardSpace; }
 
 void Board::checkIfBoardInitializedWithCorrectSize() const {
-  if (boardSpace.size() < height || boardSpace.empty()) {
+  if (boardSpace.size() != height || boardSpace.empty()) {
     throw std::invalid_argument(
         "Board height does match the expectation. Possibly not initialized");
   }
-  if (boardSpace.front().size() < width || boardSpace.front().empty()) {
+  if (boardSpace.front().size() != width || boardSpace.front().empty()) {
     throw std::invalid_argument(
         "Board width does match the expectation. Possibly not initialized");
   }
@@ -63,6 +63,7 @@ void Board::drawCharacter(const BoardPosition &iPosition, uint8_t iCharacter) {
 }
 
 std::vector<BoardPosition> Board::getAvailablePositions() const {
+  checkIfBoardInitializedWithCorrectSize();
   std::vector<BoardPosition> availablePositions;
   for (auto heightIndex{static_cast<uint8_t>(0U)}; heightIndex < height;
        ++heightIndex) {
