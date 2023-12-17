@@ -149,6 +149,19 @@ TEST_F(SnakeFixture, CantDo180) {
   }
 }
 
+TEST_F(SnakeFixture, CanDo180WhenOnlyHeadIsInSnake) {
+  Game::BoardPosition nextHeadPosition{k3Limited, k0Limited};
+  Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
+
+  getSnake().addSegment(Game::Segment{startingHeadPosition});
+
+  getSnake().move(nextHeadPosition);
+  EXPECT_EQ(getSnake().getSnakeSegments()[0].getPosition(), nextHeadPosition);
+  getSnake().move(startingHeadPosition);
+  EXPECT_EQ(getSnake().getSnakeSegments()[0].getPosition(),
+            startingHeadPosition);
+}
+
 TEST_F(SnakeFixture, CantAddSegmentNonAdjacentToTheLastSegment) {
   Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
   Game::BoardPosition startingPositionSegmentOne{k0Limited, k1Limited};
