@@ -1,3 +1,4 @@
+#include "../inc/limited_uint8_t.hpp"
 #include "board_position.hpp"
 #include "exceptions.hpp"
 #include "segment.hpp"
@@ -6,6 +7,12 @@
 #include <sys/types.h>
 
 namespace {
+
+// Simulates board of size 4
+const Game::Limited_uint8_t k0Limited{0U, 3U};
+const Game::Limited_uint8_t k1Limited{1U, 3U};
+const Game::Limited_uint8_t k2Limited{2U, 3U};
+const Game::Limited_uint8_t k3Limited{3U, 3U};
 
 constexpr u_int8_t k0{0U};
 constexpr u_int8_t k1{1U};
@@ -27,7 +34,7 @@ TEST(SnakeTest, DefaultSnakeCreation) {
 }
 
 TEST(SnakeTest, CanCreateSnakeWithSegment) {
-  Game::BoardPosition position{};
+  Game::BoardPosition position{k0Limited, k0Limited};
   Game::Segment segment{position};
   Game::Snake snake{segment};
   EXPECT_EQ(snake.getSnakeSegments().size(), k1);
@@ -36,27 +43,33 @@ TEST(SnakeTest, CanCreateSnakeWithSegment) {
 
 TEST_F(SnakeFixture, canAddSegments) {
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k0Limited, k0Limited}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k1);
-  Game::Segment segment{Game::BoardPosition{k0, k1}};
+  Game::Segment segment{Game::BoardPosition{k0Limited, k1Limited}};
   getSnake().addSegment(segment);
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k1, k1}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k1Limited, k1Limited}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k3);
 }
 
 TEST_F(SnakeFixture, CantAddDuplicateSegments) {
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k0Limited, k0Limited}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k1);
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{k0, k1}});
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k0Limited, k1Limited}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k0Limited, k0Limited}});
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k2);
 }
 
 TEST_F(SnakeFixture, CantMoveToSelf) {
-  getSnake().addSegment(Game::Segment{Game::BoardPosition{}});
+  getSnake().addSegment(
+      Game::Segment{Game::BoardPosition{k0Limited, k0Limited}});
   try {
-    getSnake().move(Game::BoardPosition{});
+    getSnake().move(Game::BoardPosition{k0Limited, k0Limited});
     FAIL() << "Should have thrown";
   } catch (
       const Game::SnakeExceptions::NonAdjacentMovementException &exception) {
@@ -65,11 +78,11 @@ TEST_F(SnakeFixture, CantMoveToSelf) {
 }
 
 TEST_F(SnakeFixture, SegmentsMoveCorrectly) {
-  Game::BoardPosition nextHeadPosition{k1, k0};
-  Game::BoardPosition startingHeadPosition{};
-  Game::BoardPosition startingPositionSegmentOne{k0, k1};
-  Game::BoardPosition startingPositionSegmentTwo{k0, k2};
-  Game::BoardPosition startingPositionSegmentThree{k1, k2};
+  Game::BoardPosition nextHeadPosition{k1Limited, k0Limited};
+  Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
+  Game::BoardPosition startingPositionSegmentOne{k0Limited, k1Limited};
+  Game::BoardPosition startingPositionSegmentTwo{k0Limited, k2Limited};
+  Game::BoardPosition startingPositionSegmentThree{k1Limited, k2Limited};
 
   getSnake().addSegment(Game::Segment{startingHeadPosition});
   getSnake().addSegment(Game::Segment{startingPositionSegmentOne});
@@ -87,15 +100,15 @@ TEST_F(SnakeFixture, SegmentsMoveCorrectly) {
 }
 
 TEST_F(SnakeFixture, MoveOnEmptySnakeDoesNothing) {
-  Game::BoardPosition nextHeadPosition{k1, k0};
+  Game::BoardPosition nextHeadPosition{k1Limited, k0Limited};
   getSnake().move(nextHeadPosition);
 
   EXPECT_EQ(getSnake().getSnakeSegments().size(), k0);
 }
 
 TEST_F(SnakeFixture, CantMoveToNonAdjacentCell) {
-  Game::BoardPosition nextHeadPosition{k3, k0};
-  Game::BoardPosition startingHeadPosition{};
+  Game::BoardPosition nextHeadPosition{k3Limited, k0Limited};
+  Game::BoardPosition startingHeadPosition{k1Limited, k0Limited};
 
   getSnake().addSegment(Game::Segment{startingHeadPosition});
 
@@ -108,21 +121,21 @@ TEST_F(SnakeFixture, CantMoveToNonAdjacentCell) {
   }
 }
 
-TEST_F(SnakeFixture, CanMoveToNonAdjacentCellIfIsPassingBoardBoarderIsSet) {
-  Game::BoardPosition nextHeadPosition{k3, k0};
-  Game::BoardPosition startingHeadPosition{};
+TEST_F(SnakeFixture, CanMoveToTheOtherSideOfTheBoarder) {
+  Game::BoardPosition nextHeadPosition{k3Limited, k0Limited};
+  Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
 
   getSnake().addSegment(Game::Segment{startingHeadPosition});
 
-  getSnake().move(nextHeadPosition, true);
+  getSnake().move(nextHeadPosition);
   EXPECT_EQ(getSnake().getSnakeSegments()[0].getPosition(), nextHeadPosition);
 }
 
 TEST_F(SnakeFixture, CantDo180) {
-  Game::BoardPosition nextHeadPosition{k3, k0};
-  Game::BoardPosition startingHeadPosition{};
-  Game::BoardPosition startingPositionSegmentOne{k0, k1};
-  Game::BoardPosition startingPositionSegmentTwo{k0, k2};
+  Game::BoardPosition nextHeadPosition{k3Limited, k0Limited};
+  Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
+  Game::BoardPosition startingPositionSegmentOne{k0Limited, k1Limited};
+  Game::BoardPosition startingPositionSegmentTwo{k0Limited, k2Limited};
 
   getSnake().addSegment(Game::Segment{startingHeadPosition});
   getSnake().addSegment(Game::Segment{startingPositionSegmentOne});
@@ -137,9 +150,9 @@ TEST_F(SnakeFixture, CantDo180) {
 }
 
 TEST_F(SnakeFixture, CantAddSegmentNonAdjacentToTheLastSegment) {
-  Game::BoardPosition startingHeadPosition{};
-  Game::BoardPosition startingPositionSegmentOne{k0, k1};
-  Game::BoardPosition startingPositionSegmentTwo{k0, k3};
+  Game::BoardPosition startingHeadPosition{k0Limited, k0Limited};
+  Game::BoardPosition startingPositionSegmentOne{k0Limited, k1Limited};
+  Game::BoardPosition startingPositionSegmentTwo{k0Limited, k3Limited};
 
   getSnake().addSegment(Game::Segment{startingHeadPosition});
   getSnake().addSegment(Game::Segment{startingPositionSegmentOne});

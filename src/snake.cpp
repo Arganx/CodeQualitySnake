@@ -3,9 +3,7 @@
 #include "../inc/segment.hpp"
 #include <algorithm>
 #include <bits/ranges_util.h>
-#include <iterator>
 #include <optional>
-#include <stdexcept>
 namespace Game {
 Snake::Snake() = default;
 
@@ -35,13 +33,11 @@ Snake::getHeadPosition() const {
 
 const std::deque<Segment> &Snake::getSnakeSegments() const { return segments; }
 
-void Snake::move(const BoardPosition &iNextHeadPosition,
-                 bool iIsPassingBoardBoarder, bool iAteSnack) {
+void Snake::move(const BoardPosition &iNextHeadPosition, bool iAteSnack) {
   if (segments.empty()) {
     return;
   }
-  if (!iIsPassingBoardBoarder &&
-      !iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
+  if (!iNextHeadPosition.isAdjacent(segments[0].getPosition())) {
     throw Game::SnakeExceptions::NonAdjacentMovementException(
         "Trying to move to non adjacent tile");
   }

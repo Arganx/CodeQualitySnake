@@ -102,7 +102,7 @@ board_position_test : board_position_test.o gmock_main.a
 snake_test.o : $(USER_DIR)/snake_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/snake_test.cpp
 snake_test : snake_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/board_position.cpp $(SRC_DIR)/limited_uint8_t.cpp $(SRC_DIR)/segment.cpp $(SRC_DIR)/snake.cpp -o $@
 
 limited_uint8_8_test.o : $(USER_DIR)/limited_uint8_8_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) $(flags) -c $(USER_DIR)/limited_uint8_8_test.cpp
