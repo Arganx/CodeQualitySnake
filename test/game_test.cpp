@@ -508,4 +508,23 @@ TEST_F(GameFixture, IfGameEndedThenSnakeWontMove) {
             BoardMapping::kSnakeHead);
 }
 
+TEST_F(GameFixture, CantGetSnakeWhenNotInitialized) {
+  try {
+    getGame().getSnake();
+    FAIL()
+        << "Should throw Game::SnakeExceptions::PointerNotInitializedException";
+  } catch (
+      const Game::SnakeExceptions::PointerNotInitializedException &exception) {
+    EXPECT_STREQ("Snake is not initialized", exception.what());
+  }
+}
+
+TEST_F(GameFixture, CanGetSnakeWhenInitialized) {
+  getGame().initGame(k4, k4);
+  auto snake = getGame().getSnake();
+  ASSERT_EQ(snake.getSnakeSegments().size(), k1);
+  EXPECT_EQ(snake.getHeadPosition()->get().getXPosition().getValue(), k2);
+  EXPECT_EQ(snake.getHeadPosition()->get().getYPosition().getValue(), k2);
+}
+
 } // namespace
