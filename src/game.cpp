@@ -112,13 +112,6 @@ void Game::checkIfPointersAreInitialized() const {
   }
 }
 
-void Game::cleanFullSnake() {
-  checkIfPointersAreInitialized();
-  for (const auto &segment : snakePtr->getSnakeSegments()) {
-    boardPtr->drawCharacter(segment.getPosition(), BoardMapping::kEmptySpace);
-  }
-}
-
 void Game::cleanLastSegmentOfSnake() {
   checkIfPointersAreInitialized();
   boardPtr->drawCharacter(snakePtr->getSnakeSegments().back().getPosition(),

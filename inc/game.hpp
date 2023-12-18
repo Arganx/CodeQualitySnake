@@ -22,7 +22,6 @@ private:
 
   void drawFullSnake();
   void drawMovablePartsOfSnake();
-  void cleanFullSnake();
   void cleanLastSegmentOfSnake();
   void checkIfSnakeIsInitialized() const;
   void checkIfPointersAreInitialized() const;

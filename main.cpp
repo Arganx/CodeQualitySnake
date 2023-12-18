@@ -33,12 +33,14 @@ void updateBlocksPositions(std::mutex &snakeBlockMutex,
     snakeBlocks[blockIndex].setPosition(game.getSnake()
                                                 .getSnakeSegments()[blockIndex]
                                                 .getPosition()
-                                                .getXPosition() *
+                                                .getXPosition()
+                                                .getValue() *
                                             tileSizes.first,
                                         game.getSnake()
                                                 .getSnakeSegments()[blockIndex]
                                                 .getPosition()
-                                                .getYPosition() *
+                                                .getYPosition()
+                                                .getValue() *
                                             tileSizes.second);
   }
 }
