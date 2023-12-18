@@ -2,7 +2,6 @@
 #define Segment_Guard
 
 #include "board_position.hpp"
-#include <memory>
 
 namespace Game {
 

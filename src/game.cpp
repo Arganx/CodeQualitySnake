@@ -5,6 +5,7 @@
 #include "../inc/board_mappings.hpp"
 #include "../inc/direction.hpp"
 #include "../inc/exceptions.hpp"
+#include "../inc/limited_uint8_t.hpp"
 #include <bits/ranges_algo.h>
 #include <cmath>
 #include <cstdint>
@@ -17,9 +18,11 @@ void Game::showStatus() const { std::cout << "Score: " << score << "\n"; }
 
 void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
   boardPtr = std::make_unique<Board>(iWidth, iHeight);
-  snakePtr = std::make_unique<Snake>(
-      Segment{BoardPosition{static_cast<uint8_t>(std::floor(iWidth / 2U)),
-                            static_cast<uint8_t>(std::floor(iHeight / 2U))}});
+  snakePtr = std::make_unique<Snake>(Segment{BoardPosition{
+      Limited_uint8_t{static_cast<uint8_t>(std::floor(iWidth / 2U)),
+                      static_cast<uint8_t>(iWidth - 1U)},
+      Limited_uint8_t{static_cast<uint8_t>(std::floor(iHeight / 2U)),
+                      static_cast<uint8_t>(iHeight - 1U)}}});
   drawFullSnake();
   drawSnack();
 }
@@ -60,56 +63,35 @@ uint8_t Game::moveSnake() {
         "Snake head not initialized");
   }
   BoardPosition nextPosition{snakePtr->getHeadPosition()->get()};
-  bool isPassingBoardBorder = false;
   switch (direction) {
     using enum Direction::Direction;
   case Right:
     nextPosition.incrementX();
-    if (nextPosition.getXPosition() >= boardPtr.get()->getWidth()) {
-      isPassingBoardBorder = true;
-      nextPosition.setXPosition(0U);
-    }
     break;
   case Left:
     nextPosition.decrementX();
-    if (nextPosition.getXPosition() == 255U) {
-      isPassingBoardBorder = true;
-      nextPosition.setXPosition(boardPtr.get()->getWidth() -
-                                static_cast<uint8_t>(1U));
-    }
     break;
   case Down:
     nextPosition.incrementY();
-    if (nextPosition.getYPosition() >= boardPtr.get()->getHeight()) {
-      isPassingBoardBorder = true;
-      nextPosition.setYPosition(0U);
-    }
     break;
   case Up:
     nextPosition.decrementY();
-    if (nextPosition.getYPosition() == 255U) {
-      isPassingBoardBorder = true;
-      nextPosition.setYPosition(boardPtr.get()->getHeight() -
-                                static_cast<uint8_t>(1U));
-    }
     break;
   default:
     throw SnakeExceptions::UnexpectedSwitchValue("Unsupported direction");
   }
 
-  if (boardPtr.get()->getBoard()[nextPosition.getYPosition()]
-                                [nextPosition.getXPosition()] ==
-      BoardMapping::kSnack) {
+  switch (boardPtr.get()->getBoard()[nextPosition.getYPosition().getValue()]
+                                    [nextPosition.getXPosition().getValue()]) {
+  case BoardMapping::kSnack:
     ++score;
-    snakePtr->move(nextPosition, isPassingBoardBorder, true);
+    snakePtr->move(nextPosition, true);
     return 2;
-  } else if (boardPtr.get()->getBoard()[nextPosition.getYPosition()]
-                                       [nextPosition.getXPosition()] ==
-             BoardMapping::kSnakeBody) {
+  case BoardMapping::kSnakeBody:
     gameEnded = true;
     return 0;
-  } else {
-    snakePtr->move(nextPosition, isPassingBoardBorder);
+  default:
+    snakePtr->move(nextPosition);
     return 1;
   }
   return 0;
@@ -214,34 +196,22 @@ void Game::setDirection(const Direction::Direction iDirection) {
     switch (iDirection) {
       using enum Direction::Direction;
     case Right:
-      if (snakeNextSegmentXPosition == 0U &&
-          snakeHeadXPosition == boardPtr->getWidth() - 1U) {
-        return;
-      } else if (snakeNextSegmentXPosition == snakeHeadXPosition + 1U) {
+      if (snakeNextSegmentXPosition == snakeHeadXPosition + 1U) {
         return;
       }
       break;
     case Left:
-      if (snakeNextSegmentXPosition == boardPtr->getWidth() - 1U &&
-          snakeHeadXPosition == 0U) {
-        return;
-      } else if (snakeNextSegmentXPosition == snakeHeadXPosition - 1U) {
+      if (snakeNextSegmentXPosition == snakeHeadXPosition - 1U) {
         return;
       }
       break;
     case Down:
-      if (snakeHeadYPosition == boardPtr->getHeight() - 1U &&
-          snakeNextSegmentYPosition == 0U) {
-        return;
-      } else if (snakeNextSegmentYPosition == snakeHeadYPosition + 1U) {
+      if (snakeNextSegmentYPosition == snakeHeadYPosition + 1U) {
         return;
       }
       break;
     case Up:
-      if (snakeHeadYPosition == 0U &&
-          snakeNextSegmentYPosition == boardPtr->getHeight() - 1U) {
-        return;
-      } else if (snakeNextSegmentYPosition == snakeHeadYPosition - 1U) {
+      if (snakeNextSegmentYPosition == snakeHeadYPosition - 1U) {
         return;
       }
       break;
@@ -253,10 +223,7 @@ void Game::setDirection(const Direction::Direction iDirection) {
 }
 
 Snake &Game::getSnake() {
-  if (snakePtr == nullptr) {
-    throw SnakeExceptions::PointerNotInitializedException(
-        "Snake is not initialized");
-  }
+  checkIfSnakeIsInitialized();
   return *snakePtr;
 }
 

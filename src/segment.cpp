@@ -1,4 +1,5 @@
 #include "../inc/segment.hpp"
+#include <utility>
 
 namespace Game {
 Segment::Segment(const BoardPosition &iPosition)
