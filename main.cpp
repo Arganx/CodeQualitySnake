@@ -45,6 +45,160 @@ void updateBlocksPositions(std::mutex &snakeBlockMutex,
   }
 }
 
+void setHeadTexture(std::vector<sf::RectangleShape> &snakeBlocks,
+                    std::map<std::string, sf::Texture, std::less<>> &textures,
+                    const Direction::Direction stepDirection) {
+  if (snakeBlocks.empty()) {
+    return;
+  }
+  switch (stepDirection) {
+    using enum Direction::Direction;
+  case Up:
+    snakeBlocks[0].setTexture(&textures["head_up"]);
+    break;
+  case Down:
+    snakeBlocks[0].setTexture(&textures["head_down"]);
+    break;
+  case Left:
+    snakeBlocks[0].setTexture(&textures["head_left"]);
+    break;
+  case Right:
+    snakeBlocks[0].setTexture(&textures["head_right"]);
+    break;
+  default:
+    break;
+  }
+}
+
+void setTailTexture(std::vector<sf::RectangleShape> &snakeBlocks,
+                    std::map<std::string, sf::Texture, std::less<>> &textures,
+                    Game::Game &game) {
+  if (snakeBlocks.size() < 2U) {
+    return;
+  }
+
+  auto tailX =
+      game.getSnake().getSnakeSegments().back().getPosition().getXPosition();
+  auto tailY =
+      game.getSnake().getSnakeSegments().back().getPosition().getYPosition();
+  auto beforeLastX = (game.getSnake().getSnakeSegments().end() - 2)
+                         ->getPosition()
+                         .getXPosition();
+  auto beforeLastY = (game.getSnake().getSnakeSegments().end() - 2)
+                         ->getPosition()
+                         .getYPosition();
+
+  if (tailX + 1U == beforeLastX) {
+    snakeBlocks.back().setTexture(&textures["tail_left"]);
+    return;
+  }
+  if (tailX - 1U == beforeLastX) {
+    snakeBlocks.back().setTexture(&textures["tail_right"]);
+    return;
+  }
+  if (tailY + 1U == beforeLastY) {
+    snakeBlocks.back().setTexture(&textures["tail_up"]);
+    return;
+  }
+  if (tailY - 1U == beforeLastY) {
+    snakeBlocks.back().setTexture(&textures["tail_down"]);
+    return;
+  }
+  return;
+}
+
+void setSegmentsTextures(
+    std::vector<sf::RectangleShape> &snakeBlocks,
+    std::map<std::string, sf::Texture, std::less<>> &textures,
+    Game::Game &game) {
+  if (snakeBlocks.size() < 3U) {
+    return;
+  }
+  // TODO make sure vectors have the same size
+  for (uint16_t segmentNumber{1U}; segmentNumber < snakeBlocks.size() - 1;
+       ++segmentNumber) {
+    auto previousX{game.getSnake()
+                       .getSnakeSegments()[segmentNumber - 1]
+                       .getPosition()
+                       .getXPosition()};
+    auto previousY{game.getSnake()
+                       .getSnakeSegments()[segmentNumber - 1]
+                       .getPosition()
+                       .getYPosition()};
+    auto nextX{game.getSnake()
+                   .getSnakeSegments()[segmentNumber + 1]
+                   .getPosition()
+                   .getXPosition()};
+    auto nextY{game.getSnake()
+                   .getSnakeSegments()[segmentNumber + 1]
+                   .getPosition()
+                   .getYPosition()};
+    auto currentX{game.getSnake()
+                      .getSnakeSegments()[segmentNumber]
+                      .getPosition()
+                      .getXPosition()};
+    auto currentY{game.getSnake()
+                      .getSnakeSegments()[segmentNumber]
+                      .getPosition()
+                      .getYPosition()};
+
+    if (currentX + 1U == nextX) // Exit on the right
+    {
+      if (currentY - 1U == previousY) // Entrance on top
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_topright"]);
+      } else if (currentY + 1U == previousY) // Entrance on bottom
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_bottomright"]);
+      } else {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_horizontal"]);
+      }
+    } else if (currentX - 1U == nextX) // Exit on the left
+    {
+      if (currentY - 1U == previousY) // Entrance on top
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_topleft"]);
+      } else if (currentY + 1U == previousY) // Entrance on bottom
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_bottomleft"]);
+      } else {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_horizontal"]);
+      }
+    } else if (currentY - 1U == nextY) // Exit on top
+    {
+      if (currentX - 1U == previousX) // Entrance on the left
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_topleft"]);
+      } else if (currentX + 1U == previousX) {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_topright"]);
+      } else {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_vertical"]);
+      }
+    } else if (currentY + 1U == nextY) // Exit on the bottom
+    {
+      if (currentX - 1U == previousX) // Entrance on the left
+      {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_bottomleft"]);
+      } else if (currentX + 1U == previousX) {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_bottomright"]);
+      } else {
+        snakeBlocks[segmentNumber].setTexture(&textures["body_vertical"]);
+      }
+    } else {
+      snakeBlocks[segmentNumber].setTexture(&textures["apple"]);
+    }
+  }
+}
+
+void setSnakeTextures(std::vector<sf::RectangleShape> &snakeBlocks,
+                      std::map<std::string, sf::Texture, std::less<>> &textures,
+                      Game::Game &game,
+                      const Direction::Direction stepDirection) {
+  setHeadTexture(snakeBlocks, textures, stepDirection);
+  setTailTexture(snakeBlocks, textures, game);
+  setSegmentsTextures(snakeBlocks, textures, game);
+}
+
 void mainGameThread(std::stop_token stop_token, Game::Game &game,
                     std::vector<sf::RectangleShape> &snakeBlocks,
                     const std::pair<uint16_t, uint16_t> &tileSizes,
@@ -55,20 +209,21 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
       return;
     }
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(500));
+    // TODO add mutex
+    Direction::Direction stepDirection = game.getDirection();
     if (!game.step()) {
       return;
     }
-    // TODO make sure the sizes are the same and insert the blocks if they are
-    // not.
+    // TODO close mutex
     while (game.getSnake().getSnakeSegments().size() > snakeBlocks.size()) {
       snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
-      snakeBlocks.back().setTexture(&textures["body_vertical"]);
     }
     if (game.getSnake().getSnakeSegments().size() != snakeBlocks.size()) {
       throw std::domain_error(
           "Length of snake segments does not match the graphics");
     }
     updateBlocksPositions(snakeBlockMutex, snakeBlocks, game, tileSizes);
+    setSnakeTextures(snakeBlocks, textures, game, stepDirection);
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
   }
 }
