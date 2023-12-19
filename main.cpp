@@ -24,6 +24,12 @@
 
 const std::string texturePath = "Textures";
 
+struct Mutexes {
+  std::mutex snakeBlockMutex{};
+  std::mutex candyBlocksMutex{};
+  std::mutex directionMutex{};
+};
+
 void updateBlocksPositions(std::mutex &snakeBlockMutex,
                            std::vector<sf::RectangleShape> &snakeBlocks,
                            Game::Game &game,
@@ -42,6 +48,32 @@ void updateBlocksPositions(std::mutex &snakeBlockMutex,
                                                 .getYPosition()
                                                 .getValue() *
                                             tileSizes.second);
+  }
+}
+
+void updateCandy(std::mutex &candyBlocksMutex,
+                 std::vector<sf::RectangleShape> &candyBlocks,
+                 const Game::Game &game,
+                 const std::pair<uint16_t, uint16_t> &tileSizes,
+                 std::map<std::string, sf::Texture, std::less<>> &textures) {
+  std::scoped_lock lock(candyBlocksMutex);
+  while (candyBlocks.size() < game.getSnacksPositions().size()) {
+    candyBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
+    candyBlocks.back().setTexture(&textures["apple"]);
+  }
+  while (candyBlocks.size() > game.getSnacksPositions().size()) {
+    candyBlocks.pop_back();
+  }
+  if (candyBlocks.size() != game.getSnacksPositions().size()) {
+    throw std::invalid_argument(
+        "Candy blocks don't much the number of candies in the game");
+  }
+  for (uint16_t blockIndex{0U}; blockIndex < candyBlocks.size(); ++blockIndex) {
+    candyBlocks[blockIndex].setPosition(
+        game.getSnacksPositions()[blockIndex].getXPosition().getValue() *
+            tileSizes.first,
+        game.getSnacksPositions()[blockIndex].getYPosition().getValue() *
+            tileSizes.second);
   }
 }
 
@@ -73,6 +105,9 @@ void setHeadTexture(std::vector<sf::RectangleShape> &snakeBlocks,
 void setTailTexture(std::vector<sf::RectangleShape> &snakeBlocks,
                     std::map<std::string, sf::Texture, std::less<>> &textures,
                     Game::Game &game) {
+  if (game.getSnake().getSnakeSegments().size() != snakeBlocks.size()) {
+    throw std::domain_error("Mismatch between snakeBlocks and snake segments");
+  }
   if (snakeBlocks.size() < 2U) {
     return;
   }
@@ -201,8 +236,9 @@ void setSnakeTextures(std::vector<sf::RectangleShape> &snakeBlocks,
 
 void mainGameThread(std::stop_token stop_token, Game::Game &game,
                     std::vector<sf::RectangleShape> &snakeBlocks,
+                    std::vector<sf::RectangleShape> &candiesBlocks,
                     const std::pair<uint16_t, uint16_t> &tileSizes,
-                    std::mutex &snakeBlockMutex,
+                    Mutexes &mutexes,
                     std::map<std::string, sf::Texture, std::less<>> &textures) {
   while (true) {
     if (stop_token.stop_requested()) {
@@ -222,8 +258,11 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
       throw std::domain_error(
           "Length of snake segments does not match the graphics");
     }
-    updateBlocksPositions(snakeBlockMutex, snakeBlocks, game, tileSizes);
+    updateBlocksPositions(mutexes.snakeBlockMutex, snakeBlocks, game,
+                          tileSizes);
     setSnakeTextures(snakeBlocks, textures, game, stepDirection);
+    updateCandy(mutexes.candyBlocksMutex, candiesBlocks, game, tileSizes,
+                textures);
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
   }
 }
@@ -293,10 +332,10 @@ void drawTiles(const std::vector<std::vector<sf::RectangleShape>> &iTiles,
   }
 }
 
-void drawSnakeBlocks(std::mutex &iSnakeBlockMutex, sf::RenderWindow &iWindow,
-                     const std::vector<sf::RectangleShape> &iSnakeBlocks) {
-  std::scoped_lock lock(iSnakeBlockMutex);
-  for (const auto &block : iSnakeBlocks) {
+void drawBlocks(std::mutex &iMutex, sf::RenderWindow &iWindow,
+                const std::vector<sf::RectangleShape> &iBlocks) {
+  std::scoped_lock lock(iMutex);
+  for (const auto &block : iBlocks) {
     iWindow.draw(block);
   }
 }
@@ -322,10 +361,7 @@ int main() {
   std::map<std::string, sf::Texture, std::less<>> textureMap;
   loadTextures(textureMap);
 
-  sf::RenderWindow window(sf::VideoMode(100, 100), "Snake Game");
-
-  sf::Texture snakeHeadTexture;
-  snakeHeadTexture.loadFromFile("Textures/head_up.png");
+  sf::RenderWindow window(sf::VideoMode(300, 300), "Snake Game");
 
   std::pair<uint16_t, uint16_t> tileSizes;
   auto tiles =
@@ -333,14 +369,21 @@ int main() {
 
   std::vector<sf::RectangleShape> snakeBlocks;
   snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
-  snakeBlocks[0].setTexture(&snakeHeadTexture);
+  std::vector<sf::RectangleShape> candyBlocks;
+  candyBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
+  candyBlocks.back().setTexture(&textureMap["apple"]);
 
-  std::mutex snakeBlockMutex;
+  Mutexes mutexes;
+
+  updateBlocksPositions(mutexes.snakeBlockMutex, snakeBlocks, game, tileSizes);
+  setSnakeTextures(snakeBlocks, textureMap, game, game.getDirection());
+  updateCandy(mutexes.candyBlocksMutex, candyBlocks, game, tileSizes,
+              textureMap);
 
   std::stop_source stop_source;
   std::jthread gameThread(mainGameThread, std::ref(game), std::ref(snakeBlocks),
-                          std::ref(tileSizes), std::ref(snakeBlockMutex),
-                          std::ref(textureMap));
+                          std::ref(candyBlocks), std::ref(tileSizes),
+                          std::ref(mutexes), std::ref(textureMap));
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -353,7 +396,8 @@ int main() {
     }
     window.clear();
     drawTiles(tiles, window);
-    drawSnakeBlocks(snakeBlockMutex, window, snakeBlocks);
+    drawBlocks(mutexes.snakeBlockMutex, window, snakeBlocks);
+    drawBlocks(mutexes.candyBlocksMutex, window, candyBlocks);
     window.display();
   }
 }

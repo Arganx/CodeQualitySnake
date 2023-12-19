@@ -161,6 +161,7 @@ void Game::drawFullSnake() {
 
 void Game::drawSnack(const uint8_t iNumberOfSnacks) {
   checkIfPointersAreInitialized();
+  snackPositions.clear();
   auto availablePositions = boardPtr->getAvailablePositions();
   std::vector<BoardPosition> selectedPositions;
 #ifdef TESTING
@@ -172,6 +173,7 @@ void Game::drawSnack(const uint8_t iNumberOfSnacks) {
                       iNumberOfSnacks, gen);
   for (const auto &position : selectedPositions) {
     boardPtr->drawCharacter(position, BoardMapping::kSnack);
+    snackPositions.emplace_back(position);
   }
 }
 
@@ -218,6 +220,10 @@ void Game::setDirection(const Direction::Direction iDirection) {
 Snake &Game::getSnake() {
   checkIfSnakeIsInitialized();
   return *snakePtr;
+}
+
+const std::vector<BoardPosition> &Game::getSnacksPositions() const {
+  return snackPositions;
 }
 
 Direction::Direction Game::getDirection() const { return direction; }

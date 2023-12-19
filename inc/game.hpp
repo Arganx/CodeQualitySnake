@@ -1,6 +1,7 @@
 #ifndef Game_Guard
 #define Game_Guard
 #include "board.hpp"
+#include "board_position.hpp"
 #include "direction.hpp"
 #include "snake.hpp"
 #include <atomic>
@@ -19,6 +20,7 @@ private:
   std::unique_ptr<Snake> snakePtr;
   std::atomic<Direction::Direction> direction{Direction::Direction::Right};
   bool gameEnded = false;
+  std::vector<BoardPosition> snackPositions;
 
   void drawFullSnake();
   void drawMovablePartsOfSnake();
@@ -30,6 +32,7 @@ private:
 
 public:
   void setDirection(const Direction::Direction iDirection);
+  const std::vector<BoardPosition> &getSnacksPositions() const;
   Direction::Direction getDirection() const; // Copy
 
   Snake &getSnake();
