@@ -10,7 +10,6 @@
 #include "tools/inc/visualiser.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <functional>
@@ -244,7 +243,7 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
     if (stop_token.stop_requested()) {
       return;
     }
-    std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(500));
+    std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
     // TODO add mutex
     Direction::Direction stepDirection = game.getDirection();
     if (!game.step()) {
@@ -292,15 +291,8 @@ std::vector<std::vector<sf::RectangleShape>>
 createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
             std::map<std::string, sf::Texture, std::less<>> &iTextureMap,
             std::pair<uint16_t, uint16_t> &oTileSizes) {
-  // TODO think what to do with the offset
-  auto offsetX = static_cast<uint16_t>(
-      std::round(0.0f * static_cast<float>(iResolution.x)));
-  auto offsetY = static_cast<uint16_t>(
-      std::round(0.0f * static_cast<float>(iResolution.y)));
-  oTileSizes.first =
-      static_cast<uint16_t>((iResolution.x - 2U * offsetX) / iBoard.getWidth());
-  oTileSizes.second = static_cast<uint16_t>((iResolution.y - 2U * offsetY) /
-                                            iBoard.getHeight());
+  oTileSizes.first = static_cast<uint16_t>(iResolution.x / iBoard.getWidth());
+  oTileSizes.second = static_cast<uint16_t>(iResolution.y / iBoard.getHeight());
   std::vector<std::vector<sf::RectangleShape>> sfmlTiles;
   sfmlTiles.reserve(iBoard.getHeight());
   for (uint8_t column{0U}; column < iBoard.getHeight(); ++column) {
@@ -310,8 +302,8 @@ createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
       sfmlTiles[column].emplace_back(
           sf::Vector2f(oTileSizes.first, oTileSizes.second));
       sfmlTiles[column][row].setPosition(
-          static_cast<float>(offsetX + row * oTileSizes.first),
-          static_cast<float>(offsetY + column * oTileSizes.second));
+          static_cast<float>(row * oTileSizes.first),
+          static_cast<float>(column * oTileSizes.second));
       // TODO make sure the Textures are there
       if ((column + row) % 2U == 0) {
         sfmlTiles[column][row].setTexture(&iTextureMap["Light_Green"]);
