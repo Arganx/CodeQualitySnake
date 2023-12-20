@@ -148,7 +148,10 @@ void setSegmentsTextures(
   if (snakeBlocks.size() < 3U) {
     return;
   }
-  // TODO make sure vectors have the same size
+  if (snakeBlocks.size() != game.getSnake().getSnakeSegments().size()) {
+    throw std::domain_error(
+        "Snake block size does not match snake segments size");
+  }
   for (uint16_t segmentNumber{1U}; segmentNumber < snakeBlocks.size() - 1;
        ++segmentNumber) {
     auto previousX{game.getSnake()
@@ -244,12 +247,14 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
       return;
     }
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
-    // TODO add mutex
-    Direction::Direction stepDirection = game.getDirection();
-    if (!game.step()) {
-      return;
+    Direction::Direction stepDirection;
+    {
+      std::scoped_lock lock(mutexes.directionMutex);
+      stepDirection = game.getDirection();
+      if (!game.step()) {
+        return;
+      }
     }
-    // TODO close mutex
     while (game.getSnake().getSnakeSegments().size() > snakeBlocks.size()) {
       snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
     }
@@ -304,7 +309,11 @@ createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
       sfmlTiles[column][row].setPosition(
           static_cast<float>(row * oTileSizes.first),
           static_cast<float>(column * oTileSizes.second));
-      // TODO make sure the Textures are there
+      if (!iTextureMap.contains("Light_Green") ||
+          !iTextureMap.contains("Dark_Green")) {
+        throw std::invalid_argument(
+            "Some textures not found"); // TODO create specific exception
+      }
       if ((column + row) % 2U == 0) {
         sfmlTiles[column][row].setTexture(&iTextureMap["Light_Green"]);
       } else {
