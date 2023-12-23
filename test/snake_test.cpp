@@ -1,8 +1,8 @@
+#include "../inc/board_position.hpp"
+#include "../inc/exceptions.hpp"
 #include "../inc/limited_uint8_t.hpp"
-#include "board_position.hpp"
-#include "exceptions.hpp"
-#include "segment.hpp"
-#include "snake.hpp"
+#include "../inc/segment.hpp"
+#include "../inc/snake.hpp"
 #include "gtest/gtest.h"
 #include <sys/types.h>
 

@@ -1,7 +1,7 @@
+#include "../inc/board_mappings.hpp"
+#include "../inc/direction.hpp"
 #include "../inc/exceptions.hpp"
 #include "../inc/game.hpp"
-#include "board_mappings.hpp"
-#include "direction.hpp"
 #include <cstdint>
 
 #include "gtest/gtest.h"

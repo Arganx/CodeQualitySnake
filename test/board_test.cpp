@@ -1,7 +1,7 @@
 #include "../inc/board.hpp"
+#include "../inc/board_mappings.hpp"
+#include "../inc/board_position.hpp"
 #include "../inc/limited_uint8_t.hpp"
-#include "board_mappings.hpp"
-#include "board_position.hpp"
 #include <bits/ranges_util.h>
 #include <cstdint>
 

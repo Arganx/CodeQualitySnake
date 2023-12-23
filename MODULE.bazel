@@ -1,0 +1,17 @@
+"""
+Main MODULE file. Here the extrenal dependencies are being fetched
+"""
+
+###############################################################################
+# Bazel now uses Bzlmod by default to manage external dependencies.
+# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
+#
+# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
+###############################################################################
+## MODULE.bazel
+
+module(
+    name = "snake",
+    repo_name = "snake_Repo",
+)
+bazel_dep(name = "googletest", version = "1.14.0")
