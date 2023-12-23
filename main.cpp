@@ -236,6 +236,16 @@ void setSnakeTextures(std::vector<sf::RectangleShape> &snakeBlocks,
   setSegmentsTextures(snakeBlocks, textures, game);
 }
 
+bool gameStep(Game::Game &ioGame, std::mutex &ioDirectionMutex,
+              Direction::Direction &oStepDirection) {
+  std::scoped_lock lock(ioDirectionMutex);
+  oStepDirection = ioGame.getDirection();
+  if (!ioGame.step()) {
+    return true;
+  }
+  return false;
+}
+
 void mainGameThread(std::stop_token stop_token, Game::Game &game,
                     std::vector<sf::RectangleShape> &snakeBlocks,
                     std::vector<sf::RectangleShape> &candiesBlocks,
@@ -248,12 +258,8 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
     }
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
     Direction::Direction stepDirection;
-    {
-      std::scoped_lock lock(mutexes.directionMutex);
-      stepDirection = game.getDirection();
-      if (!game.step()) {
-        return;
-      }
+    if (gameStep(game, mutexes.directionMutex, stepDirection)) {
+      return;
     }
     while (game.getSnake().getSnakeSegments().size() > snakeBlocks.size()) {
       snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
