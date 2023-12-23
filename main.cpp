@@ -278,7 +278,8 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
 }
 
 void handleKey(const sf::Keyboard::Key &keyCode, Game::Game &game,
-               std::jthread &gameThread) {
+               std::jthread &gameThread, std::mutex &directionMutex) {
+  std::scoped_lock lock(directionMutex);
 
   if (keyCode == sf::Keyboard::Left) {
     game.setDirection(Direction::Direction::Left);
@@ -398,7 +399,7 @@ int main() {
         window.close();
 
       if (event.type == sf::Event::KeyPressed) {
-        handleKey(event.key.code, game, gameThread);
+        handleKey(event.key.code, game, gameThread, mutexes.directionMutex);
       }
     }
     window.clear();
