@@ -7,13 +7,13 @@
 #include "inc/board.hpp"
 #include "inc/direction.hpp"
 #include "inc/game.hpp"
+#include "tools/inc/mutexes.hpp"
+#include "tools/inc/texture_loader.hpp"
 #include "tools/inc/visualiser.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <cstdint>
-#include <filesystem>
 #include <functional>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -22,12 +22,6 @@
 #include <utility>
 
 const std::string texturePath = "Textures";
-
-struct Mutexes {
-  std::mutex snakeBlockMutex{};
-  std::mutex candyBlocksMutex{};
-  std::mutex directionMutex{};
-};
 
 void updateBlocksPositions(std::mutex &snakeBlockMutex,
                            std::vector<sf::RectangleShape> &snakeBlocks,
@@ -250,7 +244,7 @@ void mainGameThread(std::stop_token stop_token, Game::Game &game,
                     std::vector<sf::RectangleShape> &snakeBlocks,
                     std::vector<sf::RectangleShape> &candiesBlocks,
                     const std::pair<uint16_t, uint16_t> &tileSizes,
-                    Mutexes &mutexes,
+                    tools::Mutexes &mutexes,
                     std::map<std::string, sf::Texture, std::less<>> &textures) {
   while (true) {
     if (stop_token.stop_requested()) {
@@ -348,26 +342,13 @@ void drawBlocks(std::mutex &iMutex, sf::RenderWindow &iWindow,
   }
 }
 
-void loadTextures(
-    std::map<std::string, sf::Texture, std::less<>> &texturesMap) {
-  std::cout << "Loading Textures\n";
-  for (const auto &file : std::filesystem::directory_iterator(texturePath)) {
-    auto startPosition = file.path().string().find("/") + 1U;
-    auto endPosition = file.path().string().find(".");
-    auto name =
-        file.path().string().substr(startPosition, endPosition - startPosition);
-    texturesMap.try_emplace(name);
-    texturesMap[name].loadFromFile(file.path());
-  }
-  std::cout << "Textures Loaded\n";
-}
-
 int main() {
   Game::Game game;
   game.initGame(5, 4); // From here the boardPtr is initialized
 
   std::map<std::string, sf::Texture, std::less<>> textureMap;
-  loadTextures(textureMap);
+  tools::TextureLoader textureLoader(texturePath);
+  textureLoader.loadTextures(textureMap);
 
   sf::RenderWindow window(sf::VideoMode(300, 300), "Snake Game");
   window.setFramerateLimit(30);
@@ -382,7 +363,7 @@ int main() {
   candyBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
   candyBlocks.back().setTexture(&textureMap["apple"]);
 
-  Mutexes mutexes;
+  tools::Mutexes mutexes;
 
   updateBlocksPositions(mutexes.snakeBlockMutex, snakeBlocks, game, tileSizes);
   setSnakeTextures(snakeBlocks, textureMap, game, game.getDirection());

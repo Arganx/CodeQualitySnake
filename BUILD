@@ -86,6 +86,15 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "texture_loader",
+    srcs = ["tools/src/texture_loader.cpp"],
+    hdrs = [
+        "tools/inc/texture_loader.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
 cc_test(
     name = "limited_test",
     srcs = ["test/limited_uint8_8_test.cpp"],
@@ -155,7 +164,10 @@ cc_test(
 
 cc_binary(
     name = "graphicalSnake",
-    srcs = ["main.cpp"],
+    srcs = [
+        "main.cpp",
+        "tools/inc/mutexes.hpp",
+    ],
     copts = CPP_FLAGS_DEBUG,
     data = ["Textures"],
     linkopts = [
@@ -165,6 +177,7 @@ cc_binary(
     ],
     deps = [
         ":game",
+        ":texture_loader",
         ":visualiser",
     ],
 )
