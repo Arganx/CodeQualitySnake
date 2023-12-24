@@ -4,8 +4,8 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Event.hpp"
 #include "SFML/Window/Keyboard.hpp"
-#include "board.hpp"
-#include "direction.hpp"
+#include "inc/board.hpp"
+#include "inc/direction.hpp"
 #include "inc/game.hpp"
 #include "tools/inc/visualiser.hpp"
 #include <SFML/Graphics.hpp>
@@ -370,6 +370,7 @@ int main() {
   loadTextures(textureMap);
 
   sf::RenderWindow window(sf::VideoMode(300, 300), "Snake Game");
+  window.setFramerateLimit(30);
 
   std::pair<uint16_t, uint16_t> tileSizes;
   auto tiles =

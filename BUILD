@@ -74,6 +74,18 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "visualiser",
+    srcs = ["tools/src/visualiser.cpp"],
+    hdrs = [
+        "tools/inc/visualiser.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [
+        ":board",
+    ],
+)
+
 cc_test(
     name = "limited_test",
     srcs = ["test/limited_uint8_8_test.cpp"],
@@ -128,5 +140,31 @@ cc_test(
     deps = [
         ":game_testing",
         "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "visualiser_test",
+    srcs = ["tools/tests/visualiser_test.cpp"],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [
+        ":visualiser",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "graphicalSnake",
+    srcs = ["main.cpp"],
+    copts = CPP_FLAGS_DEBUG,
+    data = ["Textures"],
+    linkopts = [
+        "-lsfml-graphics",
+        "-lsfml-window",
+        "-lsfml-system",
+    ],
+    deps = [
+        ":game",
+        ":visualiser",
     ],
 )

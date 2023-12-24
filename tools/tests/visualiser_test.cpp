@@ -1,7 +1,7 @@
-#include "board_mappings.hpp"
-#include "visualiser.hpp"
+#include "../../inc/board_mappings.hpp"
+#include "../inc/visualiser.hpp"
 
-#include "board.hpp"
+#include "../../inc/board.hpp"
 #include "gtest/gtest.h"
 #include <cstdint>
 
