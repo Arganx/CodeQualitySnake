@@ -7,6 +7,7 @@
 #include "inc/board.hpp"
 #include "inc/direction.hpp"
 #include "inc/game.hpp"
+#include "tools/inc/drawer.hpp"
 #include "tools/inc/mutexes.hpp"
 #include "tools/inc/texture_loader.hpp"
 #include "tools/inc/visualiser.hpp"
@@ -325,23 +326,6 @@ createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
   return sfmlTiles;
 }
 
-void drawTiles(const std::vector<std::vector<sf::RectangleShape>> &iTiles,
-               sf::RenderWindow &iWindow) {
-  for (const auto &column : iTiles) {
-    for (const auto &tile : column) {
-      iWindow.draw(tile);
-    }
-  }
-}
-
-void drawBlocks(std::mutex &iMutex, sf::RenderWindow &iWindow,
-                const std::vector<sf::RectangleShape> &iBlocks) {
-  std::scoped_lock lock(iMutex);
-  for (const auto &block : iBlocks) {
-    iWindow.draw(block);
-  }
-}
-
 int main() {
   Game::Game game;
   game.initGame(5, 4); // From here the boardPtr is initialized
@@ -352,6 +336,7 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(300, 300), "Snake Game");
   window.setFramerateLimit(30);
+  tools::Drawer drawer(window);
 
   std::pair<uint16_t, uint16_t> tileSizes;
   auto tiles =
@@ -385,9 +370,9 @@ int main() {
       }
     }
     window.clear();
-    drawTiles(tiles, window);
-    drawBlocks(mutexes.snakeBlockMutex, window, snakeBlocks);
-    drawBlocks(mutexes.candyBlocksMutex, window, candyBlocks);
+    drawer.drawTiles(tiles);
+    drawer.drawBlocks(mutexes.snakeBlockMutex, snakeBlocks);
+    drawer.drawBlocks(mutexes.candyBlocksMutex, candyBlocks);
     window.display();
   }
 }

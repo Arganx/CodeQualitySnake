@@ -95,6 +95,15 @@ cc_library(
     copts = CPP_FLAGS_DEBUG,
 )
 
+cc_library(
+    name = "drawer",
+    srcs = ["tools/src/drawer.cpp"],
+    hdrs = [
+        "tools/inc/drawer.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
 cc_test(
     name = "limited_test",
     srcs = ["test/limited_uint8_8_test.cpp"],
@@ -176,6 +185,7 @@ cc_binary(
         "-lsfml-system",
     ],
     deps = [
+        ":drawer",
         ":game",
         ":texture_loader",
         ":visualiser",

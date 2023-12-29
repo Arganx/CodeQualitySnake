@@ -37,12 +37,10 @@ GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
                 $(GMOCK_DIR)/include/gmock/internal/*.h \
                 $(GTEST_HEADERS)
 
-# ALL = game_test
-
 INC_DIR = ../inc
 SRC_DIR = ../src
 
-# all : $(ALL)
+
 
 # main: ../main.cpp
 # 	$(compiler) $(flags) -I$(INC_DIR) ../main.cpp $(SRC_DIR)/* -o main
@@ -112,7 +110,7 @@ limited_uint8_8_test : limited_uint8_8_test.o gmock_main.a
 visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(INC_DIR) -I$(TOOLS_INC) $(flags) -c $(TOOLS_TESTS)/visualiser_test.cpp
 visualiser_test : visualiser_test.o gmock_main.a
-	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/* -o $@
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/visualiser.cpp -o $@
 
 tests: board_test game_test board_position_test snake_test visualiser_test
 
@@ -121,3 +119,6 @@ SFML_LIB = /home/argan/libs/SFML-2.6.1/lib
 
 main: ../main.cpp
 	$(compiler) $(flags) -I$(INC_DIR) -I$(SFML_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main -L$(SFML_LIB) -lsfml-graphics -lsfml-window -lsfml-system
+
+ALL = main tests
+all : $(ALL)
