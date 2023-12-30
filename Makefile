@@ -112,7 +112,12 @@ visualiser_test.o : $(TOOLS_TESTS)/visualiser_test.cpp $(GMOCK_HEADERS)
 visualiser_test : visualiser_test.o gmock_main.a
 	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/visualiser.cpp -o $@
 
-tests: board_test game_test board_position_test snake_test visualiser_test
+texture_loader_test.o : $(TOOLS_TESTS)/texture_loader_test.cpp $(GMOCK_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(INC_DIR) -I$(TOOLS_INC) $(flags) -c $(TOOLS_TESTS)/texture_loader_test.cpp
+texture_loader_test : texture_loader_test.o gmock_main.a
+	$(CXX) $(CPPFLAGS) $(TESTING_FLAG) $(flags) -lpthread $^ $(SRC_DIR)/* $(TOOLS_SRC)/texture_loader.cpp -o $@ -lsfml-graphics
+
+tests: board_test game_test board_position_test snake_test visualiser_test texture_loader_test
 
 SFML_INC = /home/argan/libs/SFML-2.6.1/include
 SFML_LIB = /home/argan/libs/SFML-2.6.1/lib

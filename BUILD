@@ -171,6 +171,23 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "texture_loader_test",
+    srcs = ["tools/tests/texture_loader_test.cpp"],
+    copts = CPP_FLAGS_DEBUG,
+    data = [
+        "inc",
+        "test-images",
+    ],
+    linkopts = [
+        "-lsfml-graphics",
+    ],
+    deps = [
+        ":texture_loader",
+        "@googletest//:gtest_main",
+    ],
+)
+
 cc_binary(
     name = "graphicalSnake",
     srcs = [
