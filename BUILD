@@ -179,9 +179,11 @@ cc_test(
         "inc",
         "test-images",
     ],
+    env = {"DISPLAY": ":0"},
     linkopts = [
         "-lsfml-graphics",
     ],
+    tags = ["local"],
     deps = [
         ":texture_loader",
         "@googletest//:gtest_main",
