@@ -1,7 +1,9 @@
 #include "../inc/board_mappings.hpp"
+#include "../inc/board_position.hpp"
 #include "../inc/direction.hpp"
 #include "../inc/exceptions.hpp"
 #include "../inc/game.hpp"
+#include "../inc/limited_uint8_t.hpp"
 #include <cstdint>
 
 #include "gtest/gtest.h"
@@ -525,6 +527,20 @@ TEST_F(GameFixture, CanGetSnakeWhenInitialized) {
   ASSERT_EQ(snake.getSnakeSegments().size(), k1);
   EXPECT_EQ(snake.getHeadPosition()->get().getXPosition().getValue(), k2);
   EXPECT_EQ(snake.getHeadPosition()->get().getYPosition().getValue(), k2);
+}
+
+TEST_F(GameFixture, CandyPositionSuccessfullyAcquired) {
+  getGame().initGame(k10, k10);
+  EXPECT_EQ(getGame().getSnacksPositions()[0],
+            Game::BoardPosition(Game::Limited_uint8_t(k4),
+                                Game::Limited_uint8_t(k5)));
+}
+
+TEST_F(GameFixture, InvalidDirection) {
+  gatherCandy(getGame());
+  auto invalidValue = static_cast<Direction::Direction>(999);
+  EXPECT_THROW(getGame().setDirection(invalidValue),
+               Game::SnakeExceptions::UnexpectedSwitchValue);
 }
 
 } // namespace
