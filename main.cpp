@@ -333,14 +333,14 @@ int main() {
   std::map<std::string, sf::Texture, std::less<>> textureMap;
   tools::TextureLoader textureLoader(texturePath);
   textureLoader.loadTextures(textureMap);
-
-  sf::RenderWindow window(sf::VideoMode(300, 300), "Snake Game");
-  window.setFramerateLimit(30);
+  auto window =
+      std::make_shared<sf::RenderWindow>(sf::VideoMode(300, 300), "Snake Game");
+  window->setFramerateLimit(30);
   tools::Drawer drawer(window);
 
   std::pair<uint16_t, uint16_t> tileSizes;
-  auto tiles =
-      createTiles(*game.getBoardPtr(), window.getSize(), textureMap, tileSizes);
+  auto tiles = createTiles(*game.getBoardPtr(), window->getSize(), textureMap,
+                           tileSizes);
 
   std::vector<sf::RectangleShape> snakeBlocks;
   snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
@@ -359,20 +359,20 @@ int main() {
   std::jthread gameThread(mainGameThread, std::ref(game), std::ref(snakeBlocks),
                           std::ref(candyBlocks), std::ref(tileSizes),
                           std::ref(mutexes), std::ref(textureMap));
-  while (window.isOpen()) {
+  while (window->isOpen()) {
     sf::Event event;
-    while (window.pollEvent(event)) {
+    while (window->pollEvent(event)) {
       if (event.type == sf::Event::Closed)
-        window.close();
+        window->close();
 
       if (event.type == sf::Event::KeyPressed) {
         handleKey(event.key.code, game, gameThread, mutexes.directionMutex);
       }
     }
-    window.clear();
+    window->clear();
     drawer.drawTiles(tiles);
     drawer.drawBlocks(mutexes.snakeBlockMutex, snakeBlocks);
     drawer.drawBlocks(mutexes.candyBlocksMutex, candyBlocks);
-    window.display();
+    window->display();
   }
 }

@@ -8,13 +8,14 @@
 namespace tools {
 
 class Drawer {
-  std::unique_ptr<sf::RenderWindow> window;
+  std::shared_ptr<sf::RenderWindow> window;
 
 public:
-  explicit Drawer(sf::RenderWindow &iWindow);
-  void drawTiles(const std::vector<std::vector<sf::RectangleShape>> &iTiles);
+  explicit Drawer(std::shared_ptr<sf::RenderWindow> iWindow);
+  void
+  drawTiles(const std::vector<std::vector<sf::RectangleShape>> &iTiles) const;
   void drawBlocks(std::mutex &iMutex,
-                  const std::vector<sf::RectangleShape> &iBlocks);
+                  const std::vector<sf::RectangleShape> &iBlocks) const;
 };
 } // namespace tools
 #endif

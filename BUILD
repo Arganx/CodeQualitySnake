@@ -190,6 +190,23 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "drawer_test",
+    srcs = ["tools/tests/drawer_test.cpp"],
+    copts = CPP_FLAGS_DEBUG,
+    env = {"DISPLAY": ":0"},
+    linkopts = [
+        "-lsfml-graphics",
+        "-lsfml-window",
+        "-lsfml-system",
+    ],
+    tags = ["local"],
+    deps = [
+        ":drawer",
+        "@googletest//:gtest_main",
+    ],
+)
+
 cc_binary(
     name = "graphicalSnake",
     srcs = [

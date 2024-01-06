@@ -113,6 +113,21 @@ target_link_libraries(
 gtest_discover_tests(visualiser_test)
 
 add_executable(
+    drawer_test
+    tools/tests/drawer_test.cpp
+    tools/src/drawer.cpp
+    ${SOURCES}
+)
+
+target_link_libraries(
+    drawer_test
+    GTest::gtest_main
+    sfml-graphics sfml-window sfml-system
+)
+
+gtest_discover_tests(drawer_test)
+
+add_executable(
     snake_game
     main.cpp
     tools/src/visualiser.cpp
