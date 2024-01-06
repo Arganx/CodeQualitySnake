@@ -18,31 +18,31 @@ enable_testing()
 
 add_executable(
     limited_test
-    test/board_position_test.cpp
+    tests/limited_uint8_8_test.cpp
     ${SOURCES}
 )
 
 add_executable(
     board_position_test
-    test/board_position_test.cpp
+    tests/board_position_test.cpp
     ${SOURCES}
 )
 
 add_executable(
     board_test
-    test/board_test.cpp
+    tests/board_test.cpp
     ${SOURCES}
 )
 
 add_executable(
     game_test
-    test/game_test.cpp
+    tests/game_test.cpp
     ${SOURCES}
 )
 
 add_executable(
     snake_test
-    test/snake_test.cpp
+    tests/snake_test.cpp
     ${SOURCES}
 )
 

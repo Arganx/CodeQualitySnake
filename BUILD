@@ -106,7 +106,7 @@ cc_library(
 
 cc_test(
     name = "limited_test",
-    srcs = ["test/limited_uint8_8_test.cpp"],
+    srcs = ["tests/limited_uint8_8_test.cpp"],
     copts = CPP_FLAGS_DEBUG,
     deps = [
         ":limited",
@@ -116,7 +116,7 @@ cc_test(
 
 cc_test(
     name = "board_position_test",
-    srcs = ["test/board_position_test.cpp"],
+    srcs = ["tests/board_position_test.cpp"],
     copts = CPP_FLAGS_DEBUG,
     deps = [
         ":board_position",
@@ -127,7 +127,7 @@ cc_test(
 cc_test(
     name = "board_test",
     srcs = [
-        "test/board_test.cpp",
+        "tests/board_test.cpp",
     ],
     copts = CPP_FLAGS_DEBUG,
     deps = [
@@ -139,7 +139,7 @@ cc_test(
 cc_test(
     name = "snake_test",
     srcs = [
-        "test/snake_test.cpp",
+        "tests/snake_test.cpp",
     ],
     copts = CPP_FLAGS_DEBUG,
     deps = [
@@ -151,7 +151,7 @@ cc_test(
 cc_test(
     name = "game_test",
     srcs = [
-        "test/game_test.cpp",
+        "tests/game_test.cpp",
     ],
     copts = CPP_FLAGS_DEBUG,
     defines = ["TESTING"],
@@ -214,7 +214,7 @@ cc_binary(
         "tools/inc/mutexes.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
-    data = ["Textures"],
+    data = ["textures"],
     linkopts = [
         "-lsfml-graphics",
         "-lsfml-window",

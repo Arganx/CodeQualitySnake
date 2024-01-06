@@ -22,7 +22,7 @@
 #include <thread>
 #include <utility>
 
-const std::string texturePath = "Textures";
+const std::string texturePath = "textures";
 
 void updateBlocksPositions(std::mutex &snakeBlockMutex,
                            std::vector<sf::RectangleShape> &snakeBlocks,

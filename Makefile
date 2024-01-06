@@ -12,7 +12,7 @@ GTEST_DIR = ../googletest/googletest
 GMOCK_DIR = ../googletest/googlemock
 
 # Where to find user code.
-USER_DIR = ../test
+USER_DIR = ../tests
 
 # Where to find tools code
 TOOLS_DIR = ../tools
