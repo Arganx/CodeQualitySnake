@@ -19,6 +19,8 @@ TOOLS_DIR = ../tools
 TOOLS_TESTS = $(TOOLS_DIR)/tests
 TOOLS_INC = $(TOOLS_DIR)/inc
 TOOLS_SRC = $(TOOLS_DIR)/src
+CONTROLLERS_INC = $(TOOLS_DIR)/SFML-tools/inc
+CONTROLLERS_SRC =$(TOOLS_DIR)/SFML-tools/src
 
 # Flags passed to the preprocessor.
 # Set Google Test and Google Mock's header directories as system
@@ -128,7 +130,10 @@ SFML_INC = /home/argan/libs/SFML-2.6.1/include
 SFML_LIB = /home/argan/libs/SFML-2.6.1/lib
 
 main: ../main.cpp
-	$(compiler) $(flags) -I$(INC_DIR) -I$(SFML_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* -o main -L$(SFML_LIB) -lsfml-graphics -lsfml-window -lsfml-system
+	$(compiler) $(flags) -I$(INC_DIR) -I$(CONTROLLERS_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* $(CONTROLLERS_SRC)/* -o main -lsfml-graphics -lsfml-window -lsfml-system
 
 ALL = main tests
 all : $(ALL)
+
+menu: ../menu_example.cpp
+	g++ $(flags) -I../tools/inc/* -I../tools/SFML-tools/inc/* ../menu_example.cpp ../tools/SFML-tools/src/menu.cpp ../tools/src/screen_selector.cpp -o menu -lsfml-graphics -lsfml-window -lsfml-system

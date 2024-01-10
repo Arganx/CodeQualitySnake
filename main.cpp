@@ -4,11 +4,12 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Window/Event.hpp"
 #include "SFML/Window/Keyboard.hpp"
-#include "inc/board.hpp"
 #include "inc/direction.hpp"
 #include "inc/game.hpp"
+#include "tools/SFML-tools/inc/new_game_controller.hpp"
 #include "tools/inc/drawer.hpp"
 #include "tools/inc/mutexes.hpp"
+#include "tools/inc/screen_selector.hpp"
 #include "tools/inc/texture_loader.hpp"
 #include "tools/inc/visualiser.hpp"
 #include <SFML/Graphics.hpp>
@@ -294,71 +295,36 @@ void handleKey(const sf::Keyboard::Key &keyCode, Game::Game &game,
   }
 }
 
-std::vector<std::vector<sf::RectangleShape>>
-createTiles(const Game::Board &iBoard, const sf::Vector2u &iResolution,
-            std::map<std::string, sf::Texture, std::less<>> &iTextureMap,
-            std::pair<uint16_t, uint16_t> &oTileSizes) {
-  oTileSizes.first = static_cast<uint16_t>(iResolution.x / iBoard.getWidth());
-  oTileSizes.second = static_cast<uint16_t>(iResolution.y / iBoard.getHeight());
-  std::vector<std::vector<sf::RectangleShape>> sfmlTiles;
-  sfmlTiles.reserve(iBoard.getHeight());
-  for (uint8_t column{0U}; column < iBoard.getHeight(); ++column) {
-    sfmlTiles.emplace_back();
-    sfmlTiles[column].reserve(iBoard.getWidth());
-    for (uint8_t row{0U}; row < iBoard.getWidth(); ++row) {
-      sfmlTiles[column].emplace_back(
-          sf::Vector2f(oTileSizes.first, oTileSizes.second));
-      sfmlTiles[column][row].setPosition(
-          static_cast<float>(row * oTileSizes.first),
-          static_cast<float>(column * oTileSizes.second));
-      if (!iTextureMap.contains("Light_Green") ||
-          !iTextureMap.contains("Dark_Green")) {
-        throw std::invalid_argument(
-            "Some textures not found"); // TODO create specific exception
-      }
-      if ((column + row) % 2U == 0) {
-        sfmlTiles[column][row].setTexture(&iTextureMap["Light_Green"]);
-      } else {
-        sfmlTiles[column][row].setTexture(&iTextureMap["Dark_Green"]);
-      }
-    }
-  }
-  return sfmlTiles;
-}
-
 int main() {
-  Game::Game game;
-  game.initGame(5, 4); // From here the boardPtr is initialized
-
-  std::map<std::string, sf::Texture, std::less<>> textureMap;
+  auto textureMap =
+      std::make_shared<std::map<std::string, sf::Texture, std::less<>>>();
   tools::TextureLoader textureLoader(texturePath);
-  textureLoader.loadTextures(textureMap);
+  textureLoader.loadTextures(*textureMap);
+
   auto window =
       std::make_shared<sf::RenderWindow>(sf::VideoMode(300, 300), "Snake Game");
   window->setFramerateLimit(30);
+
+  tools::ScreenSelector selector;
+
   tools::Drawer drawer(window);
+  controllers::NewGameController controller{5, 4, window, textureMap};
 
-  std::pair<uint16_t, uint16_t> tileSizes;
-  auto tiles = createTiles(*game.getBoardPtr(), window->getSize(), textureMap,
-                           tileSizes);
-
-  std::vector<sf::RectangleShape> snakeBlocks;
-  snakeBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
-  std::vector<sf::RectangleShape> candyBlocks;
-  candyBlocks.emplace_back(sf::Vector2f(tileSizes.first, tileSizes.second));
-  candyBlocks.back().setTexture(&textureMap["apple"]);
-
-  tools::Mutexes mutexes;
-
-  updateBlocksPositions(mutexes.snakeBlockMutex, snakeBlocks, game, tileSizes);
-  setSnakeTextures(snakeBlocks, textureMap, game, game.getDirection());
-  updateCandy(mutexes.candyBlocksMutex, candyBlocks, game, tileSizes,
-              textureMap);
+  updateBlocksPositions(controller.getMutexes().snakeBlockMutex,
+                        controller.getSnakeBlocks(), controller.getGame(),
+                        controller.getTileSize());
+  setSnakeTextures(controller.getSnakeBlocks(), *textureMap,
+                   controller.getGame(), controller.getGame().getDirection());
+  updateCandy(controller.getMutexes().candyBlocksMutex,
+              controller.getCandyBlocks(), controller.getGame(),
+              controller.getTileSize(), *textureMap);
 
   std::stop_source stop_source;
-  std::jthread gameThread(mainGameThread, std::ref(game), std::ref(snakeBlocks),
-                          std::ref(candyBlocks), std::ref(tileSizes),
-                          std::ref(mutexes), std::ref(textureMap));
+  std::jthread gameThread(
+      mainGameThread, std::ref(controller.getGame()),
+      std::ref(controller.getSnakeBlocks()),
+      std::ref(controller.getCandyBlocks()), controller.getTileSize(),
+      std::ref(controller.getMutexes()), std::ref(*textureMap));
   while (window->isOpen()) {
     sf::Event event;
     while (window->pollEvent(event)) {
@@ -366,13 +332,16 @@ int main() {
         window->close();
 
       if (event.type == sf::Event::KeyPressed) {
-        handleKey(event.key.code, game, gameThread, mutexes.directionMutex);
+        handleKey(event.key.code, controller.getGame(), gameThread,
+                  controller.getMutexes().directionMutex);
       }
     }
     window->clear();
-    drawer.drawTiles(tiles);
-    drawer.drawBlocks(mutexes.snakeBlockMutex, snakeBlocks);
-    drawer.drawBlocks(mutexes.candyBlocksMutex, candyBlocks);
+    drawer.drawTiles(controller.getTiles());
+    drawer.drawBlocks(controller.getMutexes().snakeBlockMutex,
+                      controller.getSnakeBlocks());
+    drawer.drawBlocks(controller.getMutexes().candyBlocksMutex,
+                      controller.getCandyBlocks());
     window->display();
   }
 }
