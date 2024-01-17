@@ -342,17 +342,13 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
 
   if (keyCode == sf::Keyboard::Left) {
     game.setDirection(Direction::Direction::Left);
-  }
-  if (keyCode == sf::Keyboard::Right) {
+  } else if (keyCode == sf::Keyboard::Right) {
     game.setDirection(Direction::Direction::Right);
-  }
-  if (keyCode == sf::Keyboard::Up) {
+  } else if (keyCode == sf::Keyboard::Up) {
     game.setDirection(Direction::Direction::Up);
-  }
-  if (keyCode == sf::Keyboard::Down) {
+  } else if (keyCode == sf::Keyboard::Down) {
     game.setDirection(Direction::Direction::Down);
-  }
-  if (keyCode == sf::Keyboard::Escape) {
+  } else if (keyCode == sf::Keyboard::Escape) {
     stopSrc.request_stop();
     game.showStatus();
   }
