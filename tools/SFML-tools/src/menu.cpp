@@ -165,6 +165,7 @@ void Menu::handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
           buttonsSprites[0].getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         ioSelector.setSelectedOption(SelectorOptions::Game);
+        ioSelector.setFirstPass(true);
       } else if (pressedButton == Button::Exit &&
                  buttonsSprites[3].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
@@ -175,6 +176,7 @@ void Menu::handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         ioSelector.setSelectedOption(SelectorOptions::Options);
+        ioSelector.setFirstPass(true);
       }
       pressedButton = Button::None;
     }

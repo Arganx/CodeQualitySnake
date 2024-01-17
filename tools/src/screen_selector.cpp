@@ -17,4 +17,8 @@ void ScreenSelector::setSelectedOption(SelectorOptions iOption) {
     selectedOption = MainMenu;
   }
 }
+
+bool ScreenSelector::isFirstPass() const { return firstPass; }
+
+void ScreenSelector::setFirstPass(bool iPassValue) { firstPass = iPassValue; }
 } // namespace tools

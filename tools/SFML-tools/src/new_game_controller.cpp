@@ -1,5 +1,6 @@
 #include "../inc/new_game_controller.hpp"
 #include "../../inc/exceptions.hpp"
+#include "../../inc/screen_selector.hpp"
 #include "../../inc/visualiser.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
@@ -27,11 +28,13 @@ NewGameController::NewGameController(
   updateBlocksPositions();
   setSnakeTextures(game.getDirection());
   updateCandy();
-
-  std::stop_source stop_source;
-  gameThread = std::make_unique<std::jthread>(
-      &NewGameController::mainGameThread, this, stopSrc.get_token());
 }
+void NewGameController::startGame(tools::ScreenSelector &iSelector) {
+  gameThread =
+      std::make_unique<std::jthread>(&NewGameController::mainGameThread, this,
+                                     stopSrc.get_token(), std::ref(iSelector));
+}
+
 Game::Game &NewGameController::getGame() { return game; }
 
 const std::vector<std::vector<sf::RectangleShape>> &
@@ -91,7 +94,8 @@ std::vector<sf::RectangleShape> &NewGameController::getSnakeBlocks() {
   return snakeBlocks;
 }
 
-void NewGameController::mainGameThread(std::stop_token stopToken) {
+void NewGameController::mainGameThread(std::stop_token stopToken,
+                                       tools::ScreenSelector &iSelector) {
   while (true) {
     if (stopToken.stop_requested()) {
       return;
@@ -99,6 +103,9 @@ void NewGameController::mainGameThread(std::stop_token stopToken) {
     std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
     Direction::Direction stepDirection;
     if (gameStep(stepDirection)) {
+      iSelector.setFirstPass(true);
+      iSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
+      game.showStatus();
       return;
     }
     while (game.getSnake().getSnakeSegments().size() > snakeBlocks.size()) {
@@ -354,8 +361,10 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
 void NewGameController::call() {
   sf::Event event;
   while (windowPtr->pollEvent(event)) {
-    if (event.type == sf::Event::Closed)
+    if (event.type == sf::Event::Closed) {
+      stopSrc.request_stop();
       windowPtr->close();
+    }
 
     if (event.type == sf::Event::KeyPressed) {
       handleKey(event.key.code);

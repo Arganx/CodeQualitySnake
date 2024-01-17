@@ -134,6 +134,3 @@ main: ../main.cpp
 
 ALL = main tests
 all : $(ALL)
-
-menu: ../menu_example.cpp
-	g++ $(flags) -I../tools/inc/* -I../tools/SFML-tools/inc/* ../menu_example.cpp ../tools/SFML-tools/src/menu.cpp ../tools/src/screen_selector.cpp -o menu -lsfml-graphics -lsfml-window -lsfml-system

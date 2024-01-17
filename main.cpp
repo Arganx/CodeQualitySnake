@@ -1,7 +1,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Texture.hpp"
+#include "tools/SFML-tools/inc/menu.hpp"
 #include "tools/SFML-tools/inc/new_game_controller.hpp"
-#include "tools/inc/drawer.hpp"
 #include "tools/inc/screen_selector.hpp"
 #include "tools/inc/texture_loader.hpp"
 #include <SFML/Graphics.hpp>
@@ -22,11 +22,27 @@ int main() {
   window->setFramerateLimit(30);
 
   tools::ScreenSelector selector;
-
-  tools::Drawer drawer(window);
+  std::vector<std::string> labels{"New game", "High scores", "Options", "Exit"};
+  tools::Menu menu{labels, "./textures/menu_button.png",
+                   "./images/menu_background.png", "./fonts/SnakeChan.ttf",
+                   window->getSize()};
   controllers::NewGameController controller{5, 4, window, textureMap};
 
   while (window->isOpen()) {
-    controller.call();
+    switch (selector.getSelectedOption()) {
+    default:
+      menu.call(*window, selector);
+      break;
+    case tools::SelectorOptions::Options:
+      window->close();
+      break;
+    case tools::SelectorOptions::Game:
+      if (selector.isFirstPass()) {
+        controller.startGame(selector);
+        selector.setFirstPass(false);
+      }
+      controller.call();
+      break;
+    }
   }
 }

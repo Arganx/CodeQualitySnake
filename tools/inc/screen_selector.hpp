@@ -6,10 +6,13 @@ namespace tools {
 class ScreenSelector {
 private:
   SelectorOptions selectedOption{SelectorOptions::MainMenu};
+  bool firstPass{false};
 
 public:
   SelectorOptions getSelectedOption() const;
   void setSelectedOption(SelectorOptions iOption);
+  bool isFirstPass() const;
+  void setFirstPass(bool iPassValue);
 };
 } // namespace tools
 

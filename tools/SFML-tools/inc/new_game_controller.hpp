@@ -3,6 +3,7 @@
 
 #include "../../inc/drawer.hpp"
 #include "../../inc/mutexes.hpp"
+#include "../../inc/screen_selector.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/Window/Keyboard.hpp"
@@ -32,7 +33,8 @@ private:
   void setTailTexture();
   void setSegmentsTextures();
   bool gameStep(Direction::Direction &oStepDirection);
-  void mainGameThread(std::stop_token stopToken);
+  void mainGameThread(std::stop_token stopToken,
+                      tools::ScreenSelector &iSelector);
   void updateBlocksPositions();
   void updateCandy();
   void setSnakeTextures(const Direction::Direction stepDirection);
@@ -52,6 +54,7 @@ public:
   tools::Mutexes &getMutexes();
   void handleKey(const sf::Keyboard::Key &keyCode);
   void call();
+  void startGame(tools::ScreenSelector &iSelector);
 };
 } // namespace controllers
 #endif
