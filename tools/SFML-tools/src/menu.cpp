@@ -35,7 +35,7 @@ void Menu::createButton(const sf::Vector2u &iWindowSize,
   resizeButton(buttonsSprites.back(), iWindowSize, iXButtonPosition,
                ioYButtonPosition, iButtonYSize);
 }
-
+// TODO this should be done in main
 void Menu::loadMenuAssets(const std::string &iButtonTexturePath,
                           const std::string &iBackgroundTexturePath,
                           const std::string &iButtonFontPath) {

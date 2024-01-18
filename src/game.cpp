@@ -25,6 +25,9 @@ void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
                       static_cast<uint8_t>(iHeight - 1U)}}});
   drawFullSnake();
   drawSnack();
+  gameEnded = false;
+  direction = Direction::Direction::Right;
+  score = 0;
 }
 
 std::unique_ptr<Board> &Game::getBoardPtr() { return boardPtr; };

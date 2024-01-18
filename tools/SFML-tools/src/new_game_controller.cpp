@@ -17,17 +17,7 @@ NewGameController::NewGameController(
     std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
         iTextureMap)
     : windowPtr{iWindowPtr}, drawer{iWindowPtr}, textureMapPtr{iTextureMap} {
-  game.initGame(iGameWidth, iGameHeight);
-  createTiles();
-  snakeBlocks.emplace_back(
-      sf::Vector2f(getTileSize().first, getTileSize().second));
-  candyBlocks.emplace_back(
-      sf::Vector2f(getTileSize().first, getTileSize().second));
-  candyBlocks.back().setTexture(&(*textureMapPtr)["apple"]);
-
-  updateBlocksPositions();
-  setSnakeTextures(game.getDirection());
-  updateCandy();
+  reset(iGameWidth, iGameHeight);
 }
 void NewGameController::startGame(tools::ScreenSelector &iSelector) {
   gameThread =
@@ -371,6 +361,23 @@ void NewGameController::call() {
   drawer.drawBlocks(mutexes.snakeBlockMutex, snakeBlocks);
   drawer.drawBlocks(mutexes.candyBlocksMutex, candyBlocks);
   windowPtr->display();
+}
+
+void NewGameController::reset(uint8_t iGameWidth, uint8_t iGameHeight) {
+  boardTiles.clear();
+  snakeBlocks.clear();
+  candyBlocks.clear();
+  game.initGame(iGameWidth, iGameHeight);
+  createTiles();
+  snakeBlocks.emplace_back(
+      sf::Vector2f(getTileSize().first, getTileSize().second));
+  candyBlocks.emplace_back(
+      sf::Vector2f(getTileSize().first, getTileSize().second));
+  candyBlocks.back().setTexture(&(*textureMapPtr)["apple"]);
+
+  updateBlocksPositions();
+  setSnakeTextures(game.getDirection());
+  updateCandy();
 }
 
 } // namespace controllers

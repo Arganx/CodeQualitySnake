@@ -39,6 +39,7 @@ private:
   void updateCandy();
   void setSnakeTextures(const Direction::Direction stepDirection);
   std::pair<uint16_t, uint16_t> getTileSize() const;
+  void handleKey(const sf::Keyboard::Key &keyCode);
 
 public:
   NewGameController(
@@ -52,9 +53,9 @@ public:
   std::vector<sf::RectangleShape> &getSnakeBlocks();
   std::vector<sf::RectangleShape> &getCandyBlocks();
   tools::Mutexes &getMutexes();
-  void handleKey(const sf::Keyboard::Key &keyCode);
   void call();
   void startGame(tools::ScreenSelector &iSelector);
+  void reset(uint8_t iGameWidth, uint8_t iGameHeight);
 };
 } // namespace controllers
 #endif

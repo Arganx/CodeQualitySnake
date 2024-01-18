@@ -36,7 +36,6 @@ private:
   void resizeText(sf::Text &ioButtonText, const sf::Sprite &iButton) const;
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                    ScreenSelector &ioSelector);
-  void resize(const sf::Vector2u &iNewWindowSize);
 
 public:
   Menu(const std::vector<std::string> &iButtonLabels,
@@ -44,6 +43,7 @@ public:
        const std::string &iBackgroundTexturePath,
        const std::string &iButtonFontPath, const sf::Vector2u &iWindowSize);
   void call(sf::RenderWindow &iWindow, ScreenSelector &ioSelector);
+  void resize(const sf::Vector2u &iNewWindowSize);
 };
 } // namespace tools
 #endif

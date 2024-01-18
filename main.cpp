@@ -38,6 +38,7 @@ int main() {
       break;
     case tools::SelectorOptions::Game:
       if (selector.isFirstPass()) {
+        controller.reset(5, 4);
         controller.startGame(selector);
         selector.setFirstPass(false);
       }
