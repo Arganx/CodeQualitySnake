@@ -24,7 +24,7 @@ int main() {
   tools::ScreenSelector selector;
   std::vector<std::string> labels{"New game", "High scores", "Options", "Exit"};
   tools::Menu menu{labels, "./textures/menu_button.png",
-                   "./images/menu_background.png", "./fonts/SnakeChan.ttf",
+                   "./textures/menu_background.png", "./fonts/SnakeChan.ttf",
                    window->getSize()};
   controllers::NewGameController controller{5, 4, window, textureMap};
 

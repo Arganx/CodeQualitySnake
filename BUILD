@@ -96,6 +96,44 @@ cc_library(
 )
 
 cc_library(
+    name = "screen_selector",
+    srcs = ["tools/src/screen_selector.cpp"],
+    hdrs = [
+        "tools/inc/screen_selector.hpp",
+        "tools/inc/selector_options.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
+cc_library(
+    name = "menu_controller",
+    srcs = ["tools/SFML-tools/src/menu.cpp"],
+    hdrs = [
+        "tools/SFML-tools/inc/menu.hpp",
+        "tools/inc/exceptions.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [":screen_selector"],
+)
+
+cc_library(
+    name = "new_game_controller",
+    srcs = ["tools/SFML-tools/src/new_game_controller.cpp"],
+    hdrs = [
+        "tools/SFML-tools/inc/new_game_controller.hpp",
+        "tools/inc/exceptions.hpp",
+        "tools/inc/mutexes.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [
+        ":drawer",
+        ":game",
+        ":screen_selector",
+        ":visualiser",
+    ],
+)
+
+cc_library(
     name = "drawer",
     srcs = ["tools/src/drawer.cpp"],
     hdrs = [
@@ -214,7 +252,10 @@ cc_binary(
         "tools/inc/mutexes.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
-    data = ["textures"],
+    data = [
+        "fonts",
+        "textures",
+    ],
     linkopts = [
         "-lsfml-graphics",
         "-lsfml-window",
@@ -223,6 +264,8 @@ cc_binary(
     deps = [
         ":drawer",
         ":game",
+        ":menu_controller",
+        ":new_game_controller",
         ":texture_loader",
         ":visualiser",
     ],

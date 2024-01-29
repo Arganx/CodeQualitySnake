@@ -1,13 +1,13 @@
 #ifndef NEW_GAME_CONTROLLER_GUARD
 #define NEW_GAME_CONTROLLER_GUARD
 
+#include "../../../inc/game.hpp"
 #include "../../inc/drawer.hpp"
 #include "../../inc/mutexes.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/Window/Keyboard.hpp"
-#include "game.hpp"
 #include <cstdint>
 #include <map>
 #include <memory>

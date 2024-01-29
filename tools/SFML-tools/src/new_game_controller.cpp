@@ -1,10 +1,10 @@
 #include "../inc/new_game_controller.hpp"
+#include "../../../inc/exceptions.hpp"
 #include "../../inc/exceptions.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "../../inc/visualiser.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include "exceptions.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
