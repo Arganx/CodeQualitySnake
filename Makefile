@@ -19,8 +19,8 @@ TOOLS_DIR = ../tools
 TOOLS_TESTS = $(TOOLS_DIR)/tests
 TOOLS_INC = $(TOOLS_DIR)/inc
 TOOLS_SRC = $(TOOLS_DIR)/src
-CONTROLLERS_INC = $(TOOLS_DIR)/SFML-tools/inc
-CONTROLLERS_SRC =$(TOOLS_DIR)/SFML-tools/src
+CONTROLLERS_INC = $(TOOLS_DIR)/SFML-controllers/inc
+CONTROLLERS_SRC =$(TOOLS_DIR)/SFML-controllers/src
 
 # Flags passed to the preprocessor.
 # Set Google Test and Google Mock's header directories as system

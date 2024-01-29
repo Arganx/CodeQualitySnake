@@ -1,7 +1,7 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include "tools/SFML-tools/inc/menu.hpp"
-#include "tools/SFML-tools/inc/new_game_controller.hpp"
+#include "tools/SFML-controllers/inc/menu_controller.hpp"
+#include "tools/SFML-controllers/inc/new_game_controller.hpp"
 #include "tools/inc/screen_selector.hpp"
 #include "tools/inc/texture_loader.hpp"
 #include <SFML/Graphics.hpp>
@@ -23,9 +23,9 @@ int main() {
 
   tools::ScreenSelector selector;
   std::vector<std::string> labels{"New game", "High scores", "Options", "Exit"};
-  tools::Menu menu{labels, "./textures/menu_button.png",
-                   "./textures/menu_background.png", "./fonts/SnakeChan.ttf",
-                   window->getSize()};
+  tools::MenuController menu{labels, "./textures/menu_button.png",
+                             "./textures/menu_background.png",
+                             "./fonts/SnakeChan.ttf", window->getSize()};
   controllers::NewGameController controller{5, 4, window, textureMap};
 
   while (window->isOpen()) {

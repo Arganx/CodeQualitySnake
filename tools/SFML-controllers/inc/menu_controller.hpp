@@ -11,7 +11,7 @@
 #include <vector>
 namespace tools {
 enum class Button { New_Game, High_Scores, Options, Exit, None };
-class Menu {
+class MenuController {
 private:
   std::vector<sf::Sprite> buttonsSprites;
   std::vector<sf::Text> buttonTexts;
@@ -38,10 +38,11 @@ private:
                    ScreenSelector &ioSelector);
 
 public:
-  Menu(const std::vector<std::string> &iButtonLabels,
-       const std::string &iButtonTexturePath,
-       const std::string &iBackgroundTexturePath,
-       const std::string &iButtonFontPath, const sf::Vector2u &iWindowSize);
+  MenuController(const std::vector<std::string> &iButtonLabels,
+                 const std::string &iButtonTexturePath,
+                 const std::string &iBackgroundTexturePath,
+                 const std::string &iButtonFontPath,
+                 const sf::Vector2u &iWindowSize);
   void call(sf::RenderWindow &iWindow, ScreenSelector &ioSelector);
   void resize(const sf::Vector2u &iNewWindowSize);
 };

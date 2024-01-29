@@ -107,9 +107,9 @@ cc_library(
 
 cc_library(
     name = "menu_controller",
-    srcs = ["tools/SFML-tools/src/menu.cpp"],
+    srcs = ["tools/SFML-controllers/src/menu_controller.cpp"],
     hdrs = [
-        "tools/SFML-tools/inc/menu.hpp",
+        "tools/SFML-controllers/inc/menu_controller.hpp",
         "tools/inc/exceptions.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
@@ -118,9 +118,9 @@ cc_library(
 
 cc_library(
     name = "new_game_controller",
-    srcs = ["tools/SFML-tools/src/new_game_controller.cpp"],
+    srcs = ["tools/SFML-controllers/src/new_game_controller.cpp"],
     hdrs = [
-        "tools/SFML-tools/inc/new_game_controller.hpp",
+        "tools/SFML-controllers/inc/new_game_controller.hpp",
         "tools/inc/exceptions.hpp",
         "tools/inc/mutexes.hpp",
     ],
