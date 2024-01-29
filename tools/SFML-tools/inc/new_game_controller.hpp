@@ -53,9 +53,10 @@ public:
   std::vector<sf::RectangleShape> &getSnakeBlocks();
   std::vector<sf::RectangleShape> &getCandyBlocks();
   tools::Mutexes &getMutexes();
-  void call();
+  void call(sf::RenderWindow &iWindow);
   void startGame(tools::ScreenSelector &iSelector);
   void reset(uint8_t iGameWidth, uint8_t iGameHeight);
+  void resize(const sf::Vector2u &iNewWindowSize);
 };
 } // namespace controllers
 #endif

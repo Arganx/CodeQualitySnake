@@ -31,6 +31,10 @@ int main() {
   while (window->isOpen()) {
     switch (selector.getSelectedOption()) {
     default:
+      if (selector.isFirstPass()) {
+        menu.resize(window->getSize());
+        selector.setFirstPass(false);
+      }
       menu.call(*window, selector);
       break;
     case tools::SelectorOptions::Options:
@@ -40,9 +44,10 @@ int main() {
       if (selector.isFirstPass()) {
         controller.reset(5, 4);
         controller.startGame(selector);
+        controller.resize(window->getSize());
         selector.setFirstPass(false);
       }
-      controller.call();
+      controller.call(*window);
       break;
     }
   }

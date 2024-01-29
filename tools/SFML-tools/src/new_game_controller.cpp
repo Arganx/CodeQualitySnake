@@ -5,10 +5,13 @@
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
 #include "exceptions.hpp"
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
+#include <cstdint>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <thread>
 namespace controllers {
 NewGameController::NewGameController(
@@ -344,7 +347,44 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
   }
 }
 
-void NewGameController::call() {
+void NewGameController::resize(const sf::Vector2u &iNewWindowSize) {
+  // Resize board tiles
+  if (boardTiles.size() != game.getBoardPtr()->getHeight()) {
+    throw std::invalid_argument("Number of tiles in SFML, does not match the "
+                                "board height"); // TODO change to mismatch
+                                                 // exception
+  }
+  if (boardTiles[0].size() != game.getBoardPtr()->getWidth()) {
+    throw std::invalid_argument("Number of tiles in SFML, does not match the "
+                                "board width"); // TODO change to mismatch
+                                                // exception
+  }
+  auto newTileHeight = static_cast<float>(iNewWindowSize.y) /
+                       static_cast<float>(boardTiles.size());
+  auto newTileWidth = static_cast<float>(iNewWindowSize.x) /
+                      static_cast<float>(boardTiles[0].size());
+  for (uint8_t columnNumber{0U}; columnNumber < boardTiles.size();
+       ++columnNumber) {
+    for (uint8_t rowNumber{0U}; rowNumber < boardTiles[0].size(); ++rowNumber) {
+      boardTiles[columnNumber][rowNumber].setSize(
+          sf::Vector2f(newTileWidth, newTileHeight));
+      boardTiles[columnNumber][rowNumber].setPosition(
+          rowNumber * newTileWidth, columnNumber * newTileHeight);
+    }
+  }
+  // Resize snake blocks
+  for (auto &block : snakeBlocks) {
+    block.setSize(sf::Vector2f(newTileWidth, newTileHeight));
+  }
+  updateBlocksPositions();
+  // Resize candies
+  for (auto &candy : candyBlocks) {
+    candy.setSize(sf::Vector2f(newTileWidth, newTileHeight));
+  }
+  updateCandy();
+}
+
+void NewGameController::call(sf::RenderWindow &iWindow) {
   sf::Event event;
   while (windowPtr->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
@@ -354,6 +394,12 @@ void NewGameController::call() {
 
     if (event.type == sf::Event::KeyPressed) {
       handleKey(event.key.code);
+    }
+    if (event.type == sf::Event::Resized) {
+      sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width),
+                                static_cast<float>(event.size.height));
+      iWindow.setView(sf::View(visibleArea));
+      resize(iWindow.getSize());
     }
   }
   windowPtr->clear();
