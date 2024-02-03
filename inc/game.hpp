@@ -44,6 +44,8 @@ public:
    */
   void showStatus() const;
 
+  uint16_t getScore() const;
+
   /**
    *
    * Initializes the components of the Game class.

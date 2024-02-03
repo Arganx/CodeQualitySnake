@@ -16,6 +16,8 @@ namespace Game {
 
 void Game::showStatus() const { std::cout << "Score: " << score << "\n"; }
 
+uint16_t Game::getScore() const { return score; };
+
 void Game::initGame(uint8_t iWidth, uint8_t iHeight) {
   boardPtr = std::make_unique<Board>(iWidth, iHeight);
   snakePtr = std::make_unique<Snake>(Segment{BoardPosition{

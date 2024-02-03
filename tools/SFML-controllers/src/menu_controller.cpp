@@ -21,7 +21,7 @@ void calculateYButtonSizeRatio(const uint8_t iNumberOfButtons,
 }
 } // namespace
 
-namespace tools {
+namespace controllers {
 
 void MenuController::createButton(const sf::Vector2u &iWindowSize,
                                   const float iXButtonPosition,
@@ -41,13 +41,13 @@ void MenuController::loadMenuAssets(const std::string &iButtonTexturePath,
                                     const std::string &iBackgroundTexturePath,
                                     const std::string &iButtonFontPath) {
   if (!buttonTexture.loadFromFile(iButtonTexturePath)) {
-    throw TextureNotFoundException("Failed to load button texture");
+    throw tools::TextureNotFoundException("Failed to load button texture");
   }
   if (!backgroundTexture.loadFromFile(iBackgroundTexturePath)) {
-    throw TextureNotFoundException("Failed to load background texture");
+    throw tools::TextureNotFoundException("Failed to load background texture");
   }
   if (!buttonFont.loadFromFile(iButtonFontPath)) {
-    throw FontNotFoundException("Failed to load menu font");
+    throw tools::FontNotFoundException("Failed to load menu font");
   }
 }
 
@@ -136,7 +136,7 @@ void MenuController::resize(const sf::Vector2u &iNewWindowSize) {
 
 void MenuController::handleEvent(sf::RenderWindow &iWindow,
                                  const sf::Event &iEvent,
-                                 ScreenSelector &ioSelector) {
+                                 tools::ScreenSelector &ioSelector) {
   if (iEvent.type == sf::Event::Closed) {
     iWindow.close();
   } else if (iEvent.type == sf::Event::MouseButtonPressed) {
@@ -169,7 +169,7 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
       if (pressedButton == Button::New_Game &&
           buttonsSprites[0].getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-        ioSelector.setSelectedOption(SelectorOptions::Game);
+        ioSelector.setSelectedOption(tools::SelectorOptions::Game);
         ioSelector.setFirstPass(true);
       } else if (pressedButton == Button::Exit &&
                  buttonsSprites[3].getGlobalBounds().contains(
@@ -180,7 +180,7 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
                  buttonsSprites[2].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
-        ioSelector.setSelectedOption(SelectorOptions::Options);
+        ioSelector.setSelectedOption(tools::SelectorOptions::Options);
         ioSelector.setFirstPass(true);
       }
       pressedButton = Button::None;
@@ -194,7 +194,7 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
 }
 
 void MenuController::call(sf::RenderWindow &iWindow,
-                          ScreenSelector &ioSelector) {
+                          tools::ScreenSelector &ioSelector) {
   sf::Event event;
   while (iWindow.pollEvent(event)) {
     handleEvent(iWindow, event, ioSelector);
@@ -210,4 +210,4 @@ void MenuController::call(sf::RenderWindow &iWindow,
   iWindow.display();
 }
 
-} // namespace tools
+} // namespace controllers

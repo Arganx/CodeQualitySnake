@@ -8,8 +8,9 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <cstdint>
 #include <vector>
-namespace tools {
+namespace controllers {
 enum class Button { New_Game, High_Scores, Options, Exit, None };
 class MenuController {
 private:
@@ -35,7 +36,7 @@ private:
   void resizeBackground(const sf::Vector2u &iNewWindowSize);
   void resizeText(sf::Text &ioButtonText, const sf::Sprite &iButton) const;
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
-                   ScreenSelector &ioSelector);
+                   tools::ScreenSelector &ioSelector);
 
 public:
   MenuController(const std::vector<std::string> &iButtonLabels,
@@ -43,8 +44,8 @@ public:
                  const std::string &iBackgroundTexturePath,
                  const std::string &iButtonFontPath,
                  const sf::Vector2u &iWindowSize);
-  void call(sf::RenderWindow &iWindow, ScreenSelector &ioSelector);
+  void call(sf::RenderWindow &iWindow, tools::ScreenSelector &ioSelector);
   void resize(const sf::Vector2u &iNewWindowSize);
 };
-} // namespace tools
+} // namespace controllers
 #endif

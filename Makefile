@@ -129,6 +129,9 @@ tests: board_test game_test board_position_test snake_test limited_uint8_8_test 
 SFML_INC = /home/argan/libs/SFML-2.6.1/include
 SFML_LIB = /home/argan/libs/SFML-2.6.1/lib
 
+sqlite3.o: SQL-Lite/sqlite3.c
+	gcc -c SQL-Lite/sqlite3.c -o SQL-Lite/sqlite3.o
+
 main: ../main.cpp
 	$(compiler) $(flags) -I$(INC_DIR) -I$(CONTROLLERS_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* $(CONTROLLERS_SRC)/* -o main -lsfml-graphics -lsfml-window -lsfml-system
 

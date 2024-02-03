@@ -126,6 +126,7 @@ cc_library(
     ],
     copts = CPP_FLAGS_DEBUG,
     deps = [
+        ":database_manager",
         ":drawer",
         ":game",
         ":screen_selector",
@@ -140,6 +141,28 @@ cc_library(
         "tools/inc/drawer.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
+)
+
+cc_library(
+    name = "database_manager",
+    srcs = ["tools/src/database_manager.cpp"],
+    hdrs = [
+        "tools/inc/database_manager.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG + [
+        "-ldl",
+        "-lpthread",
+    ],
+    deps = [
+        ":sqlite3",
+    ],
+)
+
+cc_library(
+    name = "sqlite3",
+    srcs = ["SQL-Lite/sqlite3.c"],
+    hdrs = ["SQL-Lite/sqlite3.h"],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
@@ -262,6 +285,7 @@ cc_binary(
         "-lsfml-system",
     ],
     deps = [
+        ":database_manager",
         ":drawer",
         ":game",
         ":menu_controller",

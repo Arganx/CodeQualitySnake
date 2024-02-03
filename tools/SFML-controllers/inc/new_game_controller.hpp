@@ -2,6 +2,7 @@
 #define NEW_GAME_CONTROLLER_GUARD
 
 #include "../../../inc/game.hpp"
+#include "../../inc/database_manager.hpp"
 #include "../../inc/drawer.hpp"
 #include "../../inc/mutexes.hpp"
 #include "../../inc/screen_selector.hpp"
@@ -34,7 +35,8 @@ private:
   void setSegmentsTextures();
   bool gameStep(Direction::Direction &oStepDirection);
   void mainGameThread(std::stop_token stopToken,
-                      tools::ScreenSelector &iSelector);
+                      tools::ScreenSelector &iSelector,
+                      tools::DatabaseManager &iDatabaseManager);
   void updateBlocksPositions();
   void updateCandy();
   void setSnakeTextures(const Direction::Direction stepDirection);
@@ -54,7 +56,8 @@ public:
   std::vector<sf::RectangleShape> &getCandyBlocks();
   tools::Mutexes &getMutexes();
   void call(sf::RenderWindow &iWindow);
-  void startGame(tools::ScreenSelector &iSelector);
+  void startGame(tools::ScreenSelector &iSelector,
+                 tools::DatabaseManager &iDatabaseManager);
   void reset(uint8_t iGameWidth, uint8_t iGameHeight);
   void resize(const sf::Vector2u &iNewWindowSize);
 };

@@ -1,5 +1,6 @@
 #include "../inc/new_game_controller.hpp"
 #include "../../../inc/exceptions.hpp"
+#include "../../inc/database_manager.hpp"
 #include "../../inc/exceptions.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "../../inc/visualiser.hpp"
@@ -22,10 +23,11 @@ NewGameController::NewGameController(
     : windowPtr{iWindowPtr}, drawer{iWindowPtr}, textureMapPtr{iTextureMap} {
   reset(iGameWidth, iGameHeight);
 }
-void NewGameController::startGame(tools::ScreenSelector &iSelector) {
-  gameThread =
-      std::make_unique<std::jthread>(&NewGameController::mainGameThread, this,
-                                     stopSrc.get_token(), std::ref(iSelector));
+void NewGameController::startGame(tools::ScreenSelector &iSelector,
+                                  tools::DatabaseManager &iDatabaseManager) {
+  gameThread = std::make_unique<std::jthread>(
+      &NewGameController::mainGameThread, this, stopSrc.get_token(),
+      std::ref(iSelector), std::ref(iDatabaseManager));
 }
 
 Game::Game &NewGameController::getGame() { return game; }
@@ -87,8 +89,9 @@ std::vector<sf::RectangleShape> &NewGameController::getSnakeBlocks() {
   return snakeBlocks;
 }
 
-void NewGameController::mainGameThread(std::stop_token stopToken,
-                                       tools::ScreenSelector &iSelector) {
+void NewGameController::mainGameThread(
+    std::stop_token stopToken, tools::ScreenSelector &iSelector,
+    tools::DatabaseManager &iDatabaseManager) {
   while (true) {
     if (stopToken.stop_requested()) {
       return;
@@ -98,6 +101,7 @@ void NewGameController::mainGameThread(std::stop_token stopToken,
     if (gameStep(stepDirection)) {
       iSelector.setFirstPass(true);
       iSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
+      iDatabaseManager.insertScore("Player", game.getScore());
       game.showStatus();
       return;
     }
