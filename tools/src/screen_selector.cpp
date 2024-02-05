@@ -10,6 +10,7 @@ void ScreenSelector::setSelectedOption(SelectorOptions iOption) {
     using enum tools::SelectorOptions;
   case MainMenu:
   case Options:
+  case HighScores:
   case Game:
     selectedOption = iOption;
     break;

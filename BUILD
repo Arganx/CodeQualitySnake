@@ -135,6 +135,19 @@ cc_library(
 )
 
 cc_library(
+    name = "high_score_controller",
+    srcs = ["tools/SFML-controllers/src/high_score_controller.cpp"],
+    hdrs = [
+        "tools/SFML-controllers/inc/high_score_controller.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [
+        ":database_manager",
+        ":screen_selector",
+    ],
+)
+
+cc_library(
     name = "drawer",
     srcs = ["tools/src/drawer.cpp"],
     hdrs = [
@@ -288,6 +301,7 @@ cc_binary(
         ":database_manager",
         ":drawer",
         ":game",
+        ":high_score_controller",
         ":menu_controller",
         ":new_game_controller",
         ":texture_loader",

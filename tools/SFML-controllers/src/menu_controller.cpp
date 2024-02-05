@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <cstdint>
+#include <iostream>
 
 namespace {
 void calculateButtonPosition(const sf::Vector2u &iWindowSize,
@@ -147,6 +148,11 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         buttonTexts[0].setFillColor(sf::Color::Red);
         pressedButton = Button::New_Game;
+      } else if (buttonsSprites[1].getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        buttonTexts[1].setFillColor(sf::Color::Red);
+        pressedButton = Button::High_Scores;
       } else if (buttonsSprites[3].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
@@ -170,6 +176,12 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
           buttonsSprites[0].getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         ioSelector.setSelectedOption(tools::SelectorOptions::Game);
+        ioSelector.setFirstPass(true);
+      } else if (pressedButton == Button::High_Scores &&
+                 buttonsSprites[1].getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        ioSelector.setSelectedOption(tools::SelectorOptions::HighScores);
         ioSelector.setFirstPass(true);
       } else if (pressedButton == Button::Exit &&
                  buttonsSprites[3].getGlobalBounds().contains(

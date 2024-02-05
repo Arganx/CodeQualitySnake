@@ -1,6 +1,6 @@
 #ifndef SCREEN_OPTIONS_GUARD
 #define SCREEN_OPTIONS_GUARD
 namespace tools {
-enum class SelectorOptions { MainMenu, Game, Options };
+enum class SelectorOptions { MainMenu, HighScores, Game, Options };
 }
 #endif
