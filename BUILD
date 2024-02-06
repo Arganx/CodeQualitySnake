@@ -121,6 +121,7 @@ cc_library(
     srcs = ["tools/SFML-controllers/src/new_game_controller.cpp"],
     hdrs = [
         "tools/SFML-controllers/inc/new_game_controller.hpp",
+        "tools/inc/config/texture_config.hpp",
         "tools/inc/exceptions.hpp",
         "tools/inc/mutexes.hpp",
     ],
@@ -139,6 +140,9 @@ cc_library(
     srcs = ["tools/SFML-controllers/src/high_score_controller.cpp"],
     hdrs = [
         "tools/SFML-controllers/inc/high_score_controller.hpp",
+        "tools/inc/config/texture_config.hpp",
+        "tools/inc/config/variable_config.hpp",
+        "tools/inc/exceptions.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
     deps = [
@@ -160,7 +164,9 @@ cc_library(
     name = "database_manager",
     srcs = ["tools/src/database_manager.cpp"],
     hdrs = [
+        "tools/inc/config/variable_config.hpp",
         "tools/inc/database_manager.hpp",
+        "tools/inc/exceptions.hpp",
     ],
     copts = CPP_FLAGS_DEBUG + [
         "-ldl",

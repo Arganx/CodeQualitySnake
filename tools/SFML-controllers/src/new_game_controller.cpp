@@ -1,5 +1,6 @@
 #include "../inc/new_game_controller.hpp"
 #include "../../../inc/exceptions.hpp"
+#include "../../inc/config/texture_config.hpp"
 #include "../../inc/database_manager.hpp"
 #include "../../inc/exceptions.hpp"
 #include "../../inc/screen_selector.hpp"
@@ -72,15 +73,17 @@ void NewGameController::createTiles() {
       boardTiles[column][row].setPosition(
           static_cast<float>(row * tileSizeX),
           static_cast<float>(column * tileSizeY));
-      if (!(*textureMapPtr).contains("Light_Green") ||
-          !(*textureMapPtr).contains("Dark_Green")) {
-        throw tools::TextureNotFoundException(
-            "Light_Green or Dark_Green textures not found");
+      if (!(*textureMapPtr).contains(config::kGridTileTextureOne) ||
+          !(*textureMapPtr).contains(config::kGridTileTextureTwo)) {
+        throw tools::exceptions::TextureNotFoundException(
+            "Grid textures not found");
       }
       if ((column + row) % 2U == 0) {
-        boardTiles[column][row].setTexture(&(*textureMapPtr)["Light_Green"]);
+        boardTiles[column][row].setTexture(
+            &(*textureMapPtr)[config::kGridTileTextureOne]);
       } else {
-        boardTiles[column][row].setTexture(&(*textureMapPtr)["Dark_Green"]);
+        boardTiles[column][row].setTexture(
+            &(*textureMapPtr)[config::kGridTileTextureTwo]);
       }
     }
   }
@@ -354,14 +357,14 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
 void NewGameController::resize(const sf::Vector2u &iNewWindowSize) {
   // Resize board tiles
   if (boardTiles.size() != game.getBoardPtr()->getHeight()) {
-    throw std::invalid_argument("Number of tiles in SFML, does not match the "
-                                "board height"); // TODO change to mismatch
-                                                 // exception
+    throw tools::exceptions::ExpectedSizeMismatchException(
+        "Number of tiles in SFML, does not match the "
+        "board height");
   }
   if (boardTiles[0].size() != game.getBoardPtr()->getWidth()) {
-    throw std::invalid_argument("Number of tiles in SFML, does not match the "
-                                "board width"); // TODO change to mismatch
-                                                // exception
+    throw tools::exceptions::ExpectedSizeMismatchException(
+        "Number of tiles in SFML, does not match the "
+        "board width");
   }
   auto newTileHeight = static_cast<float>(iNewWindowSize.y) /
                        static_cast<float>(boardTiles.size());

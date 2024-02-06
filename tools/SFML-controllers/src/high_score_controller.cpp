@@ -1,13 +1,14 @@
 #include "../inc/high_score_controller.hpp"
+#include "../../inc/config/texture_config.hpp"
+#include "../../inc/config/variable_config.hpp"
+#include "../../inc/exceptions.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
 #include <format>
-#include <stdexcept>
 #include <string>
 
 namespace {
-constexpr uint8_t kNumberODisplayedHighScores{5U};
 
 void setScoreTextsOrigin(sf::Text &iText) {
   iText.setOrigin(iText.getLocalBounds().width / 2,
@@ -23,27 +24,23 @@ HighScoreController::HighScoreController(
     const std::shared_ptr<sf::Font> &iFont)
     : textureMapPtr{iTextureMap}, fontPtr{iFont},
       buttonText("Main menu", *fontPtr, 17) {
-  highScoreTexts.reserve(kNumberODisplayedHighScores);
-  std::string backgroundImage{
-      "high_scores_background"};          // TODO export to separate file
-  std::string buttonImage{"menu_button"}; // TODO export to separate file
-  std::string HighScoreImage{
-      "high_score_board"}; // TODO export to separate file
-  if (!(*textureMapPtr).contains(backgroundImage)) {
-    throw std::invalid_argument(
-        "Background of High Scores not found"); // TODO change exception
+  highScoreTexts.reserve(config::kNumberOfDisplayedHighScores);
+  if (!(*textureMapPtr).contains(config::kHighScoreBackgroundName)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Background texture of high scores not found");
   }
-  if (!(*textureMapPtr).contains(buttonImage)) {
-    throw std::invalid_argument(
-        "Menu button not found"); // TODO change exception
+  if (!(*textureMapPtr).contains(config::kButtonTextureName)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Menu button texture not found");
   }
-  if (!(*textureMapPtr).contains(HighScoreImage)) {
-    throw std::invalid_argument(
-        "High Score Board not found"); // TODO change exception
+  if (!(*textureMapPtr).contains(config::kBoardTexture)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "High score board texture not found");
   }
-  backgroundSprite.setTexture((*textureMapPtr)[backgroundImage]);
-  returnButtonSprite.setTexture((*textureMapPtr)[buttonImage]);
-  highScoreBoardSprite.setTexture((*textureMapPtr)[HighScoreImage]);
+  backgroundSprite.setTexture(
+      (*textureMapPtr)[config::kHighScoreBackgroundName]);
+  returnButtonSprite.setTexture((*textureMapPtr)[config::kButtonTextureName]);
+  highScoreBoardSprite.setTexture((*textureMapPtr)[config::kBoardTexture]);
   returnButtonSprite.setOrigin(returnButtonSprite.getLocalBounds().width / 2,
                                returnButtonSprite.getLocalBounds().height / 2);
   buttonText.setOrigin(buttonText.getLocalBounds().width / 2,
@@ -66,7 +63,7 @@ HighScoreController::HighScoreController(
   resizeBackground(iWindowSize);
 
   // Create empty texts
-  for (uint8_t textIndex{0U}; textIndex < kNumberODisplayedHighScores;
+  for (uint8_t textIndex{0U}; textIndex < config::kNumberOfDisplayedHighScores;
        ++textIndex) {
     highScoreTexts.emplace_back("", *fontPtr, 13);
     highScoreTexts[textIndex].setFillColor(sf::Color::Black);
@@ -109,8 +106,8 @@ void HighScoreController::resizeButtonText() {
 
 void HighScoreController::resizeButton(const sf::Vector2u &iNewWindowSize) {
   if (returnButtonSprite.getTexture() == nullptr) {
-    throw std::invalid_argument(
-        "Background texture not assigned"); // TODO change exception
+    throw tools::exceptions::TextureNotSetException(
+        "Background texture not assigned");
   }
   returnButtonSprite.setScale(
       static_cast<float>(iNewWindowSize.x) * 0.50F /
@@ -123,8 +120,8 @@ void HighScoreController::resizeButton(const sf::Vector2u &iNewWindowSize) {
 
 void HighScoreController::resizeBackground(const sf::Vector2u &iNewWindowSize) {
   if (backgroundSprite.getTexture() == nullptr) {
-    throw std::invalid_argument(
-        "Background texture not assigned"); // TODO change exception
+    throw tools::exceptions::TextureNotSetException(
+        "Background texture not assigned");
   }
   backgroundSprite.setScale(
       static_cast<float>(iNewWindowSize.x) /
@@ -193,8 +190,8 @@ void HighScoreController::resize(const sf::Vector2u &iNewWindowSize) {
 void HighScoreController::updateHighScores(
     const tools::DatabaseManager &iDatabaseManager) {
   auto scores = iDatabaseManager.getBestScores();
-  for (uint8_t scoreIndex{0U}; scoreIndex < kNumberODisplayedHighScores;
-       ++scoreIndex) {
+  for (uint8_t scoreIndex{0U};
+       scoreIndex < config::kNumberOfDisplayedHighScores; ++scoreIndex) {
 
     highScoreTexts[scoreIndex].setString(
         std::format("#{}  {}:  {}", std::to_string(scoreIndex + 1),

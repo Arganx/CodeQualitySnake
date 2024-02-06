@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <cstdint>
-#include <iostream>
 
 namespace {
 void calculateButtonPosition(const sf::Vector2u &iWindowSize,
@@ -42,13 +41,15 @@ void MenuController::loadMenuAssets(const std::string &iButtonTexturePath,
                                     const std::string &iBackgroundTexturePath,
                                     const std::string &iButtonFontPath) {
   if (!buttonTexture.loadFromFile(iButtonTexturePath)) {
-    throw tools::TextureNotFoundException("Failed to load button texture");
+    throw tools::exceptions::TextureNotFoundException(
+        "Failed to load button texture");
   }
   if (!backgroundTexture.loadFromFile(iBackgroundTexturePath)) {
-    throw tools::TextureNotFoundException("Failed to load background texture");
+    throw tools::exceptions::TextureNotFoundException(
+        "Failed to load background texture");
   }
   if (!buttonFont.loadFromFile(iButtonFontPath)) {
-    throw tools::FontNotFoundException("Failed to load menu font");
+    throw tools::exceptions::FontNotFoundException("Failed to load menu font");
   }
 }
 
@@ -79,8 +80,8 @@ void MenuController::resizeBackground(const sf::Vector2u &iNewWindowSize) {
 
 void MenuController::resizeText(sf::Text &ioButtonText,
                                 const sf::Sprite &iButton) const {
-  ioButtonText.setCharacterSize(static_cast<unsigned int>(
-      0.3F * iButton.getGlobalBounds().height)); // TODO change the resizing
+  ioButtonText.setCharacterSize(
+      static_cast<unsigned int>(0.3F * iButton.getGlobalBounds().height));
   ioButtonText.setOrigin(ioButtonText.getLocalBounds().width / 2,
                          ioButtonText.getLocalBounds().height / 2);
   ioButtonText.setPosition(iButton.getPosition());
@@ -142,27 +143,28 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
     iWindow.close();
   } else if (iEvent.type == sf::Event::MouseButtonPressed) {
     if (iEvent.mouseButton.button == sf::Mouse::Left && !mouseButtonPressed) {
+      using enum controllers::Button;
       mouseButtonPressed = true;
       sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
       if (buttonsSprites[0].getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
         buttonTexts[0].setFillColor(sf::Color::Red);
-        pressedButton = Button::New_Game;
+        pressedButton = New_Game;
       } else if (buttonsSprites[1].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         buttonTexts[1].setFillColor(sf::Color::Red);
-        pressedButton = Button::High_Scores;
+        pressedButton = High_Scores;
       } else if (buttonsSprites[3].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         buttonTexts[3].setFillColor(sf::Color::Red);
-        pressedButton = Button::Exit;
+        pressedButton = Exit;
       } else if (buttonsSprites[2].getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         buttonTexts[2].setFillColor(sf::Color::Red);
-        pressedButton = Button::Options;
+        pressedButton = Options;
       }
     }
   } else if (iEvent.type == sf::Event::MouseButtonReleased) {

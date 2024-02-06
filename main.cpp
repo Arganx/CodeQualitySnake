@@ -29,7 +29,7 @@ int main() {
   // TODO create assets manager
   auto font = std::make_shared<sf::Font>();
   if (!font->loadFromFile("./fonts/SnakeChan.ttf")) {
-    throw tools::FontNotFoundException("Failed to load font");
+    throw tools::exceptions::FontNotFoundException("Failed to load font");
   }
 
   tools::ScreenSelector selector;
