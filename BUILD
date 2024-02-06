@@ -161,6 +161,17 @@ cc_library(
 )
 
 cc_library(
+    name = "assets_manager",
+    srcs = ["tools/src/assets_manager.cpp"],
+    hdrs = [
+        "tools/inc/assets_manager.hpp",
+        "tools/inc/exceptions.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [":texture_loader"],
+)
+
+cc_library(
     name = "database_manager",
     srcs = ["tools/src/database_manager.cpp"],
     hdrs = [
@@ -304,13 +315,13 @@ cc_binary(
         "-lsfml-system",
     ],
     deps = [
+        ":assets_manager",
         ":database_manager",
         ":drawer",
         ":game",
         ":high_score_controller",
         ":menu_controller",
         ":new_game_controller",
-        ":texture_loader",
         ":visualiser",
     ],
 )
