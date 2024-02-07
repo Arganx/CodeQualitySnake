@@ -8,25 +8,7 @@
 #include <iostream>
 #include <utility>
 
-namespace {
-int callback(void *data, int argc, char **argv, char **azColName) {
-  static_cast<void>(azColName);
-  static uint8_t current_record{0U};
-  auto &scores =
-      *static_cast<std::array<std::pair<std::string, std::string>, 5> *>(data);
-  if (argc != 2) {
-    throw tools::exceptions::IncorrectFormatException(
-        "Expected 2 values for each row:");
-  }
-  scores[current_record] =
-      std::make_pair(std::string(argv[0]), std::string(argv[1]));
-  ++current_record;
-  if (current_record >= config::kNumberOfDisplayedHighScores) {
-    current_record = 0U;
-  }
-  return 0;
-}
-} // namespace
+uint8_t tools::DatabaseManager::current_record = 0U;
 
 namespace tools {
 DatabaseManager::DatabaseManager(const std::string &iDatabasePath)
@@ -64,6 +46,8 @@ DatabaseManager::getBestScores() const {
   std::string query =
       "SELECT Name, Score FROM HighScores ORDER BY Score DESC LIMIT 5;";
 
+  current_record = 0U;
+
   if (auto exit = static_cast<uint8_t>(sqlite3_exec(
           database_ptr.get(), query.c_str(), callback, &scores, &errMsg));
       exit != SQLITE_OK) {
@@ -72,6 +56,24 @@ DatabaseManager::getBestScores() const {
   }
 
   return scores;
+}
+
+int DatabaseManager::callback(void *data, int argc, char **argv,
+                              char **azColName) {
+  static_cast<void>(azColName);
+  auto &scores =
+      *static_cast<std::array<std::pair<std::string, std::string>, 5> *>(data);
+  if (argc != 2) {
+    throw tools::exceptions::IncorrectFormatException(
+        "Expected 2 values for each row:");
+  }
+  scores[current_record] =
+      std::make_pair(std::string(argv[0]), std::string(argv[1]));
+  ++current_record;
+  if (current_record >= config::kNumberOfDisplayedHighScores) {
+    current_record = 0U;
+  }
+  return 0;
 }
 
 void DatabaseManager::insertScore(const std::string &iName,

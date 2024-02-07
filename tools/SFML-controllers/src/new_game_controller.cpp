@@ -94,7 +94,7 @@ std::vector<sf::RectangleShape> &NewGameController::getSnakeBlocks() {
 
 void NewGameController::mainGameThread(
     std::stop_token stopToken, tools::ScreenSelector &iSelector,
-    tools::DatabaseManager &iDatabaseManager) {
+    const tools::DatabaseManager &iDatabaseManager) {
   while (true) {
     if (stopToken.stop_requested()) {
       return;

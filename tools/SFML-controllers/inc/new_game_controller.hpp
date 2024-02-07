@@ -36,7 +36,7 @@ private:
   bool gameStep(Direction::Direction &oStepDirection);
   void mainGameThread(std::stop_token stopToken,
                       tools::ScreenSelector &iSelector,
-                      tools::DatabaseManager &iDatabaseManager);
+                      const tools::DatabaseManager &iDatabaseManager);
   void updateBlocksPositions();
   void updateCandy();
   void setSnakeTextures(const Direction::Direction stepDirection);

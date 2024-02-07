@@ -9,17 +9,18 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
+#include <memory>
 #include <vector>
 namespace controllers {
 enum class Button { New_Game, High_Scores, Options, Exit, None };
 class MenuController {
 private:
+  std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
+      textureMapPtr;
+  std::shared_ptr<sf::Font> fontPtr;
   std::vector<sf::Sprite> buttonsSprites;
   std::vector<sf::Text> buttonTexts;
-  sf::Texture buttonTexture;
-  sf::Texture backgroundTexture;
   sf::Sprite backgroundSprite;
-  sf::Font buttonFont;
   bool mouseButtonPressed{false};
   Button pressedButton{Button::None};
   void createButton(const sf::Vector2u &iWindowSize,
@@ -27,9 +28,6 @@ private:
                     const float iButtonYSize);
   void createTexts(const std::string &iLabel, const sf::Sprite &iButton,
                    uint8_t iFontSize = 13);
-  void loadMenuAssets(const std::string &iButtonTexturePath,
-                      const std::string &iBackgroundTexturePath,
-                      const std::string &iButtonFontPath);
   void resizeButton(sf::Sprite &ioButton, const sf::Vector2u &iWindowSize,
                     const float iXButtonPosition, float &ioYButtonPosition,
                     const float iButtonYSize) const;
@@ -39,11 +37,12 @@ private:
                    tools::ScreenSelector &ioSelector);
 
 public:
-  MenuController(const std::vector<std::string> &iButtonLabels,
-                 const std::string &iButtonTexturePath,
-                 const std::string &iBackgroundTexturePath,
-                 const std::string &iButtonFontPath,
-                 const sf::Vector2u &iWindowSize);
+  MenuController(
+      std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
+          iTextureMap,
+      const std::shared_ptr<sf::Font> &iFont,
+      const std::vector<std::string> &iButtonLabels,
+      const sf::Vector2u &iWindowSize);
   void call(sf::RenderWindow &iWindow, tools::ScreenSelector &ioSelector);
   void resize(const sf::Vector2u &iNewWindowSize);
 };

@@ -1,4 +1,5 @@
 #include "../inc/menu_controller.hpp"
+#include "../../inc/config/texture_config.hpp"
 #include "../../inc/exceptions.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -23,83 +24,13 @@ void calculateYButtonSizeRatio(const uint8_t iNumberOfButtons,
 
 namespace controllers {
 
-void MenuController::createButton(const sf::Vector2u &iWindowSize,
-                                  const float iXButtonPosition,
-                                  float &ioYButtonPosition,
-                                  const float iButtonYSize) {
-  buttonsSprites.emplace_back();
-  buttonsSprites.back().setTexture(buttonTexture);
-  buttonsSprites.back().setOrigin(
-      buttonsSprites.back().getLocalBounds().width / 2,
-      buttonsSprites.back().getLocalBounds().height / 2);
-
-  resizeButton(buttonsSprites.back(), iWindowSize, iXButtonPosition,
-               ioYButtonPosition, iButtonYSize);
-}
-// TODO this should be done in main
-void MenuController::loadMenuAssets(const std::string &iButtonTexturePath,
-                                    const std::string &iBackgroundTexturePath,
-                                    const std::string &iButtonFontPath) {
-  if (!buttonTexture.loadFromFile(iButtonTexturePath)) {
-    throw tools::exceptions::TextureNotFoundException(
-        "Failed to load button texture");
-  }
-  if (!backgroundTexture.loadFromFile(iBackgroundTexturePath)) {
-    throw tools::exceptions::TextureNotFoundException(
-        "Failed to load background texture");
-  }
-  if (!buttonFont.loadFromFile(iButtonFontPath)) {
-    throw tools::exceptions::FontNotFoundException("Failed to load menu font");
-  }
-}
-
-void MenuController::resizeButton(sf::Sprite &ioButton,
-                                  const sf::Vector2u &iWindowSize,
-                                  const float iXButtonPosition,
-                                  float &ioYButtonPosition,
-                                  const float iButtonYSize) const {
-  ioButton.setScale(static_cast<float>(iWindowSize.x) * 0.35F /
-                        static_cast<float>(buttonTexture.getSize().x),
-                    static_cast<float>(iWindowSize.y) * iButtonYSize * 1.3F /
-                        static_cast<float>(buttonTexture.getSize().y));
-
-  ioButton.setPosition(iXButtonPosition + ioButton.getGlobalBounds().width / 2,
-                       ioYButtonPosition +
-                           ioButton.getGlobalBounds().height / 2);
-  ioYButtonPosition = ioYButtonPosition +
-                      static_cast<float>(iWindowSize.y) * iButtonYSize * 2.0F;
-}
-
-void MenuController::resizeBackground(const sf::Vector2u &iNewWindowSize) {
-  backgroundSprite.setScale(
-      static_cast<float>(iNewWindowSize.x) /
-          static_cast<float>(backgroundTexture.getSize().x),
-      static_cast<float>(iNewWindowSize.y) /
-          static_cast<float>(backgroundTexture.getSize().y));
-}
-
-void MenuController::resizeText(sf::Text &ioButtonText,
-                                const sf::Sprite &iButton) const {
-  ioButtonText.setCharacterSize(
-      static_cast<unsigned int>(0.3F * iButton.getGlobalBounds().height));
-  ioButtonText.setOrigin(ioButtonText.getLocalBounds().width / 2,
-                         ioButtonText.getLocalBounds().height / 2);
-  ioButtonText.setPosition(iButton.getPosition());
-}
-
-void MenuController::createTexts(const std::string &iLabel,
-                                 const sf::Sprite &iButton, uint8_t iFontSize) {
-  buttonTexts.emplace_back(iLabel, buttonFont, iFontSize);
-  buttonTexts.back().setFillColor(sf::Color::Black);
-  resizeText(buttonTexts.back(), iButton);
-}
-
-MenuController::MenuController(const std::vector<std::string> &iButtonLabels,
-                               const std::string &iButtonTexturePath,
-                               const std::string &iBackgroundTexturePath,
-                               const std::string &iButtonFontPath,
-                               const sf::Vector2u &iWindowSize) {
-  loadMenuAssets(iButtonTexturePath, iBackgroundTexturePath, iButtonFontPath);
+MenuController::MenuController(
+    std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
+        iTextureMap,
+    const std::shared_ptr<sf::Font> &iFont,
+    const std::vector<std::string> &iButtonLabels,
+    const sf::Vector2u &iWindowSize)
+    : textureMapPtr{iTextureMap}, fontPtr{iFont} {
 
   float xButtonPosition;
   float yButtonPosition;
@@ -113,9 +44,73 @@ MenuController::MenuController(const std::vector<std::string> &iButtonLabels,
     createButton(iWindowSize, xButtonPosition, yButtonPosition, buttonYSize);
     createTexts(label, buttonsSprites.back());
   }
-  backgroundSprite.setTexture(backgroundTexture);
+  backgroundSprite.setTexture((*textureMapPtr)[config::kMenuBackgroundName]);
   resizeBackground(iWindowSize);
 };
+
+void MenuController::createButton(const sf::Vector2u &iWindowSize,
+                                  const float iXButtonPosition,
+                                  float &ioYButtonPosition,
+                                  const float iButtonYSize) {
+  buttonsSprites.emplace_back();
+  buttonsSprites.back().setTexture(
+      (*textureMapPtr)[config::kButtonTextureName]);
+  buttonsSprites.back().setOrigin(
+      buttonsSprites.back().getLocalBounds().width / 2,
+      buttonsSprites.back().getLocalBounds().height / 2);
+
+  resizeButton(buttonsSprites.back(), iWindowSize, iXButtonPosition,
+               ioYButtonPosition, iButtonYSize);
+}
+
+void MenuController::resizeButton(sf::Sprite &ioButton,
+                                  const sf::Vector2u &iWindowSize,
+                                  const float iXButtonPosition,
+                                  float &ioYButtonPosition,
+                                  const float iButtonYSize) const {
+  if (ioButton.getTexture() == nullptr) {
+    throw tools::exceptions::TextureNotSetException(
+        "Button texture not set in the menu");
+  }
+  ioButton.setScale(static_cast<float>(iWindowSize.x) * 0.35F /
+                        static_cast<float>(ioButton.getTexture()->getSize().x),
+                    static_cast<float>(iWindowSize.y) * iButtonYSize * 1.3F /
+                        static_cast<float>(ioButton.getTexture()->getSize().y));
+
+  ioButton.setPosition(iXButtonPosition + ioButton.getGlobalBounds().width / 2,
+                       ioYButtonPosition +
+                           ioButton.getGlobalBounds().height / 2);
+  ioYButtonPosition = ioYButtonPosition +
+                      static_cast<float>(iWindowSize.y) * iButtonYSize * 2.0F;
+}
+
+void MenuController::resizeBackground(const sf::Vector2u &iNewWindowSize) {
+  if (backgroundSprite.getTexture() == nullptr) {
+    throw tools::exceptions::TextureNotSetException(
+        "Background texture not set in the menu");
+  }
+  backgroundSprite.setScale(
+      static_cast<float>(iNewWindowSize.x) /
+          static_cast<float>(backgroundSprite.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) /
+          static_cast<float>(backgroundSprite.getTexture()->getSize().y));
+}
+
+void MenuController::resizeText(sf::Text &ioButtonText,
+                                const sf::Sprite &iButton) const {
+  ioButtonText.setCharacterSize(
+      static_cast<unsigned int>(0.3F * iButton.getGlobalBounds().height));
+  ioButtonText.setOrigin(ioButtonText.getLocalBounds().width / 2,
+                         ioButtonText.getLocalBounds().height / 2);
+  ioButtonText.setPosition(iButton.getPosition());
+}
+
+void MenuController::createTexts(const std::string &iLabel,
+                                 const sf::Sprite &iButton, uint8_t iFontSize) {
+  buttonTexts.emplace_back(iLabel, *fontPtr, iFontSize);
+  buttonTexts.back().setFillColor(sf::Color::Black);
+  resizeText(buttonTexts.back(), iButton);
+}
 
 void MenuController::resize(const sf::Vector2u &iNewWindowSize) {
   float xButtonPosition;

@@ -10,6 +10,8 @@ namespace tools {
 class DatabaseManager {
 private:
   std::unique_ptr<sqlite3, decltype(&sqlite3_close)> database_ptr;
+  static uint8_t current_record;
+  static int callback(void *data, int argc, char **argv, char **azColName);
 
 public:
   explicit DatabaseManager(const std::string &iDatabasePath);

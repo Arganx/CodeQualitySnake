@@ -110,6 +110,7 @@ cc_library(
     srcs = ["tools/SFML-controllers/src/menu_controller.cpp"],
     hdrs = [
         "tools/SFML-controllers/inc/menu_controller.hpp",
+        "tools/inc/config/texture_config.hpp",
         "tools/inc/exceptions.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,

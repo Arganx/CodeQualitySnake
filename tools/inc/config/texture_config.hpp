@@ -3,12 +3,14 @@
 
 namespace config {
 
-constexpr const char kHighScoreBackgroundName[]{"high_scores_background"};
-constexpr const char kButtonTextureName[]{"menu_button"};
-constexpr const char kBoardTexture[]{"high_score_board"};
+constexpr char kHighScoreBackgroundName[]{"high_scores_background"};
+constexpr char kButtonTextureName[]{"menu_button"};
+constexpr char kBoardTexture[]{"high_score_board"};
+constexpr char kMenuBackgroundName[]{"menu_background"};
+;
 
-constexpr const char kGridTileTextureOne[]{"Light_Green"};
-constexpr const char kGridTileTextureTwo[]{"Dark_Green"};
+constexpr char kGridTileTextureOne[]{"Light_Green"};
+constexpr char kGridTileTextureTwo[]{"Dark_Green"};
 } // namespace config
 
 #endif
