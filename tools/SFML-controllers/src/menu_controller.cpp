@@ -138,61 +138,11 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
     iWindow.close();
   } else if (iEvent.type == sf::Event::MouseButtonPressed) {
     if (iEvent.mouseButton.button == sf::Mouse::Left && !mouseButtonPressed) {
-      using enum controllers::Button;
-      mouseButtonPressed = true;
-      sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
-      if (buttonsSprites[0].getGlobalBounds().contains(
-              static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-        buttonTexts[0].setFillColor(sf::Color::Red);
-        pressedButton = New_Game;
-      } else if (buttonsSprites[1].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        buttonTexts[1].setFillColor(sf::Color::Red);
-        pressedButton = High_Scores;
-      } else if (buttonsSprites[3].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        buttonTexts[3].setFillColor(sf::Color::Red);
-        pressedButton = Exit;
-      } else if (buttonsSprites[2].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        buttonTexts[2].setFillColor(sf::Color::Red);
-        pressedButton = Options;
-      }
+      handleMouseButtonPressed(iWindow);
     }
   } else if (iEvent.type == sf::Event::MouseButtonReleased) {
     if (iEvent.mouseButton.button == sf::Mouse::Left) {
-      sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
-      for (auto &buttonText : buttonTexts) {
-        buttonText.setFillColor(sf::Color::Black);
-      }
-      mouseButtonPressed = false;
-      if (pressedButton == Button::New_Game &&
-          buttonsSprites[0].getGlobalBounds().contains(
-              static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-        ioSelector.setSelectedOption(tools::SelectorOptions::Game);
-        ioSelector.setFirstPass(true);
-      } else if (pressedButton == Button::High_Scores &&
-                 buttonsSprites[1].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        ioSelector.setSelectedOption(tools::SelectorOptions::HighScores);
-        ioSelector.setFirstPass(true);
-      } else if (pressedButton == Button::Exit &&
-                 buttonsSprites[3].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        iWindow.close();
-      } else if (pressedButton == Button::Options &&
-                 buttonsSprites[2].getGlobalBounds().contains(
-                     static_cast<float>(mousePos.x),
-                     static_cast<float>(mousePos.y))) {
-        ioSelector.setSelectedOption(tools::SelectorOptions::Options);
-        ioSelector.setFirstPass(true);
-      }
-      pressedButton = Button::None;
+      handleMouseButtonReleased(iWindow, ioSelector);
     }
   } else if (iEvent.type == sf::Event::Resized) {
     sf::FloatRect visibleArea(0, 0, static_cast<float>(iEvent.size.width),
@@ -200,6 +150,65 @@ void MenuController::handleEvent(sf::RenderWindow &iWindow,
     iWindow.setView(sf::View(visibleArea));
     resize(iWindow.getSize());
   }
+}
+
+void MenuController::handleMouseButtonPressed(const sf::RenderWindow &iWindow) {
+  using enum controllers::Button;
+  mouseButtonPressed = true;
+  sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
+  if (buttonsSprites[0].getGlobalBounds().contains(
+          static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+    buttonTexts[0].setFillColor(sf::Color::Red);
+    pressedButton = New_Game;
+  } else if (buttonsSprites[1].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    buttonTexts[1].setFillColor(sf::Color::Red);
+    pressedButton = High_Scores;
+  } else if (buttonsSprites[3].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    buttonTexts[3].setFillColor(sf::Color::Red);
+    pressedButton = Exit;
+  } else if (buttonsSprites[2].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    buttonTexts[2].setFillColor(sf::Color::Red);
+    pressedButton = Options;
+  }
+}
+
+void MenuController::handleMouseButtonReleased(
+    sf::RenderWindow &iWindow, tools::ScreenSelector &ioSelector) {
+  sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
+  for (auto &buttonText : buttonTexts) {
+    buttonText.setFillColor(sf::Color::Black);
+  }
+  mouseButtonPressed = false;
+  if (pressedButton == Button::New_Game &&
+      buttonsSprites[0].getGlobalBounds().contains(
+          static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
+    ioSelector.setSelectedOption(tools::SelectorOptions::Game);
+    ioSelector.setFirstPass(true);
+  } else if (pressedButton == Button::High_Scores &&
+             buttonsSprites[1].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    ioSelector.setSelectedOption(tools::SelectorOptions::HighScores);
+    ioSelector.setFirstPass(true);
+  } else if (pressedButton == Button::Exit &&
+             buttonsSprites[3].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    iWindow.close();
+  } else if (pressedButton == Button::Options &&
+             buttonsSprites[2].getGlobalBounds().contains(
+                 static_cast<float>(mousePos.x),
+                 static_cast<float>(mousePos.y))) {
+    ioSelector.setSelectedOption(tools::SelectorOptions::Options);
+    ioSelector.setFirstPass(true);
+  }
+  pressedButton = Button::None;
 }
 
 void MenuController::call(sf::RenderWindow &iWindow,

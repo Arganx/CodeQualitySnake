@@ -35,6 +35,9 @@ private:
   void resizeText(sf::Text &ioButtonText, const sf::Sprite &iButton) const;
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                    tools::ScreenSelector &ioSelector);
+  void handleMouseButtonPressed(const sf::RenderWindow &iWindow);
+  void handleMouseButtonReleased(sf::RenderWindow &iWindow,
+                                 tools::ScreenSelector &ioSelector);
 
 public:
   MenuController(
