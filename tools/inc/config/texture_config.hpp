@@ -7,6 +7,7 @@ constexpr char kHighScoreBackgroundName[]{"high_scores_background"};
 constexpr char kButtonTextureName[]{"menu_button"};
 constexpr char kBoardTexture[]{"high_score_board"};
 constexpr char kMenuBackgroundName[]{"menu_background"};
+constexpr char kOptionsBackgroundName[]{"options_background"};
 ;
 
 constexpr char kGridTileTextureOne[]{"Light_Green"};

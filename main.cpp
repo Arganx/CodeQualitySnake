@@ -2,6 +2,7 @@
 #include "tools/SFML-controllers/inc/high_score_controller.hpp"
 #include "tools/SFML-controllers/inc/menu_controller.hpp"
 #include "tools/SFML-controllers/inc/new_game_controller.hpp"
+#include "tools/SFML-controllers/inc/options_controller.hpp"
 #include "tools/inc/assets_manager.hpp"
 #include "tools/inc/database_manager.hpp"
 #include "tools/inc/screen_selector.hpp"
@@ -26,6 +27,8 @@ int main() {
                                    window->getSize()};
   controllers::NewGameController controller{5, 4, window,
                                             assetsManager.getTextures()};
+  controllers::OptionController optionsController{
+      window->getSize(), assetsManager.getTextures(), assetsManager.getFont()};
   controllers::HighScoreController highScoresController{
       window->getSize(), assetsManager.getTextures(), assetsManager.getFont()};
 
@@ -47,7 +50,11 @@ int main() {
       highScoresController.call(*window, selector);
       break;
     case tools::SelectorOptions::Options:
-      window->close();
+      if (selector.isFirstPass()) {
+        optionsController.resize(window->getSize());
+        selector.setFirstPass(false);
+      }
+      optionsController.call(*window, selector);
       break;
     case tools::SelectorOptions::Game:
       if (selector.isFirstPass()) {

@@ -96,6 +96,15 @@ cc_library(
 )
 
 cc_library(
+    name = "text_box",
+    srcs = ["tools/src/text_box.cpp"],
+    hdrs = [
+        "tools/inc/text_box.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
+cc_library(
     name = "screen_selector",
     srcs = ["tools/src/screen_selector.cpp"],
     hdrs = [
@@ -149,6 +158,21 @@ cc_library(
     deps = [
         ":database_manager",
         ":screen_selector",
+    ],
+)
+
+cc_library(
+    name = "options_controller",
+    srcs = ["tools/SFML-controllers/src/options_controller.cpp"],
+    hdrs = [
+        "tools/SFML-controllers/inc/options_controller.hpp",
+        "tools/inc/config/texture_config.hpp",
+        "tools/inc/exceptions.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+    deps = [
+        ":screen_selector",
+        ":text_box",
     ],
 )
 
@@ -323,6 +347,7 @@ cc_binary(
         ":high_score_controller",
         ":menu_controller",
         ":new_game_controller",
+        ":options_controller",
         ":visualiser",
     ],
 )
