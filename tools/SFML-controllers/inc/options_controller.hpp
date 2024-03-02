@@ -1,6 +1,6 @@
 #ifndef OPTIONS_CONTROLLER_GUARD
 #define OPTIONS_CONTROLLER_GUARD
-
+#include "../../inc/options_manager.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "../../inc/text_box.hpp"
 #include <SFML/Graphics/Font.hpp>
@@ -34,9 +34,11 @@ private:
   void resizeOkText();
   void resizeCancelText();
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
-                   tools::ScreenSelector &ioSelector);
+                   tools::ScreenSelector &ioSelector,
+                   tools::OptionsManager &iOptionsManager);
   void handleCancel(tools::ScreenSelector &ioSelector) const;
-  void handleOk(tools::ScreenSelector &ioSelector) const;
+  void handleOk(tools::ScreenSelector &ioSelector,
+                tools::OptionsManager &iOptionsManager) const;
 
 public:
   explicit OptionController(
@@ -44,8 +46,10 @@ public:
       std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
           iTextureMap,
       const std::shared_ptr<sf::Font> &iFont);
-  void call(sf::RenderWindow &iWindow, tools::ScreenSelector &ioSelector);
+  void call(sf::RenderWindow &iWindow, tools::ScreenSelector &ioSelector,
+            tools::OptionsManager &iOptionsManager);
   void resize(const sf::Vector2u &iNewWindowSize);
+  void refreshValues(const tools::OptionsManager &iOptionsManager);
 };
 } // namespace controllers
 #endif

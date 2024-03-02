@@ -5,6 +5,7 @@
 #include "../../inc/database_manager.hpp"
 #include "../../inc/drawer.hpp"
 #include "../../inc/mutexes.hpp"
+#include "../../inc/options_manager.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/Texture.hpp"
@@ -36,7 +37,8 @@ private:
   bool gameStep(Direction::Direction &oStepDirection);
   void mainGameThread(std::stop_token stopToken,
                       tools::ScreenSelector &iSelector,
-                      const tools::DatabaseManager &iDatabaseManager);
+                      const tools::DatabaseManager &iDatabaseManager,
+                      const tools::OptionsManager &iOptionsManager);
   void updateBlocksPositions();
   void updateCandy();
   void setSnakeTextures(const Direction::Direction stepDirection);
@@ -57,7 +59,8 @@ public:
   tools::Mutexes &getMutexes();
   void call(sf::RenderWindow &iWindow);
   void startGame(tools::ScreenSelector &iSelector,
-                 tools::DatabaseManager &iDatabaseManager);
+                 tools::DatabaseManager &iDatabaseManager,
+                 const tools::OptionsManager &iOptionsManager);
   void reset(uint8_t iGameWidth, uint8_t iGameHeight);
   void resize(const sf::Vector2u &iNewWindowSize);
 };

@@ -108,19 +108,23 @@ void OptionController::handleCancel(tools::ScreenSelector &ioSelector) const {
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
 }
-void OptionController::handleOk(tools::ScreenSelector &ioSelector) const {
+void OptionController::handleOk(tools::ScreenSelector &ioSelector,
+                                tools::OptionsManager &iOptionsManager) const {
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
+  iOptionsManager.setPlayerName(nameBox.getString());
 }
 
 void OptionController::handleEvent(sf::RenderWindow &iWindow,
                                    const sf::Event &iEvent,
-                                   tools::ScreenSelector &ioSelector) {
+                                   tools::ScreenSelector &ioSelector,
+                                   tools::OptionsManager &iOptionsManager) {
   if (iEvent.type == sf::Event::Closed) {
     iWindow.close();
   } else if (iEvent.type == sf::Event::MouseButtonPressed) {
     if (iEvent.mouseButton.button == sf::Mouse::Left && !mouseButtonPressed) {
       mouseButtonPressed = true;
+      selectedTextBox = static_cast<uint8_t>(0U);
       sf::Vector2i mousePos = sf::Mouse::getPosition(iWindow);
       if (cancelButtonSprite.getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
@@ -151,7 +155,7 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
       } else if (okButtonSprite.getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
-        handleOk(ioSelector);
+        handleOk(ioSelector, iOptionsManager);
       }
     }
   } else if (iEvent.type == sf::Event::TextEntered) {
@@ -168,10 +172,11 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
 }
 
 void OptionController::call(sf::RenderWindow &iWindow,
-                            tools::ScreenSelector &ioSelector) {
+                            tools::ScreenSelector &ioSelector,
+                            tools::OptionsManager &iOptionsManager) {
   sf::Event event;
   while (iWindow.pollEvent(event)) {
-    handleEvent(iWindow, event, ioSelector);
+    handleEvent(iWindow, event, ioSelector, iOptionsManager);
   }
   iWindow.clear();
   iWindow.draw(backgroundObject);
@@ -181,5 +186,10 @@ void OptionController::call(sf::RenderWindow &iWindow,
   iWindow.draw(okText);
   iWindow.draw(cancelText);
   iWindow.display();
+}
+
+void OptionController::refreshValues(
+    const tools::OptionsManager &iOptionsManager) {
+  nameBox.setString(iOptionsManager.getPlayerName());
 }
 } // namespace controllers

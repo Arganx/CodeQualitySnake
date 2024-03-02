@@ -5,16 +5,17 @@
 #include "tools/SFML-controllers/inc/options_controller.hpp"
 #include "tools/inc/assets_manager.hpp"
 #include "tools/inc/database_manager.hpp"
+#include "tools/inc/options_manager.hpp"
 #include "tools/inc/screen_selector.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <memory>
-
 constexpr std::string kTexturePath = "textures";
 
 int main() {
   tools::AssetsManager assetsManager{"./fonts/SnakeChan.ttf", kTexturePath};
   tools::DatabaseManager databaseManager{"highscores.db"};
+  tools::OptionsManager optionsManager{"options.txt"};
 
   auto window =
       std::make_shared<sf::RenderWindow>(sf::VideoMode(300, 300), "Snake Game");
@@ -51,15 +52,16 @@ int main() {
       break;
     case tools::SelectorOptions::Options:
       if (selector.isFirstPass()) {
+        optionsController.refreshValues(optionsManager);
         optionsController.resize(window->getSize());
         selector.setFirstPass(false);
       }
-      optionsController.call(*window, selector);
+      optionsController.call(*window, selector, optionsManager);
       break;
     case tools::SelectorOptions::Game:
       if (selector.isFirstPass()) {
         controller.reset(5, 4);
-        controller.startGame(selector, databaseManager);
+        controller.startGame(selector, databaseManager, optionsManager);
         controller.resize(window->getSize());
         selector.setFirstPass(false);
       }

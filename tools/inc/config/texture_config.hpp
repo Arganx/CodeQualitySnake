@@ -8,7 +8,6 @@ constexpr char kButtonTextureName[]{"menu_button"};
 constexpr char kBoardTexture[]{"high_score_board"};
 constexpr char kMenuBackgroundName[]{"menu_background"};
 constexpr char kOptionsBackgroundName[]{"options_background"};
-;
 
 constexpr char kGridTileTextureOne[]{"Light_Green"};
 constexpr char kGridTileTextureTwo[]{"Dark_Green"};

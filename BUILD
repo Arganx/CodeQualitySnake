@@ -140,6 +140,7 @@ cc_library(
         ":database_manager",
         ":drawer",
         ":game",
+        ":options_manager",
         ":screen_selector",
         ":visualiser",
     ],
@@ -171,6 +172,7 @@ cc_library(
     ],
     copts = CPP_FLAGS_DEBUG,
     deps = [
+        ":options_manager",
         ":screen_selector",
         ":text_box",
     ],
@@ -211,6 +213,15 @@ cc_library(
     deps = [
         ":sqlite3",
     ],
+)
+
+cc_library(
+    name = "options_manager",
+    srcs = ["tools/src/options_manager.cpp"],
+    hdrs = [
+        "tools/inc/options_manager.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
 )
 
 cc_library(
@@ -348,6 +359,7 @@ cc_binary(
         ":menu_controller",
         ":new_game_controller",
         ":options_controller",
+        ":options_manager",
         ":visualiser",
     ],
 )

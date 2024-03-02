@@ -3,6 +3,7 @@
 #include "../../inc/config/texture_config.hpp"
 #include "../../inc/database_manager.hpp"
 #include "../../inc/exceptions.hpp"
+#include "../../inc/options_manager.hpp"
 #include "../../inc/screen_selector.hpp"
 #include "../../inc/visualiser.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
@@ -24,11 +25,13 @@ NewGameController::NewGameController(
     : windowPtr{iWindowPtr}, drawer{iWindowPtr}, textureMapPtr{iTextureMap} {
   reset(iGameWidth, iGameHeight);
 }
-void NewGameController::startGame(tools::ScreenSelector &iSelector,
-                                  tools::DatabaseManager &iDatabaseManager) {
+void NewGameController::startGame(
+    tools::ScreenSelector &iSelector, tools::DatabaseManager &iDatabaseManager,
+    const tools::OptionsManager &iOptionsManager) {
   gameThread = std::make_unique<std::jthread>(
       &NewGameController::mainGameThread, this, stopSrc.get_token(),
-      std::ref(iSelector), std::ref(iDatabaseManager));
+      std::ref(iSelector), std::ref(iDatabaseManager),
+      std::ref(iOptionsManager));
 }
 
 Game::Game &NewGameController::getGame() { return game; }
@@ -94,7 +97,8 @@ std::vector<sf::RectangleShape> &NewGameController::getSnakeBlocks() {
 
 void NewGameController::mainGameThread(
     std::stop_token stopToken, tools::ScreenSelector &iSelector,
-    const tools::DatabaseManager &iDatabaseManager) {
+    const tools::DatabaseManager &iDatabaseManager,
+    const tools::OptionsManager &iOptionsManager) {
   while (true) {
     if (stopToken.stop_requested()) {
       return;
@@ -104,7 +108,8 @@ void NewGameController::mainGameThread(
     if (gameStep(stepDirection)) {
       iSelector.setFirstPass(true);
       iSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
-      iDatabaseManager.insertScore("Player", game.getScore());
+      iDatabaseManager.insertScore(iOptionsManager.getPlayerName(),
+                                   game.getScore());
       game.showStatus();
       return;
     }
