@@ -1,9 +1,10 @@
 #include "../inc/options_controller.hpp"
 #include "../../inc/config/texture_config.hpp"
 #include "../../inc/exceptions.hpp"
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
-#include <iostream>
+#include <string>
 
 namespace controllers {
 OptionController::OptionController(
@@ -13,13 +14,26 @@ OptionController::OptionController(
     const std::shared_ptr<sf::Font> &iFont)
     : textureMapPtr{iTextureMap}, fontPtr{iFont},
       okText{"Accept", *fontPtr, 17}, cancelText{"Cancel", *fontPtr, 17},
-      nameBox{fontPtr} {
+      nameBox{fontPtr}, widthBox(fontPtr), heightBox(fontPtr),
+      playerNameText{"Player name:", *fontPtr, 17},
+      boardDimensionsText{"Board (X, Y):", *fontPtr, 17} {
   // Setup background object
   if (!textureMapPtr->contains(config::kOptionsBackgroundName)) {
     throw tools::exceptions::TextureNotFoundException(
         "Options background texture not found");
   }
   backgroundObject.setTexture((*textureMapPtr)[config::kOptionsBackgroundName]);
+
+  // Setup background board
+  if (!textureMapPtr->contains(config::kOptionBoard)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Texture for options background board not found");
+  }
+  backgroundBoard.setTexture((*textureMapPtr)[config::kOptionBoard]);
+  // Set transparency
+  sf::Color color = backgroundBoard.getColor();
+  color.a = static_cast<uint8_t>(255.0F * 0.8F);
+  backgroundBoard.setColor(color);
 
   // Setup buttons
   if (!textureMapPtr->contains(config::kButtonTextureName)) {
@@ -33,11 +47,37 @@ OptionController::OptionController(
   cancelButtonSprite.setOrigin(cancelButtonSprite.getLocalBounds().width / 2,
                                cancelButtonSprite.getLocalBounds().height / 2);
 
+  backgroundBoard.setOrigin(backgroundBoard.getLocalBounds().width / 2,
+                            backgroundBoard.getLocalBounds().height / 2);
+
   // Setup texts
   okText.setFillColor(sf::Color::Black);
   cancelText.setFillColor(sf::Color::Black);
+  playerNameText.setFillColor(sf::Color::Black);
+  boardDimensionsText.setFillColor(sf::Color::Black);
 
   resize(iWindowSize);
+}
+
+void OptionController::resizePlayerNameText(
+    const sf::Vector2u &iNewWindowSize) {
+  playerNameText.setCharacterSize(static_cast<unsigned int>(
+      0.35F * okButtonSprite.getGlobalBounds().height));
+  playerNameText.setOrigin(playerNameText.getLocalBounds().width / 2,
+                           playerNameText.getLocalBounds().height / 2);
+  playerNameText.setPosition(static_cast<float>(iNewWindowSize.x * 0.3),
+                             static_cast<float>(iNewWindowSize.y * 0.05));
+}
+
+void OptionController::resizeBoardDimensionsText(
+    const sf::Vector2u &iNewWindowSize) {
+  boardDimensionsText.setCharacterSize(static_cast<unsigned int>(
+      0.35F * okButtonSprite.getGlobalBounds().height));
+  boardDimensionsText.setOrigin(boardDimensionsText.getLocalBounds().width / 2,
+                                boardDimensionsText.getLocalBounds().height /
+                                    2);
+  boardDimensionsText.setPosition(static_cast<float>(iNewWindowSize.x * 0.3),
+                                  static_cast<float>(iNewWindowSize.y * 0.12));
 }
 
 void OptionController::resizeOkText() {
@@ -95,13 +135,29 @@ void OptionController::resizeCancelButton(const sf::Vector2u &iNewWindowSize) {
                                  static_cast<float>(iNewWindowSize.y) * 0.9F);
 }
 
+void OptionController::resizeBackgroundBoard(
+    const sf::Vector2u &iNewWindowSize) {
+  backgroundBoard.setPosition(static_cast<float>(iNewWindowSize.x) / 2,
+                              static_cast<float>(iNewWindowSize.y) * 0.4F);
+  backgroundBoard.setScale(
+      static_cast<float>(iNewWindowSize.x) * 0.9F /
+          static_cast<float>(backgroundBoard.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) * 0.8F /
+          static_cast<float>(backgroundBoard.getTexture()->getSize().y));
+}
+
 void OptionController::resize(const sf::Vector2u &iNewWindowSize) {
   resizeBackground(iNewWindowSize);
+  resizeBackgroundBoard(iNewWindowSize);
   resizeOkButton(iNewWindowSize);
   resizeCancelButton(iNewWindowSize);
   resizeOkText();
   resizeCancelText();
-  nameBox.resize(iNewWindowSize);
+  nameBox.resizePlayerName(iNewWindowSize);
+  widthBox.resizeWidth(iNewWindowSize);
+  heightBox.resizeHeight(iNewWindowSize);
+  resizePlayerNameText(iNewWindowSize);
+  resizeBoardDimensionsText(iNewWindowSize);
 }
 
 void OptionController::handleCancel(tools::ScreenSelector &ioSelector) const {
@@ -113,6 +169,10 @@ void OptionController::handleOk(tools::ScreenSelector &ioSelector,
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
   iOptionsManager.setPlayerName(nameBox.getString());
+  iOptionsManager.setBoardWidth(
+      static_cast<uint8_t>(std::stoi(widthBox.getString())));
+  iOptionsManager.setBoardHeight(
+      static_cast<uint8_t>(std::stoi(heightBox.getString())));
 }
 
 void OptionController::handleEvent(sf::RenderWindow &iWindow,
@@ -141,6 +201,14 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         selectedTextBox = static_cast<uint8_t>(1U);
+      } else if (widthBox.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        selectedTextBox = static_cast<uint8_t>(2U);
+      } else if (heightBox.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        selectedTextBox = static_cast<uint8_t>(3U);
       }
     }
   } else if (iEvent.type == sf::Event::MouseButtonReleased) {
@@ -162,6 +230,18 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
     if (selectedTextBox == 1U) // name box
     {
       nameBox.addCharacter(iEvent.text.unicode);
+    } else if (selectedTextBox == 2U &&
+               ((47U < iEvent.text.unicode && iEvent.text.unicode < 58U) ||
+                iEvent.text.unicode ==
+                    8)) // board width ASCII for 0 and 9 and backspace
+    {
+      widthBox.addCharacter(iEvent.text.unicode);
+    } else if (selectedTextBox == 3U &&
+               ((47U < iEvent.text.unicode && iEvent.text.unicode < 58U) ||
+                iEvent.text.unicode ==
+                    8)) // board height ASCII for 0 and 9 and backspace
+    {
+      heightBox.addCharacter(iEvent.text.unicode);
     }
   } else if (iEvent.type == sf::Event::Resized) {
     sf::FloatRect visibleArea(0, 0, static_cast<float>(iEvent.size.width),
@@ -180,16 +260,23 @@ void OptionController::call(sf::RenderWindow &iWindow,
   }
   iWindow.clear();
   iWindow.draw(backgroundObject);
+  iWindow.draw(backgroundBoard);
   iWindow.draw(nameBox);
+  iWindow.draw(widthBox);
+  iWindow.draw(heightBox);
   iWindow.draw(okButtonSprite);
   iWindow.draw(cancelButtonSprite);
   iWindow.draw(okText);
   iWindow.draw(cancelText);
+  iWindow.draw(playerNameText);
+  iWindow.draw(boardDimensionsText);
   iWindow.display();
 }
 
 void OptionController::refreshValues(
     const tools::OptionsManager &iOptionsManager) {
   nameBox.setString(iOptionsManager.getPlayerName());
+  widthBox.setString(std::to_string(iOptionsManager.getBoardWidth()));
+  heightBox.setString(std::to_string(iOptionsManager.getBoardHeight()));
 }
 } // namespace controllers

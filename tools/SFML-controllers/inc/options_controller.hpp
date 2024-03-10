@@ -20,19 +20,27 @@ private:
       textureMapPtr;
   std::shared_ptr<sf::Font> fontPtr;
   sf::Sprite backgroundObject;
+  sf::Sprite backgroundBoard;
   sf::Sprite okButtonSprite;
   sf::Text okText;
   sf::Sprite cancelButtonSprite;
   OptionsButton pressedButton{OptionsButton::None};
   sf::Text cancelText;
   tools::TextBox nameBox;
+  tools::TextBox widthBox;
+  tools::TextBox heightBox;
+  sf::Text playerNameText;
+  sf::Text boardDimensionsText;
   uint8_t selectedTextBox{0U};
   bool mouseButtonPressed{false};
   void resizeBackground(const sf::Vector2u &iNewWindowSize);
   void resizeOkButton(const sf::Vector2u &iNewWindowSize);
   void resizeCancelButton(const sf::Vector2u &iNewWindowSize);
   void resizeOkText();
+  void resizePlayerNameText(const sf::Vector2u &iNewWindowSize);
   void resizeCancelText();
+  void resizeBackgroundBoard(const sf::Vector2u &iNewWindowSize);
+  void resizeBoardDimensionsText(const sf::Vector2u &iNewWindowSize);
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                    tools::ScreenSelector &ioSelector,
                    tools::OptionsManager &iOptionsManager);

@@ -26,8 +26,9 @@ int main() {
   controllers::MenuController menu{assetsManager.getTextures(),
                                    assetsManager.getFont(), labels,
                                    window->getSize()};
-  controllers::NewGameController controller{5, 4, window,
-                                            assetsManager.getTextures()};
+  controllers::NewGameController controller{
+      optionsManager.getBoardWidth(), optionsManager.getBoardHeight(), window,
+      assetsManager.getTextures()};
   controllers::OptionController optionsController{
       window->getSize(), assetsManager.getTextures(), assetsManager.getFont()};
   controllers::HighScoreController highScoresController{
@@ -60,7 +61,8 @@ int main() {
       break;
     case tools::SelectorOptions::Game:
       if (selector.isFirstPass()) {
-        controller.reset(5, 4);
+        controller.reset(optionsManager.getBoardWidth(),
+                         optionsManager.getBoardHeight());
         controller.startGame(selector, databaseManager, optionsManager);
         controller.resize(window->getSize());
         selector.setFirstPass(false);

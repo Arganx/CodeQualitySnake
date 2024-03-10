@@ -20,7 +20,9 @@ public:
 
   void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
   void addCharacter(const uint32_t &iCharacter);
-  void resize(const sf::Vector2u &iNewWindowSize);
+  void resizePlayerName(const sf::Vector2u &iNewWindowSize);
+  void resizeWidth(const sf::Vector2u &iNewWindowSize);
+  void resizeHeight(const sf::Vector2u &iNewWindowSize);
 };
 } // namespace tools
 #endif
