@@ -169,10 +169,20 @@ void OptionController::handleOk(tools::ScreenSelector &ioSelector,
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
   iOptionsManager.setPlayerName(nameBox.getString());
-  iOptionsManager.setBoardWidth(
-      static_cast<uint8_t>(std::stoi(widthBox.getString())));
-  iOptionsManager.setBoardHeight(
-      static_cast<uint8_t>(std::stoi(heightBox.getString())));
+  auto newWidth{std::stoi(widthBox.getString())};
+  if (newWidth > 255) {
+    newWidth = 255;
+  } else if (newWidth < 3) {
+    newWidth = 3U;
+  }
+  auto newHeight{std::stoi(heightBox.getString())};
+  if (newHeight > 255) {
+    newHeight = 255;
+  } else if (newHeight < 3) {
+    newHeight = 3U;
+  }
+  iOptionsManager.setBoardWidth(static_cast<uint8_t>(newWidth));
+  iOptionsManager.setBoardHeight(static_cast<uint8_t>(newHeight));
 }
 
 void OptionController::handleEvent(sf::RenderWindow &iWindow,
