@@ -13,7 +13,7 @@
 #include <memory>
 
 namespace controllers {
-enum class OptionsButton { Ok, Cancel, None };
+enum class OptionsButton { Ok, Cancel, None, PreviousCandy, NextCandy };
 class OptionController {
 private:
   std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
@@ -31,7 +31,11 @@ private:
   tools::TextBox heightBox;
   sf::Text playerNameText;
   sf::Text boardDimensionsText;
+  sf::Text candyText;
   uint8_t selectedTextBox{0U};
+  sf::Sprite candyLeft;
+  sf::Sprite candyRight;
+  sf::Sprite candyExample;
   bool mouseButtonPressed{false};
   void resizeBackground(const sf::Vector2u &iNewWindowSize);
   void resizeOkButton(const sf::Vector2u &iNewWindowSize);
@@ -41,12 +45,17 @@ private:
   void resizeCancelText();
   void resizeBackgroundBoard(const sf::Vector2u &iNewWindowSize);
   void resizeBoardDimensionsText(const sf::Vector2u &iNewWindowSize);
+  void resizeCandyText(const sf::Vector2u &iNewWindowSize);
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                    tools::ScreenSelector &ioSelector,
                    tools::OptionsManager &iOptionsManager);
-  void handleCancel(tools::ScreenSelector &ioSelector) const;
+  void handleCancel(tools::ScreenSelector &ioSelector,
+                    tools::OptionsManager &iOptionsManager) const;
   void handleOk(tools::ScreenSelector &ioSelector,
                 tools::OptionsManager &iOptionsManager) const;
+  void resizeCandyLeft(const sf::Vector2u &iNewWindowSize);
+  void resizeCandyRight(const sf::Vector2u &iNewWindowSize);
+  void resizeCandyExample(const sf::Vector2u &iNewWindowSize);
 
 public:
   explicit OptionController(

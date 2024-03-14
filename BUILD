@@ -188,6 +188,15 @@ cc_library(
 )
 
 cc_library(
+    name = "candies",
+    srcs = ["tools/src/candies.cpp"],
+    hdrs = [
+        "tools/inc/candies.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
+cc_library(
     name = "assets_manager",
     srcs = ["tools/src/assets_manager.cpp"],
     hdrs = [
@@ -222,6 +231,7 @@ cc_library(
         "tools/inc/options_manager.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
+    deps = [":candies"],
 )
 
 cc_library(

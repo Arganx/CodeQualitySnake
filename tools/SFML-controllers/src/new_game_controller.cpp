@@ -18,12 +18,12 @@
 #include <thread>
 namespace controllers {
 NewGameController::NewGameController(
-    uint8_t iGameWidth, uint8_t iGameHeight,
+    const tools::OptionsManager &iOptionsManager,
     std::shared_ptr<sf::RenderWindow> iWindowPtr,
     std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
         iTextureMap)
     : windowPtr{iWindowPtr}, drawer{iWindowPtr}, textureMapPtr{iTextureMap} {
-  reset(iGameWidth, iGameHeight);
+  reset(iOptionsManager);
 }
 void NewGameController::startGame(
     tools::ScreenSelector &iSelector, tools::DatabaseManager &iDatabaseManager,
@@ -122,8 +122,8 @@ void NewGameController::mainGameThread(
           "Length of snake segments does not match the graphics");
     }
     updateBlocksPositions();
-    setSnakeTextures(stepDirection);
-    updateCandy();
+    setSnakeTextures(stepDirection, iOptionsManager);
+    updateCandy(iOptionsManager);
     tools::Visualiser::visualiseBoard(*game.getBoardPtr());
   }
 }
@@ -146,12 +146,14 @@ void NewGameController::updateBlocksPositions() {
   }
 }
 
-void NewGameController::updateCandy() {
+void NewGameController::updateCandy(
+    const tools::OptionsManager &iOptionsManager) {
   std::scoped_lock lock(mutexes.candyBlocksMutex);
   while (candyBlocks.size() < game.getSnacksPositions().size()) {
     candyBlocks.emplace_back(
         sf::Vector2f(getTileSize().first, getTileSize().second));
-    candyBlocks.back().setTexture(&(*textureMapPtr)["apple"]);
+    candyBlocks.back().setTexture(
+        &(*textureMapPtr)[iOptionsManager.getAcceptedCandy()]);
   }
   while (candyBlocks.size() > game.getSnacksPositions().size()) {
     candyBlocks.pop_back();
@@ -231,7 +233,8 @@ void NewGameController::setTailTexture() {
   return;
 }
 
-void NewGameController::setSegmentsTextures() {
+void NewGameController::setSegmentsTextures(
+    const tools::OptionsManager &iOptionsManager) {
   if (snakeBlocks.size() < 3U) {
     return;
   }
@@ -321,16 +324,18 @@ void NewGameController::setSegmentsTextures() {
             &(*textureMapPtr)["body_vertical"]);
       }
     } else {
-      snakeBlocks[segmentNumber].setTexture(&(*textureMapPtr)["apple"]);
+      snakeBlocks[segmentNumber].setTexture(
+          &(*textureMapPtr)[iOptionsManager.getAcceptedCandy()]);
     }
   }
 }
 
 void NewGameController::setSnakeTextures(
-    const Direction::Direction stepDirection) {
+    const Direction::Direction stepDirection,
+    const tools::OptionsManager &iOptionsManager) {
   setHeadTexture(stepDirection);
   setTailTexture();
-  setSegmentsTextures();
+  setSegmentsTextures(iOptionsManager);
 }
 
 bool NewGameController::gameStep(Direction::Direction &oStepDirection) {
@@ -359,7 +364,8 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
   }
 }
 
-void NewGameController::resize(const sf::Vector2u &iNewWindowSize) {
+void NewGameController::resize(const sf::Vector2u &iNewWindowSize,
+                               const tools::OptionsManager &iOptionsManager) {
   // Resize board tiles
   if (boardTiles.size() != game.getBoardPtr()->getHeight()) {
     throw tools::exceptions::ExpectedSizeMismatchException(
@@ -393,10 +399,11 @@ void NewGameController::resize(const sf::Vector2u &iNewWindowSize) {
   for (auto &candy : candyBlocks) {
     candy.setSize(sf::Vector2f(newTileWidth, newTileHeight));
   }
-  updateCandy();
+  updateCandy(iOptionsManager);
 }
 
-void NewGameController::call(sf::RenderWindow &iWindow) {
+void NewGameController::call(sf::RenderWindow &iWindow,
+                             const tools::OptionsManager &iOptionsManager) {
   sf::Event event;
   while (windowPtr->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
@@ -411,7 +418,7 @@ void NewGameController::call(sf::RenderWindow &iWindow) {
       sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width),
                                 static_cast<float>(event.size.height));
       iWindow.setView(sf::View(visibleArea));
-      resize(iWindow.getSize());
+      resize(iWindow.getSize(), iOptionsManager);
     }
   }
   windowPtr->clear();
@@ -421,21 +428,23 @@ void NewGameController::call(sf::RenderWindow &iWindow) {
   windowPtr->display();
 }
 
-void NewGameController::reset(uint8_t iGameWidth, uint8_t iGameHeight) {
+void NewGameController::reset(const tools::OptionsManager &iOptionsManager) {
   boardTiles.clear();
   snakeBlocks.clear();
   candyBlocks.clear();
-  game.initGame(iGameWidth, iGameHeight);
+  game.initGame(iOptionsManager.getBoardWidth(),
+                iOptionsManager.getBoardHeight());
   createTiles();
   snakeBlocks.emplace_back(
       sf::Vector2f(getTileSize().first, getTileSize().second));
   candyBlocks.emplace_back(
       sf::Vector2f(getTileSize().first, getTileSize().second));
-  candyBlocks.back().setTexture(&(*textureMapPtr)["apple"]);
+  candyBlocks.back().setTexture(
+      &(*textureMapPtr)[iOptionsManager.getAcceptedCandy()]);
 
   updateBlocksPositions();
-  setSnakeTextures(game.getDirection());
-  updateCandy();
+  setSnakeTextures(game.getDirection(), iOptionsManager);
+  updateCandy(iOptionsManager);
 }
 
 } // namespace controllers

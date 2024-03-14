@@ -1,4 +1,5 @@
 #include "../inc/options_manager.hpp"
+#include "../inc/candies.hpp"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -11,6 +12,7 @@ namespace tools {
 constexpr std::string kPlayerNameMarker{"Player name: "};
 constexpr std::string kBoardWidthMarker{"Board width: "};
 constexpr std::string kBoardHeightMarker{"Board height: "};
+constexpr std::string kCandyMarker{"Candy: "};
 constexpr char kDefaultPlayerName[]{"Player"};
 constexpr uint8_t kDefaultBoardWidth{10U};
 constexpr uint8_t kDefaultBoardHeight{10U};
@@ -35,6 +37,16 @@ void OptionsManager::processLine(const std::string_view &iLine) {
     }
     boardHeight = static_cast<uint8_t>(height);
   }
+
+  if (iLine.starts_with(kCandyMarker)) {
+    auto candy{
+        std::stoi(iLine.substr(kCandyMarker.length(), iLine.length()).data())};
+    if (candy > 255) {
+      candy = 255U;
+    }
+    selectedCandy.setCurrentCandy(static_cast<Candies>(candy));
+    acceptedCandy = selectedCandy.getCurrentCandy();
+  }
 }
 
 OptionsManager::OptionsManager(const std::string &iOptionsFilePath)
@@ -54,25 +66,27 @@ OptionsManager::OptionsManager(const std::string &iOptionsFilePath)
     playerName = kDefaultPlayerName;
     boardWidth = kDefaultBoardWidth;
     boardHeight = kDefaultBoardHeight;
-    configFile.open(optionsFilePath, std::ios::out | std::ios::trunc);
     fillTheFile();
   }
 }
 
 void OptionsManager::setPlayerName(const std::string_view &iNewName) {
-  configFile.open(optionsFilePath, std::ios::out | std::ios::trunc);
+
   playerName = iNewName;
-  fillTheFile();
 }
 
 const std::string &OptionsManager::getPlayerName() const { return playerName; }
 
 void OptionsManager::fillTheFile() {
+  configFile.open(optionsFilePath, std::ios::out | std::ios::trunc);
   if (configFile.is_open()) {
     configFile << kPlayerNameMarker << playerName << "\n";
     configFile << kBoardWidthMarker << static_cast<uint16_t>(boardWidth)
                << "\n";
     configFile << kBoardHeightMarker << static_cast<uint16_t>(boardHeight)
+               << "\n";
+    configFile << kCandyMarker
+               << static_cast<uint16_t>(selectedCandy.getCurrentCandy())
                << "\n";
     configFile.close();
   } else {
@@ -81,16 +95,60 @@ void OptionsManager::fillTheFile() {
 }
 
 void OptionsManager::setBoardWidth(uint8_t iNewWidth) {
-  configFile.open(optionsFilePath, std::ios::out | std::ios::trunc);
   boardWidth = iNewWidth;
-  fillTheFile();
 }
 void OptionsManager::setBoardHeight(uint8_t iNewHeight) {
-  configFile.open(optionsFilePath, std::ios::out | std::ios::trunc);
   boardHeight = iNewHeight;
-  fillTheFile();
 }
 uint8_t OptionsManager::getBoardWidth() const { return boardWidth; }
 uint8_t OptionsManager::getBoardHeight() const { return boardHeight; }
+
+std::string OptionsManager::getCandy() const {
+  switch (selectedCandy.getCurrentCandy()) {
+    using enum tools::Candies;
+  case Apple:
+    return "apple";
+  case Banana:
+    return "banana";
+  case Blue_berry:
+    return "blue_berry";
+  case Cherry:
+    return "cherry";
+  case Lemon:
+    return "lemon";
+  case Watermelon:
+    return "watermelon";
+  }
+  return "apple";
+}
+
+void OptionsManager::acceptNewCandy() {
+  acceptedCandy = selectedCandy.getCurrentCandy();
+}
+
+void OptionsManager::revertCandy() {
+  selectedCandy.setCurrentCandy(acceptedCandy);
+}
+std::string OptionsManager::getAcceptedCandy() const {
+  switch (acceptedCandy) {
+    using enum tools::Candies;
+  case Apple:
+    return "apple";
+  case Banana:
+    return "banana";
+  case Blue_berry:
+    return "blue_berry";
+  case Cherry:
+    return "cherry";
+  case Lemon:
+    return "lemon";
+  case Watermelon:
+    return "watermelon";
+  }
+  return "apple";
+}
+
+void OptionsManager::nextCandy() { selectedCandy.getNextCandy(); }
+void OptionsManager::previousCandy() { selectedCandy.getPreviousCandy(); }
 
 } // namespace tools

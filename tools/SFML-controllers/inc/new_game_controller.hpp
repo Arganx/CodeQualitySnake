@@ -33,21 +33,22 @@ private:
   std::unique_ptr<std::jthread> gameThread;
   void setHeadTexture(const Direction::Direction stepDirection);
   void setTailTexture();
-  void setSegmentsTextures();
+  void setSegmentsTextures(const tools::OptionsManager &iOptionsManager);
   bool gameStep(Direction::Direction &oStepDirection);
   void mainGameThread(std::stop_token stopToken,
                       tools::ScreenSelector &iSelector,
                       const tools::DatabaseManager &iDatabaseManager,
                       const tools::OptionsManager &iOptionsManager);
   void updateBlocksPositions();
-  void updateCandy();
-  void setSnakeTextures(const Direction::Direction stepDirection);
+  void updateCandy(const tools::OptionsManager &iOptionsManager);
+  void setSnakeTextures(const Direction::Direction stepDirection,
+                        const tools::OptionsManager &iOptionsManager);
   std::pair<uint16_t, uint16_t> getTileSize() const;
   void handleKey(const sf::Keyboard::Key &keyCode);
 
 public:
   NewGameController(
-      uint8_t iGameWidth, uint8_t iGameHeight,
+      const tools::OptionsManager &iOptionsManager,
       std::shared_ptr<sf::RenderWindow> iWindowPtr,
       std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
           iTextureMap);
@@ -57,12 +58,14 @@ public:
   std::vector<sf::RectangleShape> &getSnakeBlocks();
   std::vector<sf::RectangleShape> &getCandyBlocks();
   tools::Mutexes &getMutexes();
-  void call(sf::RenderWindow &iWindow);
+  void call(sf::RenderWindow &iWindow,
+            const tools::OptionsManager &iOptionsManager);
   void startGame(tools::ScreenSelector &iSelector,
                  tools::DatabaseManager &iDatabaseManager,
                  const tools::OptionsManager &iOptionsManager);
-  void reset(uint8_t iGameWidth, uint8_t iGameHeight);
-  void resize(const sf::Vector2u &iNewWindowSize);
+  void reset(const tools::OptionsManager &iOptionsManager);
+  void resize(const sf::Vector2u &iNewWindowSize,
+              const tools::OptionsManager &iOptionsManager);
 };
 } // namespace controllers
 #endif

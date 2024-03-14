@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 namespace controllers {
@@ -16,7 +17,8 @@ OptionController::OptionController(
       okText{"Accept", *fontPtr, 17}, cancelText{"Cancel", *fontPtr, 17},
       nameBox{fontPtr}, widthBox(fontPtr), heightBox(fontPtr),
       playerNameText{"Player name:", *fontPtr, 17},
-      boardDimensionsText{"Board (X, Y):", *fontPtr, 17} {
+      boardDimensionsText{"Board (X, Y):", *fontPtr, 17},
+      candyText{"Candy: ", *fontPtr, 17} {
   // Setup background object
   if (!textureMapPtr->contains(config::kOptionsBackgroundName)) {
     throw tools::exceptions::TextureNotFoundException(
@@ -47,6 +49,22 @@ OptionController::OptionController(
   cancelButtonSprite.setOrigin(cancelButtonSprite.getLocalBounds().width / 2,
                                cancelButtonSprite.getLocalBounds().height / 2);
 
+  if (!textureMapPtr->contains(config::kArrowLeft)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Arrow left texture not found");
+  }
+  candyLeft.setTexture((*textureMapPtr)[config::kArrowLeft]);
+  candyLeft.setOrigin(candyLeft.getLocalBounds().width / 2,
+                      candyLeft.getLocalBounds().height / 2);
+
+  if (!textureMapPtr->contains(config::kArrowRight)) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Arrow right texture not found");
+  }
+  candyRight.setTexture((*textureMapPtr)[config::kArrowRight]);
+  candyRight.setOrigin(candyRight.getLocalBounds().width / 2,
+                       candyRight.getLocalBounds().height / 2);
+
   backgroundBoard.setOrigin(backgroundBoard.getLocalBounds().width / 2,
                             backgroundBoard.getLocalBounds().height / 2);
 
@@ -55,6 +73,7 @@ OptionController::OptionController(
   cancelText.setFillColor(sf::Color::Black);
   playerNameText.setFillColor(sf::Color::Black);
   boardDimensionsText.setFillColor(sf::Color::Black);
+  candyText.setFillColor(sf::Color::Black);
 
   resize(iWindowSize);
 }
@@ -146,6 +165,49 @@ void OptionController::resizeBackgroundBoard(
           static_cast<float>(backgroundBoard.getTexture()->getSize().y));
 }
 
+void OptionController::resizeCandyLeft(const sf::Vector2u &iNewWindowSize) {
+  candyLeft.setScale(
+      static_cast<float>(iNewWindowSize.x) * 0.05F /
+          static_cast<float>(candyLeft.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) * 0.1F /
+          static_cast<float>(candyLeft.getTexture()->getSize().y));
+  candyLeft.setPosition(widthBox.getPosition().x,
+                        widthBox.getPosition().y +
+                            static_cast<float>(iNewWindowSize.y) * 0.1F);
+}
+
+void OptionController::resizeCandyRight(const sf::Vector2u &iNewWindowSize) {
+  candyRight.setScale(
+      static_cast<float>(iNewWindowSize.x) * 0.05F /
+          static_cast<float>(candyRight.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) * 0.1F /
+          static_cast<float>(candyRight.getTexture()->getSize().y));
+  candyRight.setPosition(heightBox.getPosition().x,
+                         heightBox.getPosition().y +
+                             static_cast<float>(iNewWindowSize.y) * 0.1F);
+}
+
+void OptionController::resizeCandyText(const sf::Vector2u &iNewWindowSize) {
+  candyText.setCharacterSize(static_cast<unsigned int>(
+      0.35F * cancelButtonSprite.getGlobalBounds().height));
+  candyText.setOrigin(candyText.getLocalBounds().width / 2,
+                      candyText.getLocalBounds().height / 2);
+  candyText.setPosition(static_cast<float>(iNewWindowSize.x * 0.3),
+                        static_cast<float>(iNewWindowSize.y * 0.21));
+}
+
+void OptionController::resizeCandyExample(const sf::Vector2u &iNewWindowSize) {
+  if (candyExample.getTexture() != nullptr) {
+    candyExample.setScale(
+        static_cast<float>(iNewWindowSize.x) * 0.05F /
+            static_cast<float>(candyExample.getTexture()->getSize().x),
+        static_cast<float>(iNewWindowSize.y) * 0.1F /
+            static_cast<float>(candyExample.getTexture()->getSize().y));
+    candyExample.setPosition(static_cast<float>(iNewWindowSize.x * 0.57),
+                             static_cast<float>(iNewWindowSize.y * 0.18));
+  }
+}
+
 void OptionController::resize(const sf::Vector2u &iNewWindowSize) {
   resizeBackground(iNewWindowSize);
   resizeBackgroundBoard(iNewWindowSize);
@@ -158,9 +220,16 @@ void OptionController::resize(const sf::Vector2u &iNewWindowSize) {
   heightBox.resizeHeight(iNewWindowSize);
   resizePlayerNameText(iNewWindowSize);
   resizeBoardDimensionsText(iNewWindowSize);
+  resizeCandyText(iNewWindowSize);
+  resizeCandyLeft(iNewWindowSize);
+  resizeCandyRight(iNewWindowSize);
+  resizeCandyExample(iNewWindowSize);
 }
 
-void OptionController::handleCancel(tools::ScreenSelector &ioSelector) const {
+void OptionController::handleCancel(
+    tools::ScreenSelector &ioSelector,
+    tools::OptionsManager &iOptionsManager) const {
+  iOptionsManager.revertCandy();
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
 }
@@ -183,6 +252,8 @@ void OptionController::handleOk(tools::ScreenSelector &ioSelector,
   }
   iOptionsManager.setBoardWidth(static_cast<uint8_t>(newWidth));
   iOptionsManager.setBoardHeight(static_cast<uint8_t>(newHeight));
+  iOptionsManager.acceptNewCandy();
+  iOptionsManager.fillTheFile();
 }
 
 void OptionController::handleEvent(sf::RenderWindow &iWindow,
@@ -219,6 +290,15 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         selectedTextBox = static_cast<uint8_t>(3U);
+      } else if (candyLeft.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        pressedButton = OptionsButton::PreviousCandy;
+
+      } else if (candyRight.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        pressedButton = OptionsButton::NextCandy;
       }
     }
   } else if (iEvent.type == sf::Event::MouseButtonReleased) {
@@ -227,13 +307,29 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
       okText.setFillColor(sf::Color::Black);
       cancelText.setFillColor(sf::Color::Black);
       mouseButtonPressed = false;
-      if (cancelButtonSprite.getGlobalBounds().contains(
+      if (pressedButton == OptionsButton::Cancel &&
+          cancelButtonSprite.getGlobalBounds().contains(
               static_cast<float>(mousePos.x), static_cast<float>(mousePos.y))) {
-        handleCancel(ioSelector);
-      } else if (okButtonSprite.getGlobalBounds().contains(
+        handleCancel(ioSelector, iOptionsManager);
+      } else if (pressedButton == OptionsButton::Ok &&
+                 okButtonSprite.getGlobalBounds().contains(
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         handleOk(ioSelector, iOptionsManager);
+      } else if (pressedButton == OptionsButton::PreviousCandy &&
+                 candyLeft.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        iOptionsManager.previousCandy();
+        refreshValues(iOptionsManager);
+        resizeCandyExample(iWindow.getSize());
+      } else if (pressedButton == OptionsButton::NextCandy &&
+                 candyRight.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        iOptionsManager.nextCandy();
+        refreshValues(iOptionsManager);
+        resizeCandyExample(iWindow.getSize());
       }
     }
   } else if (iEvent.type == sf::Event::TextEntered) {
@@ -280,6 +376,10 @@ void OptionController::call(sf::RenderWindow &iWindow,
   iWindow.draw(cancelText);
   iWindow.draw(playerNameText);
   iWindow.draw(boardDimensionsText);
+  iWindow.draw(candyText);
+  iWindow.draw(candyLeft);
+  iWindow.draw(candyRight);
+  iWindow.draw(candyExample);
   iWindow.display();
 }
 
@@ -288,5 +388,10 @@ void OptionController::refreshValues(
   nameBox.setString(iOptionsManager.getPlayerName());
   widthBox.setString(std::to_string(iOptionsManager.getBoardWidth()));
   heightBox.setString(std::to_string(iOptionsManager.getBoardHeight()));
+  if (!textureMapPtr->contains(iOptionsManager.getCandy())) {
+    throw tools::exceptions::TextureNotFoundException(
+        "Candy texture not found");
+  }
+  candyExample.setTexture((*textureMapPtr)[iOptionsManager.getCandy()]);
 }
 } // namespace controllers
