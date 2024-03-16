@@ -13,7 +13,15 @@
 #include <memory>
 
 namespace controllers {
-enum class OptionsButton { Ok, Cancel, None, PreviousCandy, NextCandy };
+enum class OptionsButton {
+  Ok,
+  Cancel,
+  None,
+  PreviousCandy,
+  NextCandy,
+  NextSnakeColor,
+  PreviousSnakeColor
+};
 class OptionController {
 private:
   std::shared_ptr<std::map<std::string, sf::Texture, std::less<>>>
@@ -32,10 +40,14 @@ private:
   sf::Text playerNameText;
   sf::Text boardDimensionsText;
   sf::Text candyText;
+  sf::Text snakeColorText;
   uint8_t selectedTextBox{0U};
   sf::Sprite candyLeft;
   sf::Sprite candyRight;
   sf::Sprite candyExample;
+  sf::Sprite snakeColorLeft;
+  sf::Sprite snakeColorRight;
+  sf::Sprite snakeColorExample;
   bool mouseButtonPressed{false};
   void resizeBackground(const sf::Vector2u &iNewWindowSize);
   void resizeOkButton(const sf::Vector2u &iNewWindowSize);
@@ -46,6 +58,7 @@ private:
   void resizeBackgroundBoard(const sf::Vector2u &iNewWindowSize);
   void resizeBoardDimensionsText(const sf::Vector2u &iNewWindowSize);
   void resizeCandyText(const sf::Vector2u &iNewWindowSize);
+  void resizeSnakeColorText(const sf::Vector2u &iNewWindowSize);
   void handleEvent(sf::RenderWindow &iWindow, const sf::Event &iEvent,
                    tools::ScreenSelector &ioSelector,
                    tools::OptionsManager &iOptionsManager);
@@ -56,6 +69,9 @@ private:
   void resizeCandyLeft(const sf::Vector2u &iNewWindowSize);
   void resizeCandyRight(const sf::Vector2u &iNewWindowSize);
   void resizeCandyExample(const sf::Vector2u &iNewWindowSize);
+  void resizeSnakeColorLeft(const sf::Vector2u &iNewWindowSize);
+  void resizeSnakeColorRight(const sf::Vector2u &iNewWindowSize);
+  void resizeSnakeColorExample(const sf::Vector2u &iNewWindowSize);
 
 public:
   explicit OptionController(

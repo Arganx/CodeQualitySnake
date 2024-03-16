@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
-#include <iostream>
 #include <string>
 
 namespace controllers {
@@ -18,7 +17,8 @@ OptionController::OptionController(
       nameBox{fontPtr}, widthBox(fontPtr), heightBox(fontPtr),
       playerNameText{"Player name:", *fontPtr, 17},
       boardDimensionsText{"Board (X, Y):", *fontPtr, 17},
-      candyText{"Candy: ", *fontPtr, 17} {
+      candyText{"Candy: ", *fontPtr, 17},
+      snakeColorText{"Snake color:", *fontPtr, 17} {
   // Setup background object
   if (!textureMapPtr->contains(config::kOptionsBackgroundName)) {
     throw tools::exceptions::TextureNotFoundException(
@@ -57,6 +57,10 @@ OptionController::OptionController(
   candyLeft.setOrigin(candyLeft.getLocalBounds().width / 2,
                       candyLeft.getLocalBounds().height / 2);
 
+  snakeColorLeft.setTexture((*textureMapPtr)[config::kArrowLeft]);
+  snakeColorLeft.setOrigin(snakeColorLeft.getLocalBounds().width / 2,
+                           snakeColorLeft.getLocalBounds().height / 2);
+
   if (!textureMapPtr->contains(config::kArrowRight)) {
     throw tools::exceptions::TextureNotFoundException(
         "Arrow right texture not found");
@@ -64,6 +68,10 @@ OptionController::OptionController(
   candyRight.setTexture((*textureMapPtr)[config::kArrowRight]);
   candyRight.setOrigin(candyRight.getLocalBounds().width / 2,
                        candyRight.getLocalBounds().height / 2);
+
+  snakeColorRight.setTexture((*textureMapPtr)[config::kArrowRight]);
+  snakeColorRight.setOrigin(snakeColorRight.getLocalBounds().width / 2,
+                            snakeColorRight.getLocalBounds().height / 2);
 
   backgroundBoard.setOrigin(backgroundBoard.getLocalBounds().width / 2,
                             backgroundBoard.getLocalBounds().height / 2);
@@ -74,6 +82,7 @@ OptionController::OptionController(
   playerNameText.setFillColor(sf::Color::Black);
   boardDimensionsText.setFillColor(sf::Color::Black);
   candyText.setFillColor(sf::Color::Black);
+  snakeColorText.setFillColor(sf::Color::Black);
 
   resize(iWindowSize);
 }
@@ -208,6 +217,52 @@ void OptionController::resizeCandyExample(const sf::Vector2u &iNewWindowSize) {
   }
 }
 
+void OptionController::resizeSnakeColorLeft(
+    const sf::Vector2u &iNewWindowSize) {
+  snakeColorLeft.setScale(
+      static_cast<float>(iNewWindowSize.x) * 0.05F /
+          static_cast<float>(snakeColorLeft.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) * 0.1F /
+          static_cast<float>(snakeColorLeft.getTexture()->getSize().y));
+  snakeColorLeft.setPosition(widthBox.getPosition().x,
+                             widthBox.getPosition().y +
+                                 static_cast<float>(iNewWindowSize.y) * 0.22F);
+}
+void OptionController::resizeSnakeColorRight(
+    const sf::Vector2u &iNewWindowSize) {
+  snakeColorRight.setScale(
+      static_cast<float>(iNewWindowSize.x) * 0.05F /
+          static_cast<float>(snakeColorRight.getTexture()->getSize().x),
+      static_cast<float>(iNewWindowSize.y) * 0.1F /
+          static_cast<float>(snakeColorRight.getTexture()->getSize().y));
+  snakeColorRight.setPosition(heightBox.getPosition().x,
+                              heightBox.getPosition().y +
+                                  static_cast<float>(iNewWindowSize.y) * 0.22F);
+}
+
+void OptionController::resizeSnakeColorText(
+    const sf::Vector2u &iNewWindowSize) {
+  snakeColorText.setCharacterSize(static_cast<unsigned int>(
+      0.35F * cancelButtonSprite.getGlobalBounds().height));
+  snakeColorText.setOrigin(snakeColorText.getLocalBounds().width / 2,
+                           snakeColorText.getLocalBounds().height / 2);
+  snakeColorText.setPosition(static_cast<float>(iNewWindowSize.x * 0.3),
+                             static_cast<float>(iNewWindowSize.y * 0.33));
+}
+
+void OptionController::resizeSnakeColorExample(
+    const sf::Vector2u &iNewWindowSize) {
+  if (snakeColorExample.getTexture() != nullptr) {
+    snakeColorExample.setScale(
+        static_cast<float>(iNewWindowSize.x) * 0.05F /
+            static_cast<float>(snakeColorExample.getTexture()->getSize().x),
+        static_cast<float>(iNewWindowSize.y) * 0.1F /
+            static_cast<float>(snakeColorExample.getTexture()->getSize().y));
+    snakeColorExample.setPosition(static_cast<float>(iNewWindowSize.x * 0.57),
+                                  static_cast<float>(iNewWindowSize.y * 0.29));
+  }
+}
+
 void OptionController::resize(const sf::Vector2u &iNewWindowSize) {
   resizeBackground(iNewWindowSize);
   resizeBackgroundBoard(iNewWindowSize);
@@ -224,12 +279,17 @@ void OptionController::resize(const sf::Vector2u &iNewWindowSize) {
   resizeCandyLeft(iNewWindowSize);
   resizeCandyRight(iNewWindowSize);
   resizeCandyExample(iNewWindowSize);
+  resizeSnakeColorText(iNewWindowSize);
+  resizeSnakeColorLeft(iNewWindowSize);
+  resizeSnakeColorRight(iNewWindowSize);
+  resizeSnakeColorExample(iNewWindowSize);
 }
 
 void OptionController::handleCancel(
     tools::ScreenSelector &ioSelector,
     tools::OptionsManager &iOptionsManager) const {
   iOptionsManager.revertCandy();
+  iOptionsManager.revertSnakeColor();
   ioSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
   ioSelector.setFirstPass(true);
 }
@@ -253,6 +313,7 @@ void OptionController::handleOk(tools::ScreenSelector &ioSelector,
   iOptionsManager.setBoardWidth(static_cast<uint8_t>(newWidth));
   iOptionsManager.setBoardHeight(static_cast<uint8_t>(newHeight));
   iOptionsManager.acceptNewCandy();
+  iOptionsManager.acceptNewSnakeColor();
   iOptionsManager.fillTheFile();
 }
 
@@ -299,6 +360,14 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
                      static_cast<float>(mousePos.x),
                      static_cast<float>(mousePos.y))) {
         pressedButton = OptionsButton::NextCandy;
+      } else if (snakeColorLeft.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        pressedButton = OptionsButton::PreviousSnakeColor;
+      } else if (snakeColorRight.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        pressedButton = OptionsButton::NextSnakeColor;
       }
     }
   } else if (iEvent.type == sf::Event::MouseButtonReleased) {
@@ -330,6 +399,22 @@ void OptionController::handleEvent(sf::RenderWindow &iWindow,
         iOptionsManager.nextCandy();
         refreshValues(iOptionsManager);
         resizeCandyExample(iWindow.getSize());
+      } else if (pressedButton == OptionsButton::PreviousSnakeColor &&
+                 snakeColorLeft.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        iOptionsManager.previousSnakeColor();
+        snakeColorExample.setTexture(
+            (*textureMapPtr)[iOptionsManager.getSnakeColor()]);
+        resizeSnakeColorExample(iWindow.getSize());
+      } else if (pressedButton == OptionsButton::NextSnakeColor &&
+                 snakeColorRight.getGlobalBounds().contains(
+                     static_cast<float>(mousePos.x),
+                     static_cast<float>(mousePos.y))) {
+        iOptionsManager.nextSnakeColor();
+        snakeColorExample.setTexture(
+            (*textureMapPtr)[iOptionsManager.getSnakeColor()]);
+        resizeSnakeColorExample(iWindow.getSize());
       }
     }
   } else if (iEvent.type == sf::Event::TextEntered) {
@@ -380,6 +465,10 @@ void OptionController::call(sf::RenderWindow &iWindow,
   iWindow.draw(candyLeft);
   iWindow.draw(candyRight);
   iWindow.draw(candyExample);
+  iWindow.draw(snakeColorText);
+  iWindow.draw(snakeColorLeft);
+  iWindow.draw(snakeColorRight);
+  iWindow.draw(snakeColorExample);
   iWindow.display();
 }
 
@@ -393,5 +482,7 @@ void OptionController::refreshValues(
         "Candy texture not found");
   }
   candyExample.setTexture((*textureMapPtr)[iOptionsManager.getCandy()]);
+  snakeColorExample.setTexture(
+      (*textureMapPtr)[iOptionsManager.getSnakeColor()]);
 }
 } // namespace controllers

@@ -225,13 +225,25 @@ cc_library(
 )
 
 cc_library(
+    name = "colors",
+    srcs = ["tools/src/colors.cpp"],
+    hdrs = [
+        "tools/inc/colors.hpp",
+    ],
+    copts = CPP_FLAGS_DEBUG,
+)
+
+cc_library(
     name = "options_manager",
     srcs = ["tools/src/options_manager.cpp"],
     hdrs = [
         "tools/inc/options_manager.hpp",
     ],
     copts = CPP_FLAGS_DEBUG,
-    deps = [":candies"],
+    deps = [
+        ":candies",
+        ":colors",
+    ],
 )
 
 cc_library(

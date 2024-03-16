@@ -31,8 +31,9 @@ private:
   void createTiles();
   tools::Mutexes mutexes;
   std::unique_ptr<std::jthread> gameThread;
-  void setHeadTexture(const Direction::Direction stepDirection);
-  void setTailTexture();
+  void setHeadTexture(const Direction::Direction stepDirection,
+                      const tools::OptionsManager &iOptionsManager);
+  void setTailTexture(const tools::OptionsManager &iOptionsManager);
   void setSegmentsTextures(const tools::OptionsManager &iOptionsManager);
   bool gameStep(Direction::Direction &oStepDirection);
   void mainGameThread(std::stop_token stopToken,

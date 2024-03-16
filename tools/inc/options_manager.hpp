@@ -2,6 +2,7 @@
 #define OPTIONS_MANAGER_GUARD
 
 #include "candies.hpp"
+#include "colors.hpp"
 #include <cstdint>
 #include <fstream>
 #include <string>
@@ -18,6 +19,8 @@ private:
   void processLine(const std::string_view &iLine);
   CandyCounter selectedCandy{Candies::Apple};
   Candies acceptedCandy{Candies::Apple};
+  ColorCounter selectedSnakeColor{Colors::Blue};
+  Colors acceptedColor{Colors::Blue};
 
 public:
   explicit OptionsManager(const std::string &iOptionsFilePath);
@@ -34,6 +37,26 @@ public:
   void acceptNewCandy();
   void revertCandy();
   std::string getAcceptedCandy() const;
+  std::string getSnakeColor() const;
+  void nextSnakeColor();
+  void previousSnakeColor();
+  void acceptNewSnakeColor();
+  void revertSnakeColor();
+  Colors getAcceptedSnakeColor() const;
+  std::string getTextureBodyHorizontal() const;
+  std::string getTextureBodyTopRight() const;
+  std::string getTextureBodyBottomRight() const;
+  std::string getTextureBodyTopLeft() const;
+  std::string getTextureBodyBottomLeft() const;
+  std::string getTextureBodyVertical() const;
+  std::string getTextureTailLeft() const;
+  std::string getTextureTailRight() const;
+  std::string getTextureTailUp() const;
+  std::string getTextureTailDown() const;
+  std::string getTextureHeadLeft() const;
+  std::string getTextureHeadRight() const;
+  std::string getTextureHeadUp() const;
+  std::string getTextureHeadDown() const;
 };
 } // namespace tools
 

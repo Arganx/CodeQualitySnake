@@ -172,30 +172,36 @@ void NewGameController::updateCandy(
 }
 
 void NewGameController::setHeadTexture(
-    const Direction::Direction stepDirection) {
+    const Direction::Direction stepDirection,
+    const tools::OptionsManager &iOptionsManager) {
   if (snakeBlocks.empty()) {
     return;
   }
   switch (stepDirection) {
     using enum Direction::Direction;
   case Up:
-    snakeBlocks[0].setTexture(&(*textureMapPtr)["head_up"]);
+    snakeBlocks[0].setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureHeadUp()]);
     break;
   case Down:
-    snakeBlocks[0].setTexture(&(*textureMapPtr)["head_down"]);
+    snakeBlocks[0].setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureHeadDown()]);
     break;
   case Left:
-    snakeBlocks[0].setTexture(&(*textureMapPtr)["head_left"]);
+    snakeBlocks[0].setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureHeadLeft()]);
     break;
   case Right:
-    snakeBlocks[0].setTexture(&(*textureMapPtr)["head_right"]);
+    snakeBlocks[0].setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureHeadRight()]);
     break;
   default:
     break;
   }
 }
 
-void NewGameController::setTailTexture() {
+void NewGameController::setTailTexture(
+    const tools::OptionsManager &iOptionsManager) {
   if (game.getSnake().getSnakeSegments().size() != snakeBlocks.size()) {
     throw std::domain_error("Mismatch between snakeBlocks and snake segments");
   }
@@ -215,19 +221,23 @@ void NewGameController::setTailTexture() {
                          .getYPosition();
 
   if (tailX + 1U == beforeLastX) {
-    snakeBlocks.back().setTexture(&(*textureMapPtr)["tail_left"]);
+    snakeBlocks.back().setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureTailLeft()]);
     return;
   }
   if (tailX - 1U == beforeLastX) {
-    snakeBlocks.back().setTexture(&(*textureMapPtr)["tail_right"]);
+    snakeBlocks.back().setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureTailRight()]);
     return;
   }
   if (tailY + 1U == beforeLastY) {
-    snakeBlocks.back().setTexture(&(*textureMapPtr)["tail_up"]);
+    snakeBlocks.back().setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureTailUp()]);
     return;
   }
   if (tailY - 1U == beforeLastY) {
-    snakeBlocks.back().setTexture(&(*textureMapPtr)["tail_down"]);
+    snakeBlocks.back().setTexture(
+        &(*textureMapPtr)[iOptionsManager.getTextureTailDown()]);
     return;
   }
   return;
@@ -274,54 +284,54 @@ void NewGameController::setSegmentsTextures(
       if (currentY - 1U == previousY) // Entrance on top
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_topright"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyTopRight()]);
       } else if (currentY + 1U == previousY) // Entrance on bottom
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_bottomright"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyBottomRight()]);
       } else {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_horizontal"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyHorizontal()]);
       }
     } else if (currentX - 1U == nextX) // Exit on the left
     {
       if (currentY - 1U == previousY) // Entrance on top
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_topleft"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyTopLeft()]);
       } else if (currentY + 1U == previousY) // Entrance on bottom
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_bottomleft"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyBottomLeft()]);
       } else {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_horizontal"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyHorizontal()]);
       }
     } else if (currentY - 1U == nextY) // Exit on top
     {
       if (currentX - 1U == previousX) // Entrance on the left
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_topleft"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyTopLeft()]);
       } else if (currentX + 1U == previousX) {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_topright"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyTopRight()]);
       } else {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_vertical"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyVertical()]);
       }
     } else if (currentY + 1U == nextY) // Exit on the bottom
     {
       if (currentX - 1U == previousX) // Entrance on the left
       {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_bottomleft"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyBottomLeft()]);
       } else if (currentX + 1U == previousX) {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_bottomright"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyBottomRight()]);
       } else {
         snakeBlocks[segmentNumber].setTexture(
-            &(*textureMapPtr)["body_vertical"]);
+            &(*textureMapPtr)[iOptionsManager.getTextureBodyVertical()]);
       }
     } else {
       snakeBlocks[segmentNumber].setTexture(
@@ -333,8 +343,8 @@ void NewGameController::setSegmentsTextures(
 void NewGameController::setSnakeTextures(
     const Direction::Direction stepDirection,
     const tools::OptionsManager &iOptionsManager) {
-  setHeadTexture(stepDirection);
-  setTailTexture();
+  setHeadTexture(stepDirection, iOptionsManager);
+  setTailTexture(iOptionsManager);
   setSegmentsTextures(iOptionsManager);
 }
 
