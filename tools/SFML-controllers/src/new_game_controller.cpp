@@ -10,6 +10,7 @@
 #include "SFML/Graphics/Texture.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Window.hpp>
 #include <cstdint>
 #include <map>
@@ -29,9 +30,8 @@ void NewGameController::startGame(
     tools::ScreenSelector &iSelector, tools::DatabaseManager &iDatabaseManager,
     const tools::OptionsManager &iOptionsManager) {
   gameThread = std::make_unique<std::jthread>(
-      &NewGameController::mainGameThread, this, stopSrc.get_token(),
-      std::ref(iSelector), std::ref(iDatabaseManager),
-      std::ref(iOptionsManager));
+      &NewGameController::mainGameThread, this, std::ref(iSelector),
+      std::ref(iDatabaseManager), std::ref(iOptionsManager));
 }
 
 Game::Game &NewGameController::getGame() { return game; }
@@ -96,14 +96,14 @@ std::vector<sf::RectangleShape> &NewGameController::getSnakeBlocks() {
 }
 
 void NewGameController::mainGameThread(
-    std::stop_token stopToken, tools::ScreenSelector &iSelector,
+    tools::ScreenSelector &iSelector,
     const tools::DatabaseManager &iDatabaseManager,
     const tools::OptionsManager &iOptionsManager) {
   while (true) {
-    if (stopToken.stop_requested()) {
+    std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
+    if (isPaused) {
       return;
     }
-    std::this_thread::sleep_for(static_cast<std::chrono::milliseconds>(400));
     Direction::Direction stepDirection;
     if (gameStep(stepDirection)) {
       iSelector.setFirstPass(true);
@@ -357,7 +357,10 @@ bool NewGameController::gameStep(Direction::Direction &oStepDirection) {
   return false;
 }
 
-void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
+void NewGameController::handleKey(
+    const sf::Keyboard::Key &keyCode, tools::ScreenSelector &iSelector,
+    tools::DatabaseManager &iDatabaseManager,
+    const tools::OptionsManager &iOptionsManager) {
   std::scoped_lock lock(mutexes.directionMutex);
 
   if (keyCode == sf::Keyboard::Left) {
@@ -369,8 +372,15 @@ void NewGameController::handleKey(const sf::Keyboard::Key &keyCode) {
   } else if (keyCode == sf::Keyboard::Down) {
     game.setDirection(Direction::Direction::Down);
   } else if (keyCode == sf::Keyboard::Escape) {
-    stopSrc.request_stop();
+    isPaused = true;
+    iSelector.setSelectedOption(tools::SelectorOptions::MainMenu);
+    iSelector.setFirstPass(true);
     game.showStatus();
+  } else if (keyCode == sf::Keyboard::P) {
+    isPaused = !isPaused;
+    if (!isPaused) {
+      startGame(iSelector, iDatabaseManager, iOptionsManager);
+    }
   }
 }
 
@@ -413,16 +423,18 @@ void NewGameController::resize(const sf::Vector2u &iNewWindowSize,
 }
 
 void NewGameController::call(sf::RenderWindow &iWindow,
+                             tools::ScreenSelector &iSelector,
+                             tools::DatabaseManager &iDatabaseManager,
                              const tools::OptionsManager &iOptionsManager) {
   sf::Event event;
   while (windowPtr->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
-      stopSrc.request_stop();
+      isPaused = true;
       windowPtr->close();
     }
 
     if (event.type == sf::Event::KeyPressed) {
-      handleKey(event.key.code);
+      handleKey(event.key.code, iSelector, iDatabaseManager, iOptionsManager);
     }
     if (event.type == sf::Event::Resized) {
       sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width),
@@ -439,6 +451,7 @@ void NewGameController::call(sf::RenderWindow &iWindow,
 }
 
 void NewGameController::reset(const tools::OptionsManager &iOptionsManager) {
+  isPaused = false;
   boardTiles.clear();
   snakeBlocks.clear();
   candyBlocks.clear();

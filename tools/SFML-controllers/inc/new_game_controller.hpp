@@ -13,14 +13,13 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <stop_token>
 #include <thread>
 namespace controllers {
 
 class NewGameController {
 private:
   Game::Game game;
-  std::stop_source stopSrc;
+  std::atomic<bool> isPaused{false};
   std::vector<std::vector<sf::RectangleShape>> boardTiles;
   std::vector<sf::RectangleShape> snakeBlocks;
   std::shared_ptr<sf::RenderWindow> windowPtr;
@@ -36,8 +35,7 @@ private:
   void setTailTexture(const tools::OptionsManager &iOptionsManager);
   void setSegmentsTextures(const tools::OptionsManager &iOptionsManager);
   bool gameStep(Direction::Direction &oStepDirection);
-  void mainGameThread(std::stop_token stopToken,
-                      tools::ScreenSelector &iSelector,
+  void mainGameThread(tools::ScreenSelector &iSelector,
                       const tools::DatabaseManager &iDatabaseManager,
                       const tools::OptionsManager &iOptionsManager);
   void updateBlocksPositions();
@@ -45,7 +43,10 @@ private:
   void setSnakeTextures(const Direction::Direction stepDirection,
                         const tools::OptionsManager &iOptionsManager);
   std::pair<uint16_t, uint16_t> getTileSize() const;
-  void handleKey(const sf::Keyboard::Key &keyCode);
+  void handleKey(const sf::Keyboard::Key &keyCode,
+                 tools::ScreenSelector &iSelector,
+                 tools::DatabaseManager &iDatabaseManager,
+                 const tools::OptionsManager &iOptionsManager);
 
 public:
   NewGameController(
@@ -59,7 +60,8 @@ public:
   std::vector<sf::RectangleShape> &getSnakeBlocks();
   std::vector<sf::RectangleShape> &getCandyBlocks();
   tools::Mutexes &getMutexes();
-  void call(sf::RenderWindow &iWindow,
+  void call(sf::RenderWindow &iWindow, tools::ScreenSelector &iSelector,
+            tools::DatabaseManager &iDatabaseManager,
             const tools::OptionsManager &iOptionsManager);
   void startGame(tools::ScreenSelector &iSelector,
                  tools::DatabaseManager &iDatabaseManager,

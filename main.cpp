@@ -65,7 +65,7 @@ int main() {
         controller.resize(window->getSize(), optionsManager);
         selector.setFirstPass(false);
       }
-      controller.call(*window, optionsManager);
+      controller.call(*window, selector, databaseManager, optionsManager);
       break;
     }
   }
