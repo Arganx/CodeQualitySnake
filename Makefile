@@ -1,5 +1,6 @@
 compiler = g++
 flags = -g -std=c++20 -O0 -Wextra -pedantic -Wall -Wconversion -pthread --coverage
+execution_flags = -g -std=c++20 -O0 -Wextra -pedantic -Wall -Wconversion -pthread
 
 
 # Points to the root of Google Test, relative to where this file is.
@@ -129,11 +130,11 @@ tests: board_test game_test board_position_test snake_test limited_uint8_8_test 
 SFML_INC = /home/argan/libs/SFML-2.6.1/include
 SFML_LIB = /home/argan/libs/SFML-2.6.1/lib
 
-sqlite3.o: SQL-Lite/sqlite3.c
-	gcc -c SQL-Lite/sqlite3.c -o SQL-Lite/sqlite3.o
+sqlite3.o: ../SQL-Lite/sqlite3.c
+	gcc -c ../SQL-Lite/sqlite3.c -o ../SQL-Lite/sqlite3.o
 
-main: ../main.cpp
-	$(compiler) $(flags) -I$(INC_DIR) -I$(CONTROLLERS_INC) ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* $(CONTROLLERS_SRC)/* -o main -lsfml-graphics -lsfml-window -lsfml-system
+main: ../main.cpp sqlite3.o
+	$(compiler) $(execution_flags) -I$(INC_DIR) -I$(CONTROLLERS_INC) -I$(TOOLS_INC) ../SQL-Lite/sqlite3.o ../main.cpp $(SRC_DIR)/* $(TOOLS_SRC)/* $(CONTROLLERS_SRC)/* -o main -lsfml-graphics -lsfml-window -lsfml-system
 
 ALL = main tests
 all : $(ALL)
