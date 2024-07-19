@@ -12,7 +12,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 file(GLOB SOURCES "src/*.cpp")
-include_directories(inc)
+include_directories("inc")
 
 enable_testing()
 
@@ -83,6 +83,10 @@ target_compile_definitions(game_test PRIVATE TESTING)
 include_directories("tools/inc")
 file(GLOB TOOLS "tools/src/*.cpp")
 
+#Controllers config
+include_directories("tools/SFML-controllers/inc")
+file(GLOB CONTROLLERS "tools/SFML-controllers/src/*.cpp")
+
 add_executable(
     texture_loader_test
     tools/tests/texture_loader_test.cpp
@@ -127,15 +131,21 @@ target_link_libraries(
 
 gtest_discover_tests(drawer_test)
 
+#SQL config
+add_library(sqlitelib SQL-Lite/sqlite3.h SQL-Lite/sqlite3.c)
+target_include_directories(sqlitelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(
     snake_game
     main.cpp
     tools/src/visualiser.cpp
     ${SOURCES}
     ${TOOLS}
+    ${CONTROLLERS}
 )
 
 target_link_libraries(
     snake_game
     sfml-graphics sfml-window sfml-system
+    sqlitelib
 )
