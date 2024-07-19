@@ -2,6 +2,7 @@
 #include "../../inc/config/texture_config.hpp"
 #include "../../inc/exceptions.hpp"
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Window/Event.hpp>
 #include <cstdint>
 #include <string>
@@ -482,6 +483,12 @@ void OptionController::refreshValues(
         "Candy texture not found");
   }
   candyExample.setTexture((*textureMapPtr)[iOptionsManager.getCandy()]);
+  candyExample.setTextureRect(sf::IntRect(
+      0, 0,
+      static_cast<int>(
+          (*textureMapPtr)[iOptionsManager.getCandy()].getSize().x),
+      static_cast<int>(
+          (*textureMapPtr)[iOptionsManager.getCandy()].getSize().y)));
   snakeColorExample.setTexture(
       (*textureMapPtr)[iOptionsManager.getSnakeColor()]);
 }

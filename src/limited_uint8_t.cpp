@@ -1,6 +1,8 @@
 #include "../inc/limited_uint8_t.hpp"
 #include <cstdint>
+
 namespace Game {
+
 Limited_uint8_t::Limited_uint8_t(uint8_t iValue, uint8_t iMaxValue)
     : value{iValue}, maxValue{iMaxValue} {
   value = static_cast<uint8_t>(value % (maxValue + 1U));
@@ -17,6 +19,7 @@ bool Limited_uint8_t::operator==(const uint8_t iUint8) const {
 std::strong_ordering Limited_uint8_t::operator<=>(const uint8_t iUint8) const {
   return value <=> iUint8;
 }
+
 std::strong_ordering
 Limited_uint8_t::operator<=>(const Limited_uint8_t &iOther) const {
   return value <=> iOther.getValue();
