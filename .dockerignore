@@ -1,0 +1,11 @@
+bazel-bin
+bazel-out
+bazel-Snake
+bazel-testlog
+build
+coverage
+.vscode
+docker
+TODO
+sqlCreate.cpp
+test-images
